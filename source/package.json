@@ -1,0 +1,13 @@
+{
+  "name": "Pow Edit",
+  "version": "0.0.0",
+  "description": "Pow2 Editor.",
+  "main": "app.html",
+  "window": {
+    "width": 640,
+    "height": 480,
+    "show": true,
+    "title": "Pow2 - [your game]",
+    "toolbar": true
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "pow-edit",
+  "version": "0.0.0",
+  "description": "Pow2 Editor",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/justindujardin/pow-edit.git"
+  },
+  "author": "Justin DuJardin",
+  "license": "Apache2",
+  "dependencies": {
+    "grunt": "~0.4.0",
+    "grunt-typescript": "~0.2.8",
+    "grunt-contrib-less": "0.10.0",
+    "graceful-fs": "~2.0.1",
+    "typescript": "~0.9.7"
+  },
+  "scripts": {
+    "test": "npm install && ./node_modules/.bin/grunt"
+  },
+  "devDependencies": {
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-cli": "~0.1.10",
+    "grunt-contrib-clean": "~0.5.0"
+  }
+}
