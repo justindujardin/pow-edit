@@ -1,5 +1,6 @@
-Game Editor for [Pow2](https://github.com/justindujardin/pow2)
+Cross-platform game editor for [Pow2](https://github.com/justindujardin/pow2) based on node-webkit, written with TypeScript and Angular.JS.
 
+Nothing to see here, yet.  Move along.
 
 Open Source Components:
  - Ace editor : http://ace.c9.io/
