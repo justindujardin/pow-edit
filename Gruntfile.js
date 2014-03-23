@@ -54,7 +54,10 @@ module.exports = function(grunt) {
             tasks: ['typescript:editor']
          },
          styles: {
-            files: ['source/*.less'],
+            files: [
+               'source/*.less',
+               'source/**/*.less'
+            ],
             tasks: ['less']
          }
       }
