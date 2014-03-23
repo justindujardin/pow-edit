@@ -18,11 +18,11 @@ module pow2.editor {
                history: "="
             },
             template: "<div class=\"ace-container\"></div>",
-            link: ($scope:ng.IScope, $el, attrs:any, model) => {
+            link: ($scope, $el, attrs:any, model) => {
                var editor:AceAjax.Editor = new Editor(new Renderer($el[0], "ace/theme/textmate"));
                var session:AceAjax.IEditSession = editor.getSession();
                session.setMode("ace/mode/typescript");
-               session.setUndoManager(<AceAjax.UndoManager>attrs.history);
+               session.setUndoManager(<AceAjax.UndoManager>$scope.history);
                model.$render = function() {
                   return session.setValue(model.$modelValue);
                };
