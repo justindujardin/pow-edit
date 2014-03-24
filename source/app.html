@@ -1,15 +1,23 @@
 <!doctype html>
 <html ng-app="PowEdit">
 <head>
-  <meta charset="utf-8">
-  <title>pow-edit</title>
-  <link rel="stylesheet" href="../build/pow-edit.css">
+    <meta charset="utf-8">
+    <title>pow-edit</title>
+    <link rel="stylesheet" href="../build/pow-edit.css">
 </head>
 <body ng-controller="PowCodeController">
-  <ace-editor ng-model="document" history="history"></ace-editor>
-  <treecontrol tree-model="mount" node-children="children" on-selection="selectFile(node)">{{node.label}}</treecontrol>
-  <script src="../assets/vendor/ace/src-min-noconflict/ace.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js"></script>
-  <script src="../build/pow-edit.js"></script>
+
+<bg-splitter orientation="horizontal">
+    <bg-pane min-size="100">
+        <treecontrol tree-model="mount" node-children="children" on-selection="selectFile(node)">{{node.label}}</treecontrol>
+    </bg-pane>
+    <bg-pane min-size="150">
+        <ace-editor ng-model="document" history="history"></ace-editor>
+    </bg-pane>
+</bg-splitter>
+
+<script src="../assets/vendor/ace/src-min-noconflict/ace.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js"></script>
+<script src="../build/pow-edit.js"></script>
 </body>
 </html>

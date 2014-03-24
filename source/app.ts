@@ -4,7 +4,8 @@
 module pow2.editor {
 
    export var app = angular.module("PowEdit", [
-      'treeControl'
+      'uiTree',
+      'uiSplitter'
    ]);
 
    export interface IAppPlatform {

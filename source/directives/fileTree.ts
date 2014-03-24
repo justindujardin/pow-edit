@@ -10,7 +10,7 @@
 module pow2.editor {
 
 
-   export var fileTree:ng.IModule = angular.module( 'treeControl', [] );
+   export var fileTree:ng.IModule = angular.module( 'uiTree', [] );
    fileTree.directive( 'treecontrol', ['$compile', function( $compile ) {
       return {
          restrict: 'E',
