@@ -8,10 +8,10 @@
 <body ng-controller="PowCodeController">
 
 <bg-splitter orientation="horizontal">
-    <bg-pane min-size="100">
+    <bg-pane min-size="150">
         <treecontrol tree-model="mount" node-children="children" on-selection="selectFile(node)">{{node.label}}</treecontrol>
     </bg-pane>
-    <bg-pane min-size="150">
+    <bg-pane min-size="200">
         <ace-editor ng-model="document" history="history"></ace-editor>
     </bg-pane>
 </bg-splitter>
