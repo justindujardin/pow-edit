@@ -18,9 +18,18 @@
   "scripts": {
     "test": "npm install && ./node_modules/.bin/grunt"
   },
+  "main": "source/app.html",
+  "window": {
+    "width": 640,
+    "height": 480,
+    "show": true,
+    "title": "Pow2 - [your game]",
+    "toolbar": true
+  },
   "devDependencies": {
     "grunt-contrib-watch": "~0.5.3",
     "grunt-cli": "~0.1.10",
-    "grunt-contrib-clean": "~0.5.0"
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-node-webkit-builder": "~0.1.18"
   }
 }

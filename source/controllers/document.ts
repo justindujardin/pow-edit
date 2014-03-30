@@ -9,7 +9,7 @@ module pow2.editor {
       function($scope,platform:IAppPlatform) {
          var UndoManager:any = ace.require("ace/undomanager").UndoManager;
          $scope.history = new UndoManager();
-         var file = "app.ts";
+         var file = "source/app.ts";
          platform.readFile(file, (data:any) => {
             platform.setTitle(file);
             $scope.document = data;
