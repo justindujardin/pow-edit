@@ -1,63 +1,76 @@
 
 treecontrol {
-    /* prevent user selection */
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  /* prevent user selection */
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 
-    /* default */
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    font-size:13px;
-    color: #555;
-    text-decoration: none;
-}
+  /* default */
+  color: #222;
+  text-decoration: none;
+  font-size: 12px;
 
-treecontrol ul {
+  ul {
     margin: 0;
     padding: 0;
     list-style: none;
     border: none;
     overflow: hidden;
-}
+  }
 
-treecontrol li {
+  li {
     position: relative;
-    padding: 0 0 0 20px;
-    line-height: 20px;
-}
-
-treecontrol li.tree-expanded i.tree-normal, treecontrol li.tree-collapsed i.tree-normal {display:none;}
-treecontrol li.tree-expanded i.tree-has-children, treecontrol li.tree-collapsed i.tree-has-children {display:inline;}
-treecontrol li.tree-normal i.tree-has-children {display:none;}
-treecontrol li.tree-normal i.tree-normal {display:inline;}
-treecontrol li i {
+    padding: 7px 20px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  li.tree-expanded i.tree-normal,
+  li.tree-collapsed i.tree-normal {
+    display: none;
+  }
+  li.tree-expanded i.tree-has-children,
+  li.tree-collapsed i.tree-has-children {
+    display: inline;
+  }
+  li.tree-normal i.tree-has-children {
+    display: none;
+  }
+  li.tree-normal i.tree-normal {
+    display: inline;
+  }
+  li i {
     cursor: pointer;
-}
-
-treecontrol li .tree-label {
+  }
+  li .tree-label {
     cursor: pointer;
     display: inline;
-}
-
-
-treecontrol li.tree-expanded i {
+  }
+  li.tree-expanded i {
     padding: 1px 10px;
     background: url("https://raw.github.com/wix/angular.treecontrol/master/images/folder.png") no-repeat;
-}
+  }
 
-treecontrol li.tree-collapsed i {
+
+  li.tree-collapsed i {
     padding: 1px 10px;
     background: url("https://raw.github.com/wix/angular.treecontrol/master/images/folder-closed.png") no-repeat;
-}
+  }
 
-treecontrol li.tree-normal i {
+  li.tree-normal i {
     padding: 1px 10px;
     background: url("https://raw.github.com/wix/angular.treecontrol/master/images/file.png") no-repeat;
-}
+  }
 
-treecontrol li .tree-selected {
+  li .tree-selected {
     background-color: #aaddff;
     font-weight: bold;
+  }
 }
+
+
+
+
+
+
