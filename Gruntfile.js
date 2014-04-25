@@ -60,12 +60,24 @@ module.exports = function(grunt) {
             ],
             tasks: ['less']
          }
+      },
+
+      nodewebkit: {
+         options: {
+            build_dir: './NodeWebkitBuilds',
+            mac: true,
+            win: false,
+            linux32: false,
+            linux64: false
+         },
+         src: ['./**/*']
       }
    });
 
    grunt.loadNpmTasks('grunt-contrib-clean');
    grunt.loadNpmTasks('grunt-typescript');
    grunt.loadNpmTasks('grunt-contrib-less');
+   grunt.loadNpmTasks('grunt-node-webkit-builder');
    // Support system notifications in non-production environments
    if(!process || !process.env || process.env.NODE_ENV !== 'production'){
       grunt.loadNpmTasks('grunt-contrib-watch');
