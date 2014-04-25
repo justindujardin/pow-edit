@@ -42,6 +42,12 @@ module pow2.editor {
 
          $scope.selectFile = (node:any) => {
             var file:IFileInfo = node.data;
+
+            if(file.full.indexOf('package.json') !== -1){
+               $scope.pixi = true;
+               return;
+            }
+            $scope.pixi = false;
             if(!file.children || !file.children.length){
                platform.readFile(file.full, (data:any) => {
                   platform.setTitle(file.full);
