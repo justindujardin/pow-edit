@@ -5,7 +5,7 @@
     <title>pow-edit</title>
     <link rel="stylesheet" href="../build/pow-edit.css">
 </head>
-<body ng-controller="PowCodeController">
+<body ng-controller="PowTileMapController">
 
 <!--<bg-splitter orientation="horizontal">-->
     <!--<bg-pane min-size="150">-->
@@ -13,7 +13,7 @@
     <!--</bg-pane>-->
     <!--<bg-pane min-size="200">-->
         <!--<ace-editor ng-model="document" history="history" ng-if="!pixi"></ace-editor>-->
-        <pixi></pixi>
+        <pixi url="{{mapUrl}}"></pixi>
     <!--</bg-pane>-->
 <!--</bg-splitter>-->
 

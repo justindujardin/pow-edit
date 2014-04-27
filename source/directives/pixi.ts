@@ -7,32 +7,83 @@ module pow2.editor {
    declare var requestAnimFrame:any;
    declare var PIXI:any;
 
+   export interface IDragEvent {
+      active:boolean;
+      delta:pow2.Point;
+      start:pow2.Point;
+      current:pow2.Point;
+      scrollStart:pow2.Point;
+   }
+
+
    pow2.editor.app.directive("pixi", [
       "$timeout",
       "$rootScope",
       "platform",
       ($timeout:ng.ITimeoutService,$rootScope:any,platform:IAppPlatform) => {
 
-         var fileName:string = 'assets/maps/sewer.tmx';
+         var drag:IDragEvent = {
+            active:false,
+            start:null,
+            current:null,
+            scrollStart:null,
+            delta:null
+         };
+         var resetDrag = () => {
+            drag = _.extend({},{
+               active:false,
+               start:null,
+               current:null,
+               delta:null
+            });
+         };
          return {
             restrict: "E",
             replace: true,
             template: "<div class=\"pixi-stage\"></div>",
             link: (scope, element, attrs:any) => {
 
+               var url:string = attrs.url || 'assets/maps/sewer.tmx';
+
                // create an new instance of a pixi stage
                var stage = new PIXI.Stage(0x2b2b2b, true);
+
+               var tileMapContainer = new PIXI.DisplayObjectContainer();
 
                // create a renderer instance
                var renderer = PIXI.autoDetectRenderer(element.height(),element.width());
                // add the renderer view element to the DOM
                element.append(renderer.view);
 
+
+               element.on('mousedown',(event:MouseEvent) => {
+                  drag.active = true;
+                  drag.start = new Point(event.screenX,event.screenY);
+                  drag.current = drag.start.clone();
+                  drag.delta = new pow2.Point(0,0);
+                  drag.scrollStart = new Point(tileMapContainer.x,tileMapContainer.y);
+               });
+               element.on('mousemove',(event:MouseEvent) => {
+                  if(!drag.active){
+                     return;
+                  }
+                  drag.current.set(event.screenX,event.screenY);
+                  drag.delta.set(drag.start.x - drag.current.x, drag.start.y - drag.current.y);
+
+                  tileMapContainer.x = drag.scrollStart.x - drag.delta.x;
+                  tileMapContainer.y = drag.scrollStart.y - drag.delta.y;
+
+                  console.log(drag);
+                  event.stopPropagation();
+                  return false;
+               });
+               element.on('mouseup',(event:MouseEvent) => {
+                  resetDrag();
+               });
+
                var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
-               t.load(fileName,() => {
-
-                  platform.setTitle(fileName);
-
+               t.load(url,() => {
+                  platform.setTitle(url);
                   var spriteTextures:any = {};
                   var layerContainers:{
                      [name:string]:any;
@@ -66,9 +117,10 @@ module pow2.editor {
                      }
                      container.scale = new PIXI.Point(2,2);
                      container.anchor = new PIXI.Point(0.5,0.5);
-                     stage.addChild(container);
+                     tileMapContainer.addChild(container);
                   });
 
+                  stage.addChild(tileMapContainer);
                   function animate() {
 //                     _.each(layerContainers,(c) => {
 //                        c.scale.x += 0.01;
