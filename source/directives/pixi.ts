@@ -59,17 +59,18 @@ module pow2.editor {
                            }
                         }
                      }
+                     container.scale = new PIXI.Point(2,2);
                      stage.addChild(container);
                   });
 
                   function animate() {
-                     _.each(layerContainers,(c) => {
-                        c.scale.x += 0.01;
-                        c.scale.y += 0.01;
-                        if(c.scale.x > 3 || c.scale.y > 3){
-                           c.scale.x = c.scale.y = 1;
-                        }
-                     });
+//                     _.each(layerContainers,(c) => {
+//                        c.scale.x += 0.01;
+//                        c.scale.y += 0.01;
+//                        if(c.scale.x > 3 || c.scale.y > 3){
+//                           c.scale.x = c.scale.y = 1;
+//                        }
+//                     });
                      renderer.render(stage);
                      requestAnimFrame(animate);
                   }
