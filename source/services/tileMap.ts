@@ -25,7 +25,7 @@ module pow2.editor.tiled {
 
    export class TileMap {
       map: TiledTMX;
-      tiles:any = []; // TODO: TilesetProperties
+      tiles:any[] = []; // TODO: TilesetProperties
       bounds: pow2.Rect;
       private _loaded:boolean = false;
 
@@ -35,12 +35,12 @@ module pow2.editor.tiled {
          this.bounds = new pow2.Rect(0, 0, 10,10);
       }
 
-      load(mapName:string=this.mapName){
+      load(mapName:string=this.mapName,done?:(map:TileMap)=>any){
          this.platform.readFile(mapName,(data) => {
-            var tiledDocument = new pow2.editor.tiled.TiledTMX(this.platform,this.mapName,$(data));
+            var tiledDocument = new pow2.editor.tiled.TiledTMX(this.platform,mapName,$(data));
             tiledDocument.prepare(() => {
                this.mapName = mapName;
-               this.setMap(tiledDocument);
+               this.setMap(tiledDocument,done);
             });
          });
       }
@@ -59,7 +59,7 @@ module pow2.editor.tiled {
          this._loaded = false;
       }
 
-      setMap(map:TiledTMX) {
+      setMap(map:TiledTMX,done?:(map:TileMap)=>any) {
          if (!map) {
             return false;
          }
@@ -68,7 +68,7 @@ module pow2.editor.tiled {
          }
          this.map = map;
          this.bounds = new pow2.Rect(0, 0, this.map.width, this.map.height);
-         var idSortedSets = _.sortBy(this.map.tilesets, (o:TiledTSXResource) => {
+         var idSortedSets:any = _.sortBy(this.map.tilesets, (o:TiledTSXResource) => {
             return o.firstgid;
          });
          this.tiles.length = 0;
@@ -78,8 +78,8 @@ module pow2.editor.tiled {
             }
             this.tiles = this.tiles.concat(tiles.tiles);
          });
-         //this.features = _.where(this.map.objectGroups,{name:"Features"})[0] || [];
          this.loaded();
+         done && done(this);
          return true;
       }
 
@@ -110,17 +110,17 @@ module pow2.editor.tiled {
          return terrain.data[terrainIndex];
       }
 
-      getTileMeta(gid:number):ITileMeta {
+      getTileMeta(gid:number):ITileInstanceMeta {
          if(this.tiles.length <= gid){
             return null;
          }
-         var source = _.find(this.map.tilesets,(t:TiledTSXResource) => {
+         var source = _.find(this.map.tilesets,(t:TiledTSX) => {
             return t.hasGid(gid);
          });
          if(!source){
             return null;
          }
-         return source.getTileMeta(gid);
+         return <ITileInstanceMeta>source.getTileMeta(gid);
       }
 
 //      // TODO: Calculate texture with two array index lookups like in getTerrain.  No need for FN call here.

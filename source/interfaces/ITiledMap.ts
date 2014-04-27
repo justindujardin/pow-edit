@@ -17,6 +17,16 @@
 
 module pow2.editor.tiled {
 
+    export interface ITileInstanceMeta {
+        image: HTMLImageElement;
+        url: string;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        data?: any;
+    }
+
    export interface ITiledBase {
       name:string;
       x:number;

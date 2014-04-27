@@ -141,6 +141,7 @@ module pow2.editor.tiled {
       imageWidth:number = 0;
       imageHeight:number = 0;
       image:HTMLImageElement = null;
+      url:string;
       firstgid:number = -1;
       tiles:any[] = [];
 
@@ -191,7 +192,7 @@ module pow2.editor.tiled {
                console.error("Failed to load image: " + err);
                done(this);
             };
-            reference.src = this.platform.getMountPath(this.platform.getDirName(this.mapName) + '/' + source);
+            this.url = reference.src = this.platform.getMountPath(this.platform.getDirName(this.mapName) + '/' + source);
             console.log("Tileset source: " + reference.src);
          }
          else {
@@ -205,13 +206,14 @@ module pow2.editor.tiled {
             && gid < this.firstgid + this.tiles.length;
       }
 
-      getTileMeta(gidOrIndex:number):ITileMeta {
+      getTileMeta(gidOrIndex:number):ITileInstanceMeta {
          var index:number = this.firstgid !== -1 ? (gidOrIndex - (this.firstgid)): gidOrIndex;
          var tilesX = this.imageWidth / this.tilewidth;
          var x = index % tilesX;
          var y = Math.floor((index - x) / tilesX);
          return _.extend(this.tiles[index] || {},{
             image: this.image,
+            url:this.url,
             x:x * this.tilewidth,
             y:y * this.tileheight,
             width:this.tilewidth,
