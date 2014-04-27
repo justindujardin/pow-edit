@@ -18,6 +18,21 @@ module pow2.editor {
       getDirName(location:string):string {
          return path.dirname(location);
       }
+
+      /**
+       * The current build output is in the build/ directory, so
+       * make inputs relative to one up from there.
+       *
+       *    var url = platform.getMountPath('assets/images/some.png');
+       *    var img = new Image();
+       *    img.src = url;
+       *
+       * TODO: This is pretty bad.  Do something less... bad.
+       */
+      getMountPath(fromBase:string):string {
+         return '../' + fromBase;
+      }
+
       enumPath(location:string,done:(err:any,files?:IFileInfo[]) => any) {
          var results:IFileInfo[] = [];
          fs.readdir(location, (err, list) => {
@@ -54,6 +69,7 @@ module pow2.editor {
             });
          });
       }
+
       setTitle(text:string){
          this.win.title = text;
       }

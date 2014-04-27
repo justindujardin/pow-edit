@@ -21,7 +21,7 @@ module pow2.editor {
 
                /**
                 *  TODO
-                *   - Image fetching for source images should go through Pixi, not platform.readFile
+                *   - Image fetching for source images should go through Pixi, not Img element and callbacks
                 *   - Events and done triggering.  Async load of textures for tilesets needs to be
                 *     handled properly.
                 */
@@ -49,20 +49,11 @@ module pow2.editor {
 
                var count = 0;
                function animate() {
-                  count += 0.005;
-
-                  tilingSprite.tileScale.x = 2 + Math.sin(count);
-                  tilingSprite.tileScale.y = 2 + Math.cos(count);
-
                   tilingSprite.tilePosition.x += 1;
                   tilingSprite.tilePosition.y += 1;
-
-                  // render the stage
                   renderer.render(stage);
-
                   requestAnimFrame(animate);
                }
-
                requestAnimFrame(animate);
 
                setTimeout(()=>{

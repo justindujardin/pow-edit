@@ -19,7 +19,14 @@
 module pow2.editor.tiled {
 
    export class TiledLoader {
-      constructor(public platform:IAppPlatform, public data:JQuery){}
+
+      data:JQuery;
+      constructor(
+         public platform:IAppPlatform,
+         public mapName:string,
+         data:JQuery){
+         this.data = $(data);
+      }
    }
    
    
@@ -36,12 +43,6 @@ module pow2.editor.tiled {
       layers:any[] = [];
       objectGroups:any[] = [];
 
-      constructor(
-         public platform:IAppPlatform,
-         public mapName:string,
-         public data:JQuery){
-         super(platform,data);
-      }
 
 
       prepare(done:(res:TiledTMX)=>any) {
@@ -109,10 +110,13 @@ module pow2.editor.tiled {
                return done(this);
             }
             var dep = tileSetDeps.shift();
-            return this.platform.readFile(dep.source,(tsr:TiledTSX) => {
-               this.tilesets[tsr.name] = tsr;
-               tsr.firstgid = dep.firstgid;
-               _next();
+            return this.platform.readFile(dep.source,(data:any) => {
+               var tsr:TiledTSX = new TiledTSX(this.platform,dep.source,data);
+               tsr.prepare(() => {
+                  this.tilesets[tsr.name] = tsr;
+                  tsr.firstgid = dep.firstgid;
+                  _next();
+               });
             });
          };
          _next();
@@ -136,7 +140,7 @@ module pow2.editor.tiled {
       tileheight:number = 16;
       imageWidth:number = 0;
       imageHeight:number = 0;
-      image:ImageResource = null;
+      image:HTMLImageElement = null;
       firstgid:number = -1;
       tiles:any[] = [];
 
@@ -160,15 +164,12 @@ module pow2.editor.tiled {
             var source = getElAttribute(image,'source');
             this.imageWidth = parseInt(getElAttribute(image,'width') || "0");
             this.imageHeight = parseInt(getElAttribute(image,'height') || "0");
-            console.log("Tileset source: " + source);
-            this.platform.readFile(source,(res:ImageResource) => {
-               this.image = res;
-               if(!res.isReady()){
-                  throw new Error("Failed to load required TileMap image: " + source)
-               }
+            var reference:HTMLImageElement = document.createElement('img');
+            reference.onload = () => {
 
-               this.imageWidth = this.image.data.width;
-               this.imageHeight = this.image.data.height;
+               this.image = reference;
+               this.imageWidth = this.image.width;
+               this.imageHeight = this.image.height;
 
                // Finally, build an expanded tileset from the known image w/h and the
                // tiles with properties that are specified in the form of <tile> objects.
@@ -184,10 +185,14 @@ module pow2.editor.tiled {
                });
                // TODO: uh-oh overwriting tiles...?
                this.tiles = tileLookup;
-
                done(this);
-               //console.log(this);
-            });
+            };
+            reference.onerror = (err:any) => {
+               console.error("Failed to load image: " + err);
+               done(this);
+            };
+            reference.src = this.platform.getMountPath(this.platform.getDirName(this.mapName) + '/' + source);
+            console.log("Tileset source: " + reference.src);
          }
          else {
             done(this);
