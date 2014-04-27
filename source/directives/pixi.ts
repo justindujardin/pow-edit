@@ -12,6 +12,8 @@ module pow2.editor {
       "$rootScope",
       "platform",
       ($timeout:ng.ITimeoutService,$rootScope:any,platform:IAppPlatform) => {
+
+         var fileName:string = 'assets/maps/sewer.tmx';
          return {
             restrict: "E",
             replace: true,
@@ -27,7 +29,10 @@ module pow2.editor {
                element.append(renderer.view);
 
                var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
-               t.load('assets/maps/sewer.tmx',() => {
+               t.load(fileName,() => {
+
+                  platform.setTitle(fileName);
+
                   var spriteTextures:any = {};
                   var layerContainers:{
                      [name:string]:any;
@@ -60,6 +65,7 @@ module pow2.editor {
                         }
                      }
                      container.scale = new PIXI.Point(2,2);
+                     container.anchor = new PIXI.Point(0.5,0.5);
                      stage.addChild(container);
                   });
 
