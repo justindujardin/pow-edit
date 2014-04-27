@@ -5,17 +5,17 @@
     <title>pow-edit</title>
     <link rel="stylesheet" href="../build/pow-edit.css">
 </head>
-<body ng-controller="PowTileMapController">
+<body ng-controller="PowDocumentController">
 
-<!--<bg-splitter orientation="horizontal">-->
-    <!--<bg-pane min-size="150">-->
-        <!--<treecontrol tree-model="mount" node-children="children" on-selection="selectFile(node)">{{node.label}}</treecontrol>-->
-    <!--</bg-pane>-->
-    <!--<bg-pane min-size="200">-->
-        <!--<ace-editor ng-model="document" history="history" ng-if="!pixi"></ace-editor>-->
-        <pixi url="{{mapUrl}}"></pixi>
-    <!--</bg-pane>-->
-<!--</bg-splitter>-->
+<bg-splitter orientation="horizontal">
+    <bg-pane min-size="150">
+        <treecontrol tree-model="mount" node-children="children" on-selection="selectFile(node)">{{node.label}}</treecontrol>
+    </bg-pane>
+    <bg-pane min-size="200">
+        <ace-editor ng-model="document" history="history" ng-if="!mapUrl"></ace-editor>
+        <pixi ng-if="mapUrl" url="mapUrl"></pixi>
+    </bg-pane>
+</bg-splitter>
 
 <script src="../assets/vendor/ace/src-min-noconflict/ace.js"></script>
 <script src="../bower_components/jquery/dist/jquery.js"></script>

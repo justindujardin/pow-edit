@@ -3,7 +3,7 @@
 ///<reference path="../app.ts"/>
 
 module pow2.editor {
-   app.controller('PowCodeController', [
+   app.controller('PowDocumentController', [
       '$scope',
       'platform',
       function($scope,platform:IAppPlatform) {
@@ -43,11 +43,11 @@ module pow2.editor {
          $scope.selectFile = (node:any) => {
             var file:IFileInfo = node.data;
 
-            if(file.full.indexOf('package.json') !== -1){
-               $scope.pixi = true;
+            if(file.full.indexOf('.tmx') !== -1){
+               $scope.mapUrl = file.full;
                return;
             }
-            $scope.pixi = false;
+            $scope.mapUrl = null;
             if(!file.children || !file.children.length){
                platform.readFile(file.full, (data:any) => {
                   platform.setTitle(file.full);
