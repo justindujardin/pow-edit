@@ -41,7 +41,6 @@ declare module ng.route {
         resolve?: any;
         redirectTo?: any;
         reloadOnSearch?: boolean;
-        caseInsensitiveMatch?: boolean;
     }
 
     // see http://docs.angularjs.org/api/ng.$route#current
