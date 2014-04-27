@@ -12,6 +12,7 @@ module pow2.editor {
       readFile(location:string,done:(data:any) => any);
       setTitle(text:string);
       enumPath(location:string,done:(err:any,files?:IFileInfo[]) => any);
+      getDirName(location:string):string;
    }
 
    export interface IFileInfo {

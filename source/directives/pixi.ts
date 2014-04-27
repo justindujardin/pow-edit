@@ -1,20 +1,33 @@
 ///<reference path="../../types/ace/ace.d.ts"/>
 ///<reference path="../../types/angular/angular.d.ts"/>
 ///<reference path="../app.ts"/>
+///<reference path="../services/tileMap.ts"/>
 
 module pow2.editor {
-   declare var PIXI:any;
    declare var requestAnimFrame:any;
+   declare var PIXI:any;
 
    pow2.editor.app.directive("pixi", [
       "$timeout",
       "$rootScope",
-      ($timeout:ng.ITimeoutService,$rootScope:any) => {
+      "platform",
+      ($timeout:ng.ITimeoutService,$rootScope:any,platform:IAppPlatform) => {
          return {
             restrict: "E",
             replace: true,
             template: "<div class=\"pixi-stage\"></div>",
             link: (scope, element, attrs:any) => {
+
+
+               /**
+                *  TODO
+                *   - Image fetching for source images should go through Pixi, not platform.readFile
+                *   - Events and done triggering.  Async load of textures for tilesets needs to be
+                *     handled properly.
+                */
+               var map:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform,'assets/maps/combat.tmx');
+               map.load();
+
 
                // create an new instance of a pixi stage
                var stage = new PIXI.Stage(0x2b2b2b, true);

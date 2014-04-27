@@ -15,6 +15,9 @@ module pow2.editor {
       readFile(location:string,done:(data:any) => any){
          done('' + fs.readFileSync(location));
       }
+      getDirName(location:string):string {
+         return path.dirname(location);
+      }
       enumPath(location:string,done:(err:any,files?:IFileInfo[]) => any) {
          var results:IFileInfo[] = [];
          fs.readdir(location, (err, list) => {
