@@ -37,6 +37,8 @@ module pow2.editor {
                delta:null
             });
          };
+
+         var centerOrigin = new PIXI.Point(0.5,0.5);
          return {
             restrict: "E",
             replace: true,
@@ -54,32 +56,6 @@ module pow2.editor {
                var renderer = PIXI.autoDetectRenderer(element.height(),element.width());
                // add the renderer view element to the DOM
                element.append(renderer.view);
-
-
-               element.on('mousedown',(event:MouseEvent) => {
-                  drag.active = true;
-                  drag.start = new Point(event.screenX,event.screenY);
-                  drag.current = drag.start.clone();
-                  drag.delta = new pow2.Point(0,0);
-                  drag.scrollStart = new Point(tileMapContainer.x,tileMapContainer.y);
-               });
-               element.on('mousemove',(event:MouseEvent) => {
-                  if(!drag.active){
-                     return;
-                  }
-                  drag.current.set(event.screenX,event.screenY);
-                  drag.delta.set(drag.start.x - drag.current.x, drag.start.y - drag.current.y);
-
-                  tileMapContainer.x = drag.scrollStart.x - drag.delta.x;
-                  tileMapContainer.y = drag.scrollStart.y - drag.delta.y;
-
-                  console.log(drag);
-                  event.stopPropagation();
-                  return false;
-               });
-               element.on('mouseup',(event:MouseEvent) => {
-                  resetDrag();
-               });
 
                var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
                t.load(url,() => {
@@ -111,24 +87,53 @@ module pow2.editor {
                               sprite.y = row * t.map.tilewidth;
                               sprite.width = t.map.tilewidth;
                               sprite.height = t.map.tileheight;
+                              sprite.anchor = centerOrigin;
                               container.addChild(sprite);
                            }
                         }
                      }
-                     container.scale = new PIXI.Point(2,2);
-                     container.anchor = new PIXI.Point(0.5,0.5);
                      tileMapContainer.addChild(container);
+                  });
+
+                  // Pan around map:
+                  element.on('mousedown',(event:MouseEvent) => {
+                     drag.active = true;
+                     drag.start = new Point(event.screenX,event.screenY);
+                     drag.current = drag.start.clone();
+                     drag.delta = new pow2.Point(0,0);
+                     drag.scrollStart = new Point(tileMapContainer.x,tileMapContainer.y);
+                  });
+                  element.on('mousemove',(event:MouseEvent) => {
+                     if(!drag.active){
+                        return;
+                     }
+                     drag.current.set(event.screenX,event.screenY);
+                     drag.delta.set(drag.start.x - drag.current.x, drag.start.y - drag.current.y);
+
+                     tileMapContainer.x = drag.scrollStart.x - drag.delta.x;
+                     tileMapContainer.y = drag.scrollStart.y - drag.delta.y;
+
+                     event.stopPropagation();
+                     return false;
+                  });
+                  element.on('mouseup',(event:MouseEvent) => {
+                     resetDrag();
+                  });
+                  // Zoom on map:
+                  element.on("mousewheel DOMMouseScroll MozMousePixelScroll", (ev) => {
+                     var delta:number = (ev.originalEvent.detail ? ev.originalEvent.detail * -1 : ev.originalEvent.wheelDelta);
+                     var scale:number = tileMapContainer.scale.x;
+                     var move:number = scale / 10;
+                     scale += (delta > 0 ? move : -move);
+
+                     tileMapContainer.scale.x = tileMapContainer.scale.y = scale;
+                     ev.stopImmediatePropagation();
+                     ev.preventDefault();
+                     return false;
                   });
 
                   stage.addChild(tileMapContainer);
                   function animate() {
-//                     _.each(layerContainers,(c) => {
-//                        c.scale.x += 0.01;
-//                        c.scale.y += 0.01;
-//                        if(c.scale.x > 3 || c.scale.y > 3){
-//                           c.scale.x = c.scale.y = 1;
-//                        }
-//                     });
                      renderer.render(stage);
                      requestAnimFrame(animate);
                   }
