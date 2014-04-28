@@ -69,6 +69,9 @@ module pow2.editor {
                      sceneContainer = new PIXI.DisplayObjectContainer();
                      var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
                      t.load(newUrl,() => {
+                        sceneContainer.x = (element.width() / 2) - (t.map.width * t.map.tilewidth / 2);
+                        sceneContainer.y = (element.height() / 2) - (t.map.height * t.map.tileheight / 2);
+
                         platform.setTitle(newUrl);
                         var spriteTextures:any = {};
                         var layerContainers:{
