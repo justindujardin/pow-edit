@@ -1,3 +1,5 @@
+@maxDepth:15;
+@paddingIncrement:5px;
 
 treecontrol {
   /* prevent user selection */
@@ -10,66 +12,68 @@ treecontrol {
   /* default */
   color: #222;
   text-decoration: none;
-  font-size: 12px;
 
   ul {
     margin: 0;
     padding: 0;
     list-style: none;
     border: none;
-  }
+    li {
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+      line-height:1em;
+      font-size: 1em;
+      font-family:@font-family-serif;
+      font-weight: 200;
 
-  li {
-    position: relative;
-    padding: 4px 0px 4px 20px;
-    line-height: 1em;
-    white-space: nowrap;
-  }
-  li.tree-expanded i.tree-normal,
-  li.tree-collapsed i.tree-normal {
-    display: none;
-  }
-  li.tree-expanded i.tree-has-children,
-  li.tree-collapsed i.tree-has-children {
-    display: inline;
-  }
-  li.tree-normal i.tree-has-children {
-    display: none;
-  }
-  li.tree-normal i.tree-normal {
-    display: inline;
-  }
-  li i {
-    cursor: pointer;
-  }
-  li .tree-label {
-    cursor: pointer;
-    display: inline;
-  }
-  li.tree-expanded i {
-    padding: 1px 10px;
-    background: url("https://raw.github.com/wix/angular.treecontrol/master/images/folder.png") no-repeat;
-  }
+      // Generate depth padding for up to @maxDepth levels.
+      .depthPadding (@depth) when (@depth < @maxDepth) {
+        &.depth-@{depth}{
+          a.item{
+            padding-left:@paddingIncrement * (@depth + 1);
+          }
+        }
+        .depthPadding(@depth + 1);
+      }
+      .depthPadding(0);
 
 
-  li.tree-collapsed i {
-    padding: 1px 10px;
-    background: url("https://raw.github.com/wix/angular.treecontrol/master/images/folder-closed.png") no-repeat;
-  }
+      a.item {
+        display: inline-block;
+        width:100% !important;
+        cursor: pointer;
+        padding: 7px 0px 7px 20px;
+        i {
+          width:24px;
+        }
+      }
 
-  li.tree-normal i {
-    padding: 1px 10px;
-    background: url("https://raw.github.com/wix/angular.treecontrol/master/images/file.png") no-repeat;
-  }
+      &.selected {
+        background-color: #aaddff;
+        font-weight: bold;
+      }
 
-  li .tree-selected {
-    background-color: #aaddff;
-    font-weight: bold;
+      &.tmx {
+        color:#004c62;
+        font-weight: bold;
+      }
+
+      &.branch {
+        color:#00748B;
+        font-weight: bold;
+      }
+
+      &:hover {
+        background-color: #00748B;
+        &.leaf {
+          color:#fff;
+        }
+        &.branch {
+          background-color: transparent;
+        }
+      }
+
+    }
   }
 }
-
-
-
-
-
-

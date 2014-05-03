@@ -59,7 +59,17 @@ module pow2.editor {
                fs.stat(name, (err, stat) => {
                   if (stat && stat.isDirectory()) {
                      this.enumPath(name, (err:any, res?:IFileInfo[]) => {
-                        result.children = res;
+
+                        // Sort by folder/file and alpha files.
+                        result.children = res.sort((a,b)=>{
+                           if(!a.children || a.children.length === 0){
+                              return 1;
+                           }
+                           if(!b.children || b.children.length === 0) {
+                              return -1;
+                           }
+                           return a.name.localeCompare(b.name);
+                        });
                         if (!--pending) {
                            done(null, results);
                         }

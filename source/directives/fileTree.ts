@@ -26,50 +26,80 @@ module pow2.editor {
 
             $scope.nodeChildren = $scope.nodeChildren || 'children';
             $scope.expandedNodes = {};
+            $scope.level = 0;
+
+            $scope.iconClass = function(node){
+               var results = ['fa'];
+               if (!node || typeof node[$scope.nodeChildren] === 'undefined'){
+                  if(node.label.indexOf('.tmx') !== -1){
+                     results.push('fa-file-text-o');
+                  }
+                  else {
+                     results.push('fa-file-o');
+                  }
+               }
+               else {
+                  var hasChildren:boolean = node && node[$scope.nodeChildren] && node[$scope.nodeChildren].length;
+                  if (hasChildren && !$scope.expandedNodes[this.$id]) {
+                     results.push('fa-chevron-right');
+                  }
+                  if (hasChildren && $scope.expandedNodes[this.$id]) {
+                     results.push('fa-chevron-down');
+                  }
+               }
+               return results;
+            };
 
             $scope.headClass = function(node) {
+               var results = ['depth-' + node.depth];
                if (!node || typeof node[$scope.nodeChildren] === 'undefined'){
-                  return "tree-normal"
+                  results.push('leaf');
+                  if(node.label.indexOf('.tmx') !== -1){
+                     results.push('tmx');
+                  }
                }
-               if (node[$scope.nodeChildren].length && !$scope.expandedNodes[this.$id]) {
-                  return "tree-collapsed";
+               else {
+                  results.push('branch');
                }
-               if (node[$scope.nodeChildren].length && $scope.expandedNodes[this.$id]) {
-                  return "tree-expanded";
+               var hasChildren:boolean = node && node[$scope.nodeChildren] && node[$scope.nodeChildren].length;
+               if (hasChildren && !$scope.expandedNodes[this.$id]) {
+                  results.push('collapsed');
                }
-               return "tree-normal"
+               if (hasChildren && $scope.expandedNodes[this.$id]) {
+                  results.push('expanded');
+               }
+               if($scope.selectedNode === node){
+                  results.push('selected');
+               }
+               return results;
 
+            };
+
+            $scope.selectNode = function(node) {
+               if (node.children && node.children.length > 0) {
+                  $scope.expandedNodes[this.$id] = !$scope.expandedNodes[this.$id];
+               }
+               else {
+                  $scope.selectedScope = this.$id;
+                  $scope.selectedNode = node;
+                  if (typeof $scope.onSelection === 'function') {
+                     $scope.onSelection({node: node});
+                  }
+               }
             };
 
             $scope.nodeExpanded = function() {
                return $scope.expandedNodes[this.$id];
             };
 
-            $scope.selectNodeHead = function() {
-               $scope.expandedNodes[this.$id] = !$scope.expandedNodes[this.$id];
-            };
-
-            $scope.selectNodeLabel = function( selectedNode ){
-               $scope.selectedScope = this.$id;
-               $scope.selectedNode = selectedNode;
-               if (typeof $scope.onSelection === 'function')
-                  $scope.onSelection({node: selectedNode});
-            };
-
-            $scope.selectedClass = function() {
-               return (this.$id == $scope.selectedScope)?"tree-selected":"";
-            };
-
             //tree template
             var template =
-               '<ul>' +
-                  '<li ng-repeat="node in node.' + $scope.nodeChildren+'" ng-class="headClass(node)">' +
-                  '<i class="tree-has-children" ng-click="selectNodeHead(node)"></i>' +
-                  '<i class="tree-normal"></i>' +
-                  '<div class="tree-label" ng-class="selectedClass()" ng-click="selectNodeLabel(node)" tree-transclude></div>' +
-                  '<treeitem ng-if="nodeExpanded()"></treeitem>' +
-                  '</li>' +
-                  '</ul>';
+                   '<ul class="">' +
+                   '<li class="list-node" ng-repeat="node in node.' + $scope.nodeChildren+'" ng-class="headClass(node)">' +
+                   '<a class="item" ng-click="selectNode(node)"><i ng-class="iconClass(node)"></i>{{node.label}}</a>' +
+                   '<treeitem ng-if="nodeExpanded()"></treeitem>' +
+                   '</li>' +
+                   '</ul>';
 
             return {
                templateRoot: $compile(template),
@@ -110,6 +140,8 @@ module pow2.editor {
          restrict: 'E',
          require: "^treecontrol",
          link: function( scope, element, attrs, treemodelCntr) {
+
+            scope.level = scope.$parent.level + 1;
 
             // Rendering template for the current node
             treemodelCntr.templateChild(scope, function(clone) {
