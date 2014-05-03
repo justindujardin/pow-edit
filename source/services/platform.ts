@@ -13,7 +13,12 @@ module pow2.editor {
          this.win = gui.Window.get();
       }
       readFile(location:string,done:(data:any) => any){
-         done('' + fs.readFileSync(location));
+         fs.readFile(location,(err,data) => {
+            if(err){
+               console.error(err);
+            }
+            done('' + data);
+         });
       }
       getDirName(location:string):string {
          return path.dirname(location);
