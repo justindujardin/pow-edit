@@ -23,6 +23,9 @@ module pow2.editor.tiled {
 
    declare var PIXI:any;
 
+   /**
+    * Map for Tiled editor format
+    */
    export class TileMap {
       map: TiledTMX;
       tiles:any[] = []; // TODO: TilesetProperties
@@ -81,10 +84,6 @@ module pow2.editor.tiled {
          this.loaded();
          done && done(this);
          return true;
-      }
-
-      getLayers():tiled.ITiledLayer[] {
-         return this.map ? this.map.layers : [];
       }
 
       getLayer(name:string):tiled.ITiledLayer{
