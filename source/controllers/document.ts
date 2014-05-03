@@ -45,6 +45,10 @@ module pow2.editor {
             var file:IFileInfo = node.data;
 
             if(file.full.indexOf('.tmx') !== -1){
+               if(file.full.indexOf('-full.tmx') !== -1){
+                  console.error("Skipping big ass file until it can be canceled.");
+                  return;
+               }
                $scope.mapUrl = file.full;
                return;
             }
