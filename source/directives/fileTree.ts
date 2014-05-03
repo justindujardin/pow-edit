@@ -28,6 +28,28 @@ module pow2.editor {
             $scope.expandedNodes = {};
             $scope.level = 0;
 
+            $scope.iconClass = function(node){
+               var results = ['fa'];
+               if (!node || typeof node[$scope.nodeChildren] === 'undefined'){
+                  if(node.label.indexOf('.tmx') !== -1){
+                     results.push('fa-file-text-o');
+                  }
+                  else {
+                     results.push('fa-file-o');
+                  }
+               }
+               else {
+                  var hasChildren:boolean = node && node[$scope.nodeChildren] && node[$scope.nodeChildren].length;
+                  if (hasChildren && !$scope.expandedNodes[this.$id]) {
+                     results.push('fa-chevron-right');
+                  }
+                  if (hasChildren && $scope.expandedNodes[this.$id]) {
+                     results.push('fa-chevron-down');
+                  }
+               }
+               return results;
+            };
+
             $scope.headClass = function(node) {
                var results = ['depth-' + node.depth];
                if (!node || typeof node[$scope.nodeChildren] === 'undefined'){
@@ -74,7 +96,7 @@ module pow2.editor {
             var template =
                    '<ul class="">' +
                    '<li class="list-node" ng-repeat="node in node.' + $scope.nodeChildren+'" ng-class="headClass(node)">' +
-                   '<a class="item" ng-click="selectNode(node)">{{node.label}}</a>' +
+                   '<a class="item" ng-click="selectNode(node)"><i ng-class="iconClass(node)"></i>{{node.label}}</a>' +
                    '<treeitem ng-if="nodeExpanded()"></treeitem>' +
                    '</li>' +
                    '</ul>';
