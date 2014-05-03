@@ -1,3 +1,5 @@
+@maxDepth:15;
+@paddingIncrement:15px;
 
 treecontrol {
   /* prevent user selection */
@@ -22,26 +24,53 @@ treecontrol {
       white-space: nowrap;
       line-height:1em;
       font-size: 1em;
-      font-family:@font-family-scp;
+      font-family:@font-family-serif;
+      font-weight: 200;
+
+      // Generate depth padding for up to @maxDepth levels.
+      .depthPadding (@depth) when (@depth < @maxDepth) {
+        &.depth-@{depth}{
+          a.item{
+            padding-left:@paddingIncrement * (@depth + 1);
+          }
+        }
+        .depthPadding(@depth + 1);
+      }
+      .depthPadding(0);
+
+
       a.item {
         display: inline-block;
         width:100% !important;
-        height:1em;
-        padding: 4px 0px 4px 20px;
+        cursor: pointer;
+        padding: 7px 0px 7px 20px;
       }
 
       &.selected {
         background-color: #aaddff;
         font-weight: bold;
       }
+
+      &.tmx {
+        color:#004c62;
+        font-weight: bold;
+      }
+
+      &.branch {
+        color:#00748B;
+        font-weight: bold;
+      }
+
+      &:hover {
+        background-color: #00748B;
+        &.leaf {
+          color:#fff;
+        }
+        &.branch {
+          background-color: transparent;
+        }
+      }
+
     }
-
   }
-
 }
-
-
-
-
-
-

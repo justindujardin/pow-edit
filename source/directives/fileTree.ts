@@ -26,11 +26,18 @@ module pow2.editor {
 
             $scope.nodeChildren = $scope.nodeChildren || 'children';
             $scope.expandedNodes = {};
+            $scope.level = 0;
 
             $scope.headClass = function(node) {
-               var results = [];
+               var results = ['depth-' + node.depth];
                if (!node || typeof node[$scope.nodeChildren] === 'undefined'){
                   results.push('leaf');
+                  if(node.label.indexOf('.tmx') !== -1){
+                     results.push('tmx');
+                  }
+               }
+               else {
+                  results.push('branch');
                }
                var hasChildren:boolean = node && node[$scope.nodeChildren] && node[$scope.nodeChildren].length;
                if (hasChildren && !$scope.expandedNodes[this.$id]) {
@@ -50,10 +57,12 @@ module pow2.editor {
                if (node.children && node.children.length > 0) {
                   $scope.expandedNodes[this.$id] = !$scope.expandedNodes[this.$id];
                }
-               $scope.selectedScope = this.$id;
-               $scope.selectedNode = node;
-               if (typeof $scope.onSelection === 'function') {
-                  $scope.onSelection({node: node});
+               else {
+                  $scope.selectedScope = this.$id;
+                  $scope.selectedNode = node;
+                  if (typeof $scope.onSelection === 'function') {
+                     $scope.onSelection({node: node});
+                  }
                }
             };
 
@@ -109,6 +118,8 @@ module pow2.editor {
          restrict: 'E',
          require: "^treecontrol",
          link: function( scope, element, attrs, treemodelCntr) {
+
+            scope.level = scope.$parent.level + 1;
 
             // Rendering template for the current node
             treemodelCntr.templateChild(scope, function(clone) {
