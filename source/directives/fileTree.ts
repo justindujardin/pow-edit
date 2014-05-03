@@ -28,16 +28,21 @@ module pow2.editor {
             $scope.expandedNodes = {};
 
             $scope.headClass = function(node) {
+               var results = [];
                if (!node || typeof node[$scope.nodeChildren] === 'undefined'){
-                  return "tree-normal"
+                  results.push('leaf');
                }
-               if (node[$scope.nodeChildren].length && !$scope.expandedNodes[this.$id]) {
-                  return "tree-collapsed";
+               var hasChildren:boolean = node && node[$scope.nodeChildren] && node[$scope.nodeChildren].length;
+               if (hasChildren && !$scope.expandedNodes[this.$id]) {
+                  results.push('collapsed');
                }
-               if (node[$scope.nodeChildren].length && $scope.expandedNodes[this.$id]) {
-                  return "tree-expanded";
+               if (hasChildren && $scope.expandedNodes[this.$id]) {
+                  results.push('expanded');
                }
-               return "tree-normal"
+               if($scope.selectedNode === node){
+                  results.push('selected');
+               }
+               return results;
 
             };
 
@@ -45,12 +50,10 @@ module pow2.editor {
                if (node.children && node.children.length > 0) {
                   $scope.expandedNodes[this.$id] = !$scope.expandedNodes[this.$id];
                }
-               else {
-                  $scope.selectedScope = this.$id;
-                  $scope.selectedNode = node;
-                  if (typeof $scope.onSelection === 'function') {
-                     $scope.onSelection({node: node});
-                  }
+               $scope.selectedScope = this.$id;
+               $scope.selectedNode = node;
+               if (typeof $scope.onSelection === 'function') {
+                  $scope.onSelection({node: node});
                }
             };
 
@@ -60,12 +63,12 @@ module pow2.editor {
 
             //tree template
             var template =
-               '<ul>' +
-                  '<li ng-repeat="node in node.' + $scope.nodeChildren+'" ng-class="headClass(node)">' +
-                  '<a class="item" ng-click="selectNode(node)">{{node.label}}</a>' +
-                  '<treeitem ng-if="nodeExpanded()"></treeitem>' +
-                  '</li>' +
-               '</ul>';
+                   '<ul class="">' +
+                   '<li class="list-node" ng-repeat="node in node.' + $scope.nodeChildren+'" ng-class="headClass(node)">' +
+                   '<a class="item" ng-click="selectNode(node)">{{node.label}}</a>' +
+                   '<treeitem ng-if="nodeExpanded()"></treeitem>' +
+                   '</li>' +
+                   '</ul>';
 
             return {
                templateRoot: $compile(template),

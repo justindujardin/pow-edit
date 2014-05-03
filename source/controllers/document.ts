@@ -34,6 +34,10 @@ module pow2.editor {
          platform.enumPath(rootPath,(error:any,fileList?:IFileInfo[]) => {
             var mountFiles:any[] = [];
             angular.forEach(fileList,(file:IFileInfo) => {
+               // Skip hidden files
+               if(file.name[0] === '.'){
+                  return;
+               }
                mountFiles.push($scope.makeNode(file));
             });
             $scope.$$phase || $scope.$apply(() => {
@@ -52,8 +56,8 @@ module pow2.editor {
                $scope.mapUrl = file.full;
                return;
             }
-            $scope.mapUrl = null;
             if(!file.children || !file.children.length){
+               $scope.mapUrl = null;
                platform.readFile(file.full, (data:any) => {
                   platform.setTitle(file.full);
                   $scope.document = data;
