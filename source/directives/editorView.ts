@@ -43,22 +43,23 @@ module pow2.editor {
          return {
             restrict: "E",
             replace: true,
-            template: "<div class=\"pixi-stage\"></div>",
+            templateUrl: "source/directives/editorView.html",
             compile:(element,attributes) => {
                var source = $parse(attributes.url);
                return (scope, element, attrs:any) => {
+
+                  var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
+
                   // create an new instance of a pixi stage
                   var stage = new PIXI.Stage(0x2b2b2b, true);
                   stage.pivot = centerOrigin;
+                  var newUrl:string = source(scope);
 
-                  // create a renderer instance
-                  var renderer = PIXI.autoDetectRenderer(element.height(),element.width());
-                  // add the renderer view element to the DOM
-                  element.append(renderer.view);
-
-                  var sceneContainer:any = null;
+                  /**
+                   * Data binding
+                   */
                   var updateView = () => {
-                     var newUrl:string = source(scope);
+                     newUrl = source(scope);
                      if(!newUrl){
                         return;
                      }
@@ -68,81 +69,102 @@ module pow2.editor {
                         }
                      }
                      sceneContainer = new PIXI.DisplayObjectContainer();
-                     var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
-                     t.load(newUrl,() => {
-                        sceneContainer.x = (element.width() / 2) - (t.map.width * t.map.tilewidth / 2);
-                        sceneContainer.y = (element.height() / 2) - (t.map.height * t.map.tileheight / 2);
 
-                        platform.setTitle(newUrl);
-                        var spriteTextures:any = {};
-                        var layerContainers:any = {};
-                        var objectContainers:any = {};
-                        _.each(t.map.tilesets,(tsx:pow2.editor.tiled.TiledTSX) => {
-                           spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
-                        });
-
-                        var layers = t.getLayers();
-                        // Each layer
-                        _.each(layers,(l:tiled.ITiledLayer) => {
-                           var container = layerContainers[l.name] = new PIXI.DisplayObjectContainer();
-                           for(var col:number = 0; col < t.bounds.extent.x; col++) {
-                              for (var row:number = 0; row < t.bounds.extent.y; row++) {
-                                 var gid:number = t.getTileGid(l.name,col, row);
-                                 var meta:tiled.ITileInstanceMeta = t.getTileMeta(gid);
-                                 if (meta) {
-                                    var frame = new PIXI.Rectangle(meta.x,meta.y,meta.width,meta.height);
-                                    var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
-                                    var sprite = new PIXI.Sprite(texture);
-                                    sprite.x = col * t.map.tileheight;
-                                    sprite.y = row * t.map.tilewidth;
-                                    sprite.width = t.map.tilewidth;
-                                    sprite.height = t.map.tileheight;
-                                    //sprite.anchor = centerOrigin;
-                                    container.addChild(sprite);
-                                 }
-                              }
-                           }
-                           container.visible = l.visible;
-                           sceneContainer.addChild(container);
-                           //container.cacheAsBitmap = true;
-                        });
-                        // Each object group
-                        _.each(t.map.objectGroups,(o:tiled.ITiledObjectGroup) => {
-                           var container = objectContainers[o.name] = new PIXI.DisplayObjectContainer();
-                           _.each(o.objects,(obj:tiled.ITiledObject) => {
-                              var box = new PIXI.Graphics();
-                              box.beginFill(0xFFFFFF);
-                              box.alpha = 0.6;
-                              box.lineStyle(1 , 0xAAAAAA);
-                              box.drawRect(0, 0, obj.width, obj.height);
-                              box.endFill();
-                              box.position.x = obj.x;
-                              box.position.y = obj.y;
-                              container.addChild(box);
-                           });
-                           container.visible = o.visible;
-                           sceneContainer.addChild(container);
-                           //container.cacheAsBitmap = true;
-                        });
-
-                        stage.addChild(sceneContainer);
+                     scope.status = "Loading...";
+                     t.load(newUrl,buildMapRender);
+                  };
+                  scope.$watch(attrs.url, updateView);
 
 
-                        // Debug map stats
-                        var stats:string = '';
-                        stats += 'Layers: ' + layers.length + '\n'
-                              +  'Object Groups: ' + t.map.objectGroups.length;
+                  // create a renderer instance
+                  var renderer = PIXI.autoDetectRenderer(element.height(),element.width());
+                  // add the renderer view element to the DOM
+                  element.append(renderer.view);
 
-                        var text = new PIXI.Text(stats, {
-                           font:"50px Arial",
-                           fill:"red"
-                        });
-                        text.x = text.y = 0;
-                        stage.addChild(text);
+                  var sceneContainer:any = null;
+
+                  var buildMapRender = () => {
+                     scope.$apply(()=>{
+                        scope.status = "Building...";
                      });
 
+                     sceneContainer.x = (element.width() / 2) - (t.map.width * t.map.tilewidth / 2);
+                     sceneContainer.y = (element.height() / 2) - (t.map.height * t.map.tileheight / 2);
+                     sceneContainer.pivot = sceneContainer.anchor = centerOrigin;
 
 
+                     platform.setTitle(newUrl);
+                     var spriteTextures:any = {};
+                     var layerContainers:any = {};
+                     var objectContainers:any = {};
+                     _.each(t.map.tilesets,(tsx:pow2.editor.tiled.TiledTSX) => {
+                        spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
+                     });
+
+                     // Each layer
+                     _.each(t.map.layers,(l:tiled.ITiledLayer) => {
+                        var container = layerContainers[l.name] = new PIXI.DisplayObjectContainer();
+                        for(var col:number = 0; col < t.bounds.extent.x; col++) {
+                           for (var row:number = 0; row < t.bounds.extent.y; row++) {
+                              var gid:number = t.getTileGid(l.name,col, row);
+                              var meta:tiled.ITileInstanceMeta = t.getTileMeta(gid);
+                              if (meta) {
+                                 var frame = new PIXI.Rectangle(meta.x,meta.y,meta.width,meta.height);
+                                 var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
+                                 var sprite = new PIXI.Sprite(texture);
+                                 sprite.x = col * t.map.tileheight;
+                                 sprite.y = row * t.map.tilewidth;
+                                 sprite.width = t.map.tilewidth;
+                                 sprite.height = t.map.tileheight;
+                                 //sprite.anchor = centerOrigin;
+                                 container.addChild(sprite);
+                              }
+                           }
+                        }
+                        container.visible = l.visible;
+                        container.pivot = container.anchor = centerOrigin;
+                        sceneContainer.addChild(container);
+                        //container.cacheAsBitmap = true;
+                     });
+                     // Each object group
+                     _.each(t.map.objectGroups,(o:tiled.ITiledObjectGroup) => {
+                        var container = objectContainers[o.name] = new PIXI.DisplayObjectContainer();
+                        _.each(o.objects,(obj:tiled.ITiledObject) => {
+                           var box = new PIXI.Graphics();
+                           box.beginFill(0xFFFFFF);
+                           box.alpha = 0.6;
+                           box.lineStyle(1 , 0xAAAAAA);
+                           box.drawRect(0, 0, obj.width, obj.height);
+                           box.endFill();
+                           box.position.x = obj.x;
+                           box.position.y = obj.y;
+                           container.addChild(box);
+                        });
+                        container.visible = o.visible;
+                        container.pivot = container.anchor = centerOrigin;
+                        sceneContainer.addChild(container);
+                        //container.cacheAsBitmap = true;
+                     });
+
+                     stage.addChild(sceneContainer);
+
+
+                     scope.$apply(()=>{
+                        scope.status = null;
+                     });
+                     // Debug map stats
+                     var stats:string = [
+                        'Layers: ' + t.map.layers.length,
+                        'Groups: ' + t.map.objectGroups.length,
+                        'Size: ' + t.bounds.extent
+                     ].join('\n');
+                     var text = new PIXI.Text(stats, {
+                        font:"20px SourceCodePro-Regular",
+                        fill:"white",
+                        stroke:"black"
+                     });
+                     text.x = text.y = 0;
+                     stage.addChild(text);
                   };
 
                   /**
@@ -191,10 +213,6 @@ module pow2.editor {
                   }
                   requestAnimFrame(animate);
 
-                  /**
-                   * Data binding
-                   */
-                  scope.$watch(attrs.url, updateView);
                   updateView();
 
                   /**

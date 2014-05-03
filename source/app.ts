@@ -4,6 +4,7 @@
 module pow2.editor {
 
    export var app = angular.module("PowEdit", [
+      'templates-ui',
       'uiTree',
       'uiSplitter'
    ]);

@@ -2,4 +2,27 @@
   height: 100%;
   width:100%;
   overflow:hidden;
+  canvas {
+    z-index:0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  .notify {
+    z-index: 1;
+    position: relative;
+    top: 40%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    text-align: center;
+    h1 {
+      font-size:5em;
+      color: #222;
+      text-shadow: 0px 2px 3px #555;
+    }
+  }
 }

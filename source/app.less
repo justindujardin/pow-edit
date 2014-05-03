@@ -1,25 +1,29 @@
+@font-family-serif:"Helvetica Neue",Helvetica,Arial,sans-serif;
+@font-family-scp:'SourceCodePro-Regular', 'Monaco', courier, monospace !important;
+
 @import "directives/fileTree";
 @import "directives/splitter";
-@import "directives/pixi";
+@import "directives/editorView";
 
 body, html {
   min-height:100%;
   height:100%;
   margin:0;
+  font-family:@font-family-serif;
+
 }
 
 .ace-container {
   height: 100%;
   width:100%;
-  font-family: 'SourceCodePro-Regular', 'Monaco', courier, monospace !important;
+  font-family: @font-family-scp;
   font-size: 18px;
 }
 treecontrol {
-  font-family: 'SourceCodePro-Regular', 'Monaco', courier, monospace !important;
+  font-family: @font-family-scp;
   height: 100%;
   width:20%;
 }
-
 
 
 
