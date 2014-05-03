@@ -9,6 +9,8 @@ module pow2.editor {
       'uiSplitter'
    ]);
 
+   app.value('rootPath','./assets/maps/');
+
    export interface IAppPlatform {
       readFile(location:string,done:(data:any) => any);
       setTitle(text:string);

@@ -6,7 +6,8 @@ module pow2.editor {
    app.controller('PowDocumentController', [
       '$scope',
       'platform',
-      function($scope,platform:IAppPlatform) {
+      'rootPath',
+      function($scope,platform:IAppPlatform,rootPath) {
          var UndoManager:any = ace.require("ace/undomanager").UndoManager;
          $scope.history = new UndoManager();
          var file = "source/app.ts";
@@ -30,7 +31,7 @@ module pow2.editor {
             return result;
          };
 
-         platform.enumPath("./",(error:any,fileList?:IFileInfo[]) => {
+         platform.enumPath(rootPath,(error:any,fileList?:IFileInfo[]) => {
             var mountFiles:any[] = [];
             angular.forEach(fileList,(file:IFileInfo) => {
                mountFiles.push($scope.makeNode(file));
