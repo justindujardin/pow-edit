@@ -28,8 +28,14 @@ module pow2.editor.tiled {
          this.data = $(data);
       }
    }
-   
-   
+
+   interface TileSetDependency {
+      source?:string; // Path to URL source from which to load data.
+      data?:any; // Data instead of source.
+      firstgid:number; // First global id.
+   }
+
+
    export class TiledTMX extends TiledLoader {
       $map:JQuery; // The <map> element
       width:number = 0;
@@ -54,7 +60,7 @@ module pow2.editor.tiled {
          this.tileheight = parseInt(getElAttribute(this.$map,'tileheight'));
          this.tilewidth = parseInt(getElAttribute(this.$map,'tilewidth'));
          this.properties = tiled.readTiledProperties(this.$map);
-         var tileSetDeps = [];
+         var tileSetDeps:TileSetDependency[] = [];
          var tileSets = getChildren(this.$map,'tileset');
          _.each(tileSets,(ts) => {
             var source:string = getElAttribute(ts,'source');
@@ -63,6 +69,16 @@ module pow2.editor.tiled {
                   source:this.platform.getDirName(this.mapName) + '/' + source,
                   firstgid:parseInt(getElAttribute(ts,'firstgid') || "-1")
                });
+            }
+            // Tileset element is inline, load from the existing XML and
+            // assign the source (used for relative image loading) to be
+            // the .tmx file.
+            else {
+               tileSetDeps.push({
+                  data:ts,
+                  source:this.mapName,
+                  firstgid:parseInt(getElAttribute(ts,'firstgid') || "-1")
+               })
             }
             // TODO: IF no source then create a resource with the given data.
          });
@@ -110,14 +126,25 @@ module pow2.editor.tiled {
                return done(this);
             }
             var dep = tileSetDeps.shift();
-            return this.platform.readFile(dep.source,(data:any) => {
+            var loadTileset = (data:any) => {
                var tsr:TiledTSX = new TiledTSX(this.platform,dep.source,data);
                tsr.prepare(() => {
                   this.tilesets[tsr.name] = tsr;
                   tsr.firstgid = dep.firstgid;
                   _next();
                });
-            });
+            };
+            if(dep.data) {
+               loadTileset(dep.data);
+            }
+            else if(dep.source){
+               this.platform.readFile(dep.source,(data:any) => {
+                  loadTileset(data);
+               });
+            }
+            else {
+               throw new Error("Unknown type of tile set data");
+            }
          };
          _next();
       }
