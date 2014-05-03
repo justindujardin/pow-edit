@@ -49,6 +49,7 @@ module pow2.editor {
                return (scope, element, attrs:any) => {
                   // create an new instance of a pixi stage
                   var stage = new PIXI.Stage(0x2b2b2b, true);
+                  stage.pivot = centerOrigin;
 
                   // create a renderer instance
                   var renderer = PIXI.autoDetectRenderer(element.height(),element.width());
@@ -74,9 +75,8 @@ module pow2.editor {
 
                         platform.setTitle(newUrl);
                         var spriteTextures:any = {};
-                        var layerContainers:{
-                           [name:string]:any;
-                        } = {};
+                        var layerContainers:any = {};
+                        var objectContainers:any = {};
                         _.each(t.map.tilesets,(tsx:pow2.editor.tiled.TiledTSX) => {
                            spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
                         });
@@ -97,15 +97,52 @@ module pow2.editor {
                                     sprite.y = row * t.map.tilewidth;
                                     sprite.width = t.map.tilewidth;
                                     sprite.height = t.map.tileheight;
-                                    sprite.anchor = centerOrigin;
+                                    //sprite.anchor = centerOrigin;
                                     container.addChild(sprite);
                                  }
                               }
                            }
+                           container.visible = l.visible;
                            sceneContainer.addChild(container);
+                           //container.cacheAsBitmap = true;
                         });
+                        // Each object group
+                        _.each(t.map.objectGroups,(o:tiled.ITiledObjectGroup) => {
+                           var container = objectContainers[o.name] = new PIXI.DisplayObjectContainer();
+                           _.each(o.objects,(obj:tiled.ITiledObject) => {
+                              var box = new PIXI.Graphics();
+                              box.beginFill(0xFFFFFF);
+                              box.alpha = 0.6;
+                              box.lineStyle(1 , 0xAAAAAA);
+                              box.drawRect(0, 0, obj.width, obj.height);
+                              box.endFill();
+                              box.position.x = obj.x;
+                              box.position.y = obj.y;
+                              container.addChild(box);
+                           });
+                           container.visible = o.visible;
+                           sceneContainer.addChild(container);
+                           //container.cacheAsBitmap = true;
+                        });
+
                         stage.addChild(sceneContainer);
+
+
+                        // Debug map stats
+                        var stats:string = '';
+                        stats += 'Layers: ' + layers.length + '\n'
+                              +  'Object Groups: ' + t.map.objectGroups.length;
+
+                        var text = new PIXI.Text(stats, {
+                           font:"50px Arial",
+                           fill:"red"
+                        });
+                        text.x = text.y = 0;
+                        stage.addChild(text);
                      });
+
+
+
                   };
 
                   /**
