@@ -41,35 +41,31 @@ module pow2.editor {
 
             };
 
+            $scope.selectNode = function(node) {
+               if (node.children && node.children.length > 0) {
+                  $scope.expandedNodes[this.$id] = !$scope.expandedNodes[this.$id];
+               }
+               else {
+                  $scope.selectedScope = this.$id;
+                  $scope.selectedNode = node;
+                  if (typeof $scope.onSelection === 'function') {
+                     $scope.onSelection({node: node});
+                  }
+               }
+            };
+
             $scope.nodeExpanded = function() {
                return $scope.expandedNodes[this.$id];
-            };
-
-            $scope.selectNodeHead = function() {
-               $scope.expandedNodes[this.$id] = !$scope.expandedNodes[this.$id];
-            };
-
-            $scope.selectNodeLabel = function( selectedNode ){
-               $scope.selectedScope = this.$id;
-               $scope.selectedNode = selectedNode;
-               if (typeof $scope.onSelection === 'function')
-                  $scope.onSelection({node: selectedNode});
-            };
-
-            $scope.selectedClass = function() {
-               return (this.$id == $scope.selectedScope)?"tree-selected":"";
             };
 
             //tree template
             var template =
                '<ul>' +
                   '<li ng-repeat="node in node.' + $scope.nodeChildren+'" ng-class="headClass(node)">' +
-                  '<i class="tree-has-children" ng-click="selectNodeHead(node)"></i>' +
-                  '<i class="tree-normal"></i>' +
-                  '<div class="tree-label" ng-class="selectedClass()" ng-click="selectNodeLabel(node)" tree-transclude></div>' +
+                  '<a class="item" ng-click="selectNode(node)">{{node.label}}</a>' +
                   '<treeitem ng-if="nodeExpanded()"></treeitem>' +
                   '</li>' +
-                  '</ul>';
+               '</ul>';
 
             return {
                templateRoot: $compile(template),
