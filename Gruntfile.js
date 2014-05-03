@@ -25,7 +25,7 @@ module.exports = function(grunt) {
                "source/services/*.ts",
                "source/directives/*.ts"
             ],
-            dest: 'build//<%= pkg.name %>.js'
+            dest: 'build/<%= pkg.name %>.js'
          }
       },
 
@@ -53,12 +53,35 @@ module.exports = function(grunt) {
             ],
             tasks: ['typescript:editor']
          },
+
+         ui: {
+            files: [
+               'source/directives/*.html'
+            ],
+            tasks: ['html2js:ui']
+         },
          styles: {
             files: [
                'source/*.less',
                'source/**/*.less'
             ],
             tasks: ['less']
+         }
+      },
+
+      /**
+       *
+       *
+       */
+      html2js: {
+         options: {
+            rename: function (moduleName) {
+               return '' + moduleName.replace('../', '');
+            }
+         },
+         ui: {
+            src: ['source/directives/*.html'],
+            dest: 'build/<%= pkg.name %>.ui.js'
          }
       },
 
@@ -78,12 +101,13 @@ module.exports = function(grunt) {
    grunt.loadNpmTasks('grunt-typescript');
    grunt.loadNpmTasks('grunt-contrib-less');
    grunt.loadNpmTasks('grunt-node-webkit-builder');
+   grunt.loadNpmTasks('grunt-html2js');
    // Support system notifications in non-production environments
    if(!process || !process.env || process.env.NODE_ENV !== 'production'){
       grunt.loadNpmTasks('grunt-contrib-watch');
-      grunt.registerTask('default', ['clean','typescript','less']);
+      grunt.registerTask('default', ['clean','typescript','less','html2js']);
    }
    else {
-      grunt.registerTask('default', ['typescript','less']);
+      grunt.registerTask('default', ['typescript','less','html2js']);
    }
 };
