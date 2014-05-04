@@ -3,12 +3,14 @@
 ///<reference path="../app.ts"/>
 
 module pow2.editor {
+   declare var requestAnimFrame:any;
 
    app.controller('AppController', [
       '$scope',
+      '$tasks',
       'platform',
       'rootPath',
-      function($scope,platform:IAppPlatform,rootPath) {
+      function($scope,$tasks:pow2.editor.TasksService,platform:IAppPlatform,rootPath) {
          $scope.document = {
             extension:'tmx',
             displayName:'wilderness.tmx',
@@ -80,6 +82,20 @@ module pow2.editor {
          var UndoManager:any = ace.require("ace/undomanager").UndoManager;
          $scope.history = new UndoManager();
 
+         var scopeDestroyed:boolean = false;
+         /**
+          * Process loop
+          */
+         function animate() {
+            $tasks.processTasks();
+            if(!scopeDestroyed){
+               requestAnimationFrame(animate);
+            }
+         }
+         requestAnimFrame(animate);
+         return $scope.$on("$destroy", function() {
+            scopeDestroyed = true;
+         });
       }
    ]);
 }

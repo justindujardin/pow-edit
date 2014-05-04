@@ -2,6 +2,7 @@
 ///<reference path="../../types/angular/angular.d.ts"/>
 ///<reference path="../app.ts"/>
 ///<reference path="../services/tileMap.ts"/>
+///<reference path="../services/tasks.ts"/>
 
 module pow2.editor {
    declare var requestAnimFrame:any;
@@ -27,7 +28,7 @@ module pow2.editor {
        $rootScope:any,
        $parse:ng.IParseService,
        $document,
-       $tasks,
+       $tasks:pow2.editor.TasksService,
        platform:IAppPlatform) => {
 
          var drag:IDragEvent = {
@@ -80,6 +81,7 @@ module pow2.editor {
                         return;
                      }
                      if(sceneContainer){
+                        $tasks.killTaskGroup(t.mapName);
                         destroyStage(stage);
                      }
                      sceneContainer = new PIXI.DisplayObjectContainer();
@@ -121,66 +123,77 @@ module pow2.editor {
                      var spriteTextures:any = {};
                      var layerContainers:any = {};
                      var objectContainers:any = {};
-                     _.each(t.map.tilesets,(tsx:pow2.editor.tiled.TiledTSX) => {
-                        spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
+                     $tasks.add(() => {
+                        _.each(t.map.tilesets,(tsx:pow2.editor.tiled.TiledTSX) => {
+                           spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
+                        });
+                        return true;
                      });
 
                      // Each layer
                      _.each(t.map.layers,(l:tiled.ITiledLayer) => {
-                        var container = layerContainers[l.name] = new PIXI.DisplayObjectContainer();
-                        for(var col:number = 0; col < t.bounds.extent.x; col++) {
-                           for (var row:number = 0; row < t.bounds.extent.y; row++) {
-                              var gid:number = t.getTileGid(l.name,col, row);
-                              var meta:tiled.ITileInstanceMeta = t.getTileMeta(gid);
-                              if (meta) {
-                                 var frame = new PIXI.Rectangle(meta.x,meta.y,meta.width,meta.height);
-                                 var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
-                                 var sprite = new PIXI.Sprite(texture);
-                                 sprite.x = col * t.map.tileheight;
-                                 sprite.y = row * t.map.tilewidth;
-                                 sprite.width = t.map.tilewidth;
-                                 sprite.height = t.map.tileheight;
-                                 //sprite.anchor = centerOrigin;
-                                 container.addChild(sprite);
+                        $tasks.add(() => {
+                           var container = layerContainers[l.name] = new PIXI.DisplayObjectContainer();
+                           for(var col:number = 0; col < t.bounds.extent.x; col++) {
+                              for (var row:number = 0; row < t.bounds.extent.y; row++) {
+                                 var gid:number = t.getTileGid(l.name,col, row);
+                                 var meta:tiled.ITileInstanceMeta = t.getTileMeta(gid);
+                                 if (meta) {
+                                    var frame = new PIXI.Rectangle(meta.x,meta.y,meta.width,meta.height);
+                                    var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
+                                    var sprite = new PIXI.Sprite(texture);
+                                    sprite.x = col * t.map.tileheight;
+                                    sprite.y = row * t.map.tilewidth;
+                                    sprite.width = t.map.tilewidth;
+                                    sprite.height = t.map.tileheight;
+                                    //sprite.anchor = centerOrigin;
+                                    container.addChild(sprite);
+                                 }
                               }
                            }
-                        }
-                        container.visible = l.visible;
-                        container.pivot = container.anchor = centerOrigin;
-                        sceneContainer.addChild(container);
-                        //container.cacheAsBitmap = true;
+                           container.visible = l.visible;
+                           container.pivot = container.anchor = centerOrigin;
+                           sceneContainer.addChild(container);
+                           //container.cacheAsBitmap = true;
+                           return true;
+                        },t.mapName);
                      });
                      // Each object group
                      _.each(t.map.objectGroups,(o:tiled.ITiledObjectGroup) => {
-                        var container = objectContainers[o.name] = new PIXI.DisplayObjectContainer();
-                        _.each(o.objects,(obj:tiled.ITiledObject) => {
-                           var box = new PIXI.Graphics();
-                           box.beginFill(0xFFFFFF);
-                           box.alpha = 0.6;
-                           box.lineStyle(1 , 0xAAAAAA);
-                           box.drawRect(0, 0, obj.width, obj.height);
-                           box.endFill();
-                           box.position.x = obj.x;
-                           box.position.y = obj.y;
-                           container.addChild(box);
-                        });
-                        container.visible = o.visible;
-                        container.pivot = container.anchor = centerOrigin;
-                        sceneContainer.addChild(container);
-                        //container.cacheAsBitmap = true;
+                        $tasks.add(() => {
+                           var container = objectContainers[o.name] = new PIXI.DisplayObjectContainer();
+                           _.each(o.objects,(obj:tiled.ITiledObject) => {
+                              var box = new PIXI.Graphics();
+                              box.beginFill(0xFFFFFF);
+                              box.alpha = 0.6;
+                              box.lineStyle(1 , 0xAAAAAA);
+                              box.drawRect(0, 0, obj.width, obj.height);
+                              box.endFill();
+                              box.position.x = obj.x;
+                              box.position.y = obj.y;
+                              container.addChild(box);
+                           });
+                           container.visible = o.visible;
+                           container.pivot = container.anchor = centerOrigin;
+                           sceneContainer.addChild(container);
+                           //container.cacheAsBitmap = true;
+                           return true;
+                        },t.mapName);
                      });
-
                      stage.addChild(sceneContainer);
 
 
-                     scope.$apply(()=>{
-                        scope.status = null;
-                     });
+                     $tasks.add(() => {
+                        scope.$apply(()=>{
+                           scope.status = null;
+                        });
+                        return true;
+                     },t.mapName);
                      // Debug map stats
                      var stats:string = [
-                        'Layers: ' + t.map.layers.length,
-                        'Groups: ' + t.map.objectGroups.length,
-                        'Size: ' + t.bounds.extent
+                           'Layers: ' + t.map.layers.length,
+                           'Groups: ' + t.map.objectGroups.length,
+                           'Size: ' + t.bounds.extent
                      ].join('\n');
                      var text = new PIXI.Text(stats, {
                         font:"16px courier",
@@ -269,6 +282,7 @@ module pow2.editor {
                   return scope.$on("$destroy", function() {
                      scopeDestroyed = true;
                      destroyStage(stage);
+                     $tasks.killTaskGroup(t.mapName);
                      angular.element(window).off('resize');
                   });
                };
