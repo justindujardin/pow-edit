@@ -19,10 +19,20 @@
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
     text-align: center;
+    background-color:rgba(0,0,0,0.5);
+    padding:20px 0;
     h1 {
-      font-size:5em;
       color: rgba(255, 255, 255, 0.85);
       .extrude-stroke-text(2px,lighten(@powBlue,10%),@powBlue);
+      font-size:5em;
+      margin:0;
+    }
+    p {
+      font-size:2.5em;
+      margin:0;
+      text-transform: lowercase;
+      color:#FFF;
+      .stroke-text(2px,rgba(0,0,0,0.5));
     }
   }
 }

@@ -101,17 +101,8 @@ module pow2.editor {
 
                   var buildMapRender = () => {
 
-                     /**
-                      * TODO: This needs to be async tasks for each layer/object group.
-                      *
-                      * This will actually probably look pretty neat to the user, loading
-                      * in a layer at a time.  Also, selecting another file should cancel
-                      * any pending tasks.  Until then BQ full map will __HANG__ up to a minute
-                      * while loading.
-                      *
-                      */
                      scope.$apply(()=>{
-                        scope.status = "Building...";
+                        scope.status = "Building Map...";
                      });
 
                      sceneContainer.x = (element.width() / 2) - (t.map.width * t.map.tilewidth / 2);
@@ -133,6 +124,9 @@ module pow2.editor {
                      // Each layer
                      _.each(t.map.layers,(l:tiled.ITiledLayer) => {
                         $tasks.add(() => {
+                           scope.$apply(()=>{
+                              scope.subtext = l.name;
+                           });
                            var container = layerContainers[l.name] = new PIXI.DisplayObjectContainer();
                            for(var col:number = 0; col < t.bounds.extent.x; col++) {
                               for (var row:number = 0; row < t.bounds.extent.y; row++) {
@@ -161,6 +155,9 @@ module pow2.editor {
                      // Each object group
                      _.each(t.map.objectGroups,(o:tiled.ITiledObjectGroup) => {
                         $tasks.add(() => {
+                           scope.$apply(()=>{
+                              scope.subtext = o.name;
+                           });
                            var container = objectContainers[o.name] = new PIXI.DisplayObjectContainer();
                            _.each(o.objects,(obj:tiled.ITiledObject) => {
                               var box = new PIXI.Graphics();
