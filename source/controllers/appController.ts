@@ -9,12 +9,26 @@ module pow2.editor {
       'platform',
       'rootPath',
       function($scope,platform:IAppPlatform,rootPath) {
-
          $scope.document = {
-            extension:'',
-            displayName:'',
-            path:'',
-            type:''
+            extension:'tmx',
+            displayName:'wilderness.tmx',
+            location:'assets/maps/eburp/wilderness.tmx',
+            path:'assets/maps/eburp/'
+         };
+
+         $scope.getDocumentType = ():string => {
+            switch($scope.document.extension.toLowerCase()){
+               case 'png':
+               case 'gif':
+               case 'jpg':
+               case 'jpeg':
+               case 'bmp':
+                  return 'image';
+               case 'tmx':
+                  return 'tiled';
+               default:
+                  return 'unknown';
+            }
          };
 
          var id = 1337;
@@ -65,13 +79,6 @@ module pow2.editor {
 
          var UndoManager:any = ace.require("ace/undomanager").UndoManager;
          $scope.history = new UndoManager();
-
-         // DUHHH THIS IS HORRIBLE.  Hardcode startup map
-         var file = "assets/maps/eburp/wilderness.tmx";
-         platform.setTitle(file);
-         $scope.mapUrl = file;
-         // DUHHHH END
-
 
       }
    ]);
