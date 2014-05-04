@@ -51,7 +51,7 @@ module pow2.editor {
                   var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
 
                   // create an new instance of a pixi stage
-                  var stage = new PIXI.Stage(0x2b2b2b, true);
+                  var stage = new PIXI.Stage(0x2E3233, true);
                   stage.pivot = centerOrigin;
                   var newUrl:string = source(scope);
 
@@ -159,11 +159,12 @@ module pow2.editor {
                         'Size: ' + t.bounds.extent
                      ].join('\n');
                      var text = new PIXI.Text(stats, {
-                        font:"20px SourceCodePro-Regular",
+                        font:"16px courier",
                         fill:"white",
-                        stroke:"black"
+                        stroke:"black",
+                        strokeThickness:3
                      });
-                     text.x = text.y = 0;
+                     text.x = text.y = 10;
                      stage.addChild(text);
                   };
 
