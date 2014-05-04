@@ -12,7 +12,7 @@ module pow2.editor {
          $scope.history = new UndoManager();
 
          // DUHHH THIS IS HORRIBLE.  Hardcode startup map
-         var file = "assets/maps/eburp/sewer.tmx";
+         var file = "assets/maps/eburp/wilderness.tmx";
          platform.setTitle(file);
          $scope.mapUrl = file;
          // DUHHHH END
@@ -63,7 +63,9 @@ module pow2.editor {
                $scope.mapUrl = null;
                platform.readFile(file.full, (data:any) => {
                   platform.setTitle(file.full);
-                  $scope.document = data;
+                  $scope.$apply(()=>{
+                     $scope.document = data;
+                  });
                });
             }
          };

@@ -32,19 +32,19 @@ module pow2.editor {
                var results = ['fa'];
                if (!node || typeof node[$scope.nodeChildren] === 'undefined'){
                   if(node.label.indexOf('.tmx') !== -1){
-                     results.push('fa-file-text-o');
+                     results.push('fa-file');
                   }
                   else {
-                     results.push('fa-file-o');
+                     results.push('fa-file-text');
                   }
                }
                else {
                   var hasChildren:boolean = node && node[$scope.nodeChildren] && node[$scope.nodeChildren].length;
                   if (hasChildren && !$scope.expandedNodes[this.$id]) {
-                     results.push('fa-chevron-right');
+                     results.push('fa-folder');
                   }
                   if (hasChildren && $scope.expandedNodes[this.$id]) {
-                     results.push('fa-chevron-down');
+                     results.push('fa-folder-open');
                   }
                }
                return results;
