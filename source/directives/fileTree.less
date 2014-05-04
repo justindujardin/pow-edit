@@ -11,6 +11,7 @@ treecontrol {
 
   /* default */
   color: #222;
+  background-color: #2E3233;
   text-decoration: none;
 
   ul {
@@ -24,7 +25,7 @@ treecontrol {
       white-space: nowrap;
       line-height:1em;
       font-family:@font-family-serif;
-      color:#666;
+      color: rgba(255, 255, 255, 0.9);
 
       // Generate depth padding for up to @maxDepth levels.
       .depthPadding (@depth) when (@depth < @maxDepth) {
@@ -37,37 +38,52 @@ treecontrol {
       }
       .depthPadding(0);
 
-
       a.item {
+        text-shadow:0 0 1px rgba(0,0,0,0.3);
         display: inline-block;
         width:100% !important;
         cursor: pointer;
-        padding: 7px 0px 7px 20px;
+        padding: 4px 0px;
         font-size:14px;
         i {
           width:12px;
           text-align:center;
           font-size: 1em;
           margin-right: 5px;
+          color: rgba(0, 116, 139, 0.95);
+          text-shadow:0 0 1px rgba(0,0,0,0.3);
         }
       }
 
       &.selected {
-        background-color: #aaddff;
-        font-weight: bold;
         > a.item {
           color:#fff;
           font-weight: bold;
           background-color: rgba(0, 116, 139, 0.62);
+          i {
+            color:rgba(255,255,255,0.8);
+          }
         }
       }
       &.tmx {
         font-weight: bold;
+        color:#fff;
       }
-      &.branch {}
+//      &.branch.expanded {
+//        > a.item {
+//          background-color: rgba(0,0,0,0.2);
+//          &:hover {
+//            background-color: rgba(0, 116, 139, 0.42);
+//          }
+//        }
+//      }
+
       > a.item:hover {
         background-color: rgba(0, 116, 139, 0.82);
         color:#fff;
+        i {
+          color:rgba(255,255,255,0.8);
+        }
       }
     }
   }

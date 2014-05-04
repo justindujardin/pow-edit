@@ -19,7 +19,7 @@ module pow2.editor {
             },
             template: "<div class=\"ace-container\"></div>",
             link: ($scope, $el, attrs:any, model) => {
-               var editor:AceAjax.Editor = new Editor(new Renderer($el[0], "ace/theme/textmate"));
+               var editor:AceAjax.Editor = new Editor(new Renderer($el[0], "ace/theme/tomorrow_night"));
                var session:AceAjax.IEditSession = editor.getSession();
                session.setMode("ace/mode/typescript");
                session.setUndoManager(<AceAjax.UndoManager>$scope.history);

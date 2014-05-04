@@ -51,7 +51,7 @@ module pow2.editor {
                   var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
 
                   // create an new instance of a pixi stage
-                  var stage = new PIXI.Stage(0x2E3233, true);
+                  var stage = new PIXI.Stage(0x111111, true);
                   stage.pivot = centerOrigin;
                   var newUrl:string = source(scope);
 
@@ -84,6 +84,16 @@ module pow2.editor {
                   var sceneContainer:any = null;
 
                   var buildMapRender = () => {
+
+                     /**
+                      * TODO: This needs to be async tasks for each layer/object group.
+                      *
+                      * This will actually probably look pretty neat to the user, loading
+                      * in a layer at a time.  Also, selecting another file should cancel
+                      * any pending tasks.  Until then BQ full map will __HANG__ up to a minute
+                      * while loading.
+                      *
+                      */
                      scope.$apply(()=>{
                         scope.status = "Building...";
                      });

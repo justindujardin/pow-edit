@@ -6,6 +6,8 @@
 @import "directives/editorView";
 
 
+@powBlue:#004c62;
+
 .box-sizing(@boxmodel) {
   -webkit-box-sizing: @boxmodel;
   -moz-box-sizing: @boxmodel;
@@ -19,27 +21,31 @@ body, html {
   font-family:@font-family-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  background-color: #222;
   .box-sizing(border-box);
   * {
     .box-sizing(border-box);
   }
+  .ace-container {
+    height: 100%;
+    width:100%;
+  }
+  treecontrol {
+    font-family: @font-family-scp;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+  }
+
+
+  .split-panes > .split-handler {
+    border-left: 1px solid #000;
+  }
 }
 
-.ace-container {
-  height: 100%;
-  width:100%;
-  font-family: @font-family-scp;
-  font-size: 18px;
-}
-treecontrol {
-  font-family: @font-family-scp;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  overflow-y: auto;
-}
 
 
 
@@ -116,23 +122,47 @@ treecontrol {
 }
 
 
-
+/*
+  POW2 text effect.  Used for loading title.
+*/
 @contrastFontColorA:rgba(244, 255, 0, 0.5);
 @contrastFontColor:#eeaa13;
 @contrastHighlight:#E8C627;
 @contrastShadow:#E85627;
 .extrude-stroke-text(@width:2px,@lightColor:@contrastHighlight,@shadowColor:@contrastShadow){
   text-shadow: @width  @width 0 @shadowColor,
-  -@width -@width 0 @lightColor,
-  @width -@width 0 @shadowColor,
+    -@width -@width 0 @lightColor,
+    @width -@width 0 @shadowColor,
   -@width  @width 0 @lightColor;
 }
 .inset-stroke-text(@width:2px,@lightColor:@contrastHighlight,@shadowColor:@contrastShadow){
   text-shadow:-@width -@width 0 @lightColor,
   @width  @width 0 @shadowColor,
   -@width  @width 0 @lightColor,
-  @width -@width 0 @shadowColor;
+    @width -@width 0 @shadowColor;
 }
 .stroke-text(@width:2px,@color:@contrastShadow){
   .extrude-stroke-text(@width,@color,@color);
+}
+
+
+/*
+  Custom scrollbar for file tree
+*/
+
+@scrollBarThickness:8px;
+::-webkit-scrollbar,::-webkit-scrollbar-corner,::-webkit-scrollbar-track {
+  width: @scrollBarThickness;
+  height: @scrollBarThickness;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #222;
+  &:hover {
+    background-color: #666;
+  }
 }
