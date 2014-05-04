@@ -95,7 +95,47 @@ module.exports = function(grunt) {
             linux64: false
          },
          src: ['./**/*']
+      },
+
+      /**
+       * Release/Deploy tasks
+       */
+      bump: {
+         options: {
+            files: ['package.json', 'bower.json'],
+            updateConfigs: ['pkg'],
+            commit: true,
+            commitMessage: 'chore(deploy): release v%VERSION%',
+            commitFiles: ['package.json', 'bower.json', 'CHANGELOG.md'],
+            createTag: true,
+            tagName: 'v%VERSION%',
+            tagMessage: 'Version %VERSION%',
+            push: false,
+            pushTo: 'origin',
+            gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
+         }
+      },
+      changelog: {},
+
+      'npm-contributors': {
+         options: {
+            commitMessage: 'chore(attribution): update contributors'
+         }
       }
+   });
+
+   // Release/Deploy
+   grunt.loadNpmTasks('grunt-bump');
+   grunt.loadNpmTasks('grunt-conventional-changelog');
+   grunt.loadNpmTasks('grunt-npm');
+   grunt.registerTask('release', 'Build, bump and tag a new release.', function(type) {
+      type = type || 'patch';
+      grunt.task.run([
+         'npm-contributors',
+         "bump:" + type + ":bump-only",
+         'changelog',
+         'bump-commit'
+      ]);
    });
 
    grunt.loadNpmTasks('grunt-contrib-clean');
