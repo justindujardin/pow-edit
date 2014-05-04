@@ -72,6 +72,8 @@ module pow2.editor {
                   pane1.elem.css('width', pos + 'px');
                   pane2.elem.css('left', pos + 'px');
                }
+               pane1.elem.children().triggerHandler('resize');
+               pane2.elem.children().triggerHandler('resize');
             });
 
             handler.bind('mousedown', function (ev) {

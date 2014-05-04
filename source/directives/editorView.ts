@@ -225,14 +225,16 @@ module pow2.editor {
                      renderer.resize(w,h);
                   },50);
                   var debounce;
-                  angular.element(window).on('resize',() => {
+                  var resizeHack = () => {
                      clearTimeout(debounce);
                      debounce = setTimeout(() => {
                         var w:number = element.width();
                         var h:number = element.height();
                         renderer.resize(w,h);
                      }, 20);
-                  });
+                  };
+                  angular.element(window).on('resize',resizeHack);
+                  element.on('resize',resizeHack);
                   return scope.$on("$destroy", function() {
                      angular.element(window).off('resize');
                   });
