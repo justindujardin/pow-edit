@@ -50,7 +50,7 @@ treecontrol {
           text-align:center;
           font-size: 1em;
           margin-right: 5px;
-          color: rgba(0, 116, 139, 0.95);
+          color: rgba(191, 168, 119, 0.91);
           text-shadow:0 0 1px rgba(0,0,0,0.3);
         }
       }
@@ -77,6 +77,12 @@ treecontrol {
 //          }
 //        }
 //      }
+
+      &.leaf {
+        > a.item i {
+          color: rgba(255, 255, 255, 0.70);
+        }
+      }
 
       > a.item:hover {
         background-color: rgba(0, 116, 139, 0.82);
