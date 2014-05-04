@@ -21,11 +21,13 @@ module pow2.editor {
       "$rootScope",
       "$parse",
       "$document",
+      "$tasks",
       "platform",
       ($timeout:ng.ITimeoutService,
        $rootScope:any,
        $parse:ng.IParseService,
        $document,
+       $tasks,
        platform:IAppPlatform) => {
 
          var drag:IDragEvent = {
@@ -45,6 +47,15 @@ module pow2.editor {
          };
 
          var centerOrigin = new PIXI.Point(0.5,0.5);
+
+         var destroyStage = (stage) => {
+            if(stage){
+               for (var i = stage.children.length - 1; i >= 0; i--) {
+                  stage.removeChild(stage.children[i]);
+               }
+            }
+         };
+
          return {
             restrict: "E",
             replace: true,
@@ -69,9 +80,7 @@ module pow2.editor {
                         return;
                      }
                      if(sceneContainer){
-                        for (var i = stage.children.length - 1; i >= 0; i--) {
-                           stage.removeChild(stage.children[i]);
-                        }
+                        destroyStage(stage);
                      }
                      sceneContainer = new PIXI.DisplayObjectContainer();
 
@@ -224,12 +233,15 @@ module pow2.editor {
                      return false;
                   });
 
+                  var scopeDestroyed:boolean = false;
                   /**
                    * Process loop
                    */
                   function animate() {
                      renderer.render(stage);
-                     requestAnimFrame(animate);
+                     if(!scopeDestroyed){
+                        requestAnimFrame(animate);
+                     }
                   }
                   requestAnimFrame(animate);
 
@@ -255,6 +267,8 @@ module pow2.editor {
                   angular.element(window).on('resize',resizeHack);
                   element.on('resize',resizeHack);
                   return scope.$on("$destroy", function() {
+                     scopeDestroyed = true;
+                     destroyStage(stage);
                      angular.element(window).off('resize');
                   });
                };
