@@ -20,8 +20,13 @@ module pow2.editor {
       "$timeout",
       "$rootScope",
       "$parse",
+      "$document",
       "platform",
-      ($timeout:ng.ITimeoutService,$rootScope:any,$parse:ng.IParseService,platform:IAppPlatform) => {
+      ($timeout:ng.ITimeoutService,
+       $rootScope:any,
+       $parse:ng.IParseService,
+       $document,
+       platform:IAppPlatform) => {
 
          var drag:IDragEvent = {
             active:false,
@@ -181,14 +186,7 @@ module pow2.editor {
                   /**
                    *  Pan/Zoom input listeners
                    */
-                  element.on('mousedown',(event:MouseEvent) => {
-                     drag.active = true;
-                     drag.start = new Point(event.screenX,event.screenY);
-                     drag.current = drag.start.clone();
-                     drag.delta = new pow2.Point(0,0);
-                     drag.scrollStart = new Point(sceneContainer.x,sceneContainer.y);
-                  });
-                  element.on('mousemove',(event:MouseEvent) => {
+                  var mouseMove = (event:MouseEvent) => {
                      if(!drag.active){
                         return;
                      }
@@ -200,9 +198,20 @@ module pow2.editor {
 
                      event.stopPropagation();
                      return false;
-                  });
-                  element.on('mouseup',(event:MouseEvent) => {
+                  };
+                  var mouseUp = (event:MouseEvent) => {
+                     $document.off('mousemove', mouseMove);
+                     $document.off('mouseup', mouseUp);
                      resetDrag();
+                  };
+                  element.on('mousedown',(event:MouseEvent) => {
+                     drag.active = true;
+                     drag.start = new Point(event.screenX,event.screenY);
+                     drag.current = drag.start.clone();
+                     drag.delta = new pow2.Point(0,0);
+                     drag.scrollStart = new Point(sceneContainer.x,sceneContainer.y);
+                     $document.on('mousemove', mouseMove);
+                     $document.on('mouseup', mouseUp);
                   });
                   element.on("mousewheel DOMMouseScroll MozMousePixelScroll", (ev) => {
                      var delta:number = (ev.originalEvent.detail ? ev.originalEvent.detail * -1 : ev.originalEvent.wheelDelta);
