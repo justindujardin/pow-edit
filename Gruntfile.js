@@ -142,7 +142,6 @@ module.exports = function(grunt) {
    grunt.loadNpmTasks('grunt-contrib-less');
    grunt.loadNpmTasks('grunt-node-webkit-builder');
    grunt.loadNpmTasks('grunt-html2js');
-   // Support system notifications in non-production environments
    if(!process || !process.env || process.env.NODE_ENV !== 'production'){
       grunt.loadNpmTasks('grunt-contrib-watch');
       grunt.registerTask('default', ['clean','typescript','less','html2js']);
@@ -150,4 +149,5 @@ module.exports = function(grunt) {
    else {
       grunt.registerTask('default', ['typescript','less','html2js']);
    }
+   grunt.registerTask('develop', ['default','watch']);
 };
