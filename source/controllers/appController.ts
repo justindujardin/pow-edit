@@ -3,22 +3,21 @@
 ///<reference path="../app.ts"/>
 
 module pow2.editor {
-   app.controller('PowDocumentController', [
+
+   app.controller('AppController', [
       '$scope',
       'platform',
       'rootPath',
       function($scope,platform:IAppPlatform,rootPath) {
-         var UndoManager:any = ace.require("ace/undomanager").UndoManager;
-         $scope.history = new UndoManager();
 
-         // DUHHH THIS IS HORRIBLE.  Hardcode startup map
-         var file = "assets/maps/eburp/wilderness.tmx";
-         platform.setTitle(file);
-         $scope.mapUrl = file;
-         // DUHHHH END
+         $scope.document = {
+            extension:'',
+            displayName:'',
+            path:'',
+            type:''
+         };
 
          var id = 1337;
-
          $scope.makeNode = (file:IFileInfo,depth:number) => {
             var result:any = {
                label: file.name,
@@ -33,7 +32,6 @@ module pow2.editor {
             }
             return result;
          };
-
          platform.enumPath(rootPath,(error:any,fileList?:IFileInfo[]) => {
             var mountFiles:any[] = [];
             angular.forEach(fileList,(file:IFileInfo) => {
@@ -47,28 +45,34 @@ module pow2.editor {
                $scope.mount = mountFiles;
             });
          });
-
          $scope.selectFile = (node:any) => {
             var file:IFileInfo = node.data;
-
-            if(file.full.indexOf('.tmx') !== -1){
-//               if(file.full.indexOf('-full.tmx') !== -1){
-//                  console.error("Skipping big ass file until it can be canceled.");
-//                  return;
-//               }
-               $scope.mapUrl = file.full;
-               return;
-            }
+            $scope.document.extension = file.name.split('.').pop();
+            $scope.document.displayName = file.full;
+            $scope.document.location = file.full;
+            $scope.document.path = file.path;
             if(!file.children || !file.children.length){
                $scope.mapUrl = null;
                platform.readFile(file.full, (data:any) => {
                   platform.setTitle(file.full);
                   $scope.$apply(()=>{
-                     $scope.document = data;
+                     $scope.document.data = data;
                   });
                });
             }
          };
+
+
+         var UndoManager:any = ace.require("ace/undomanager").UndoManager;
+         $scope.history = new UndoManager();
+
+         // DUHHH THIS IS HORRIBLE.  Hardcode startup map
+         var file = "assets/maps/eburp/wilderness.tmx";
+         platform.setTitle(file);
+         $scope.mapUrl = file;
+         // DUHHHH END
+
+
       }
    ]);
 }

@@ -6,15 +6,15 @@
     <link rel="stylesheet" href="../build/pow-edit.css">
     <link rel="stylesheet" href="../assets/vendor/fontawesome/css/font-awesome.min.css">
 </head>
-<body ng-controller="PowDocumentController">
+<body ng-controller="AppController">
 
 <bg-splitter orientation="horizontal">
     <bg-pane min-size="150">
         <treecontrol tree-model="mount" node-children="children" on-selection="selectFile(node)">{{node.label}}</treecontrol>
     </bg-pane>
-    <bg-pane min-size="200">
-        <ace-editor ng-model="document" history="history" ng-if="!mapUrl"></ace-editor>
-        <pixi ng-if="mapUrl" url="mapUrl"></pixi>
+    <bg-pane min-size="200" ng-switch="document.extension">
+        <pixi  ng-switch-when="tmx" url="document.location"></pixi>
+        <ace-editor ng-default ng-model="document.data" history="history"></ace-editor>
     </bg-pane>
 </bg-splitter>
 
