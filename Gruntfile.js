@@ -137,7 +137,6 @@ module.exports = function(grunt) {
          'bump-commit'
       ]);
    });
-
    grunt.loadNpmTasks('grunt-contrib-clean');
    grunt.loadNpmTasks('grunt-typescript');
    grunt.loadNpmTasks('grunt-contrib-less');
