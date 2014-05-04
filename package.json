@@ -14,7 +14,10 @@
     "grunt-contrib-less": "0.10.0",
     "graceful-fs": "~2.0.1",
     "typescript": "~0.9.7",
-    "grunt-html2js": "~0.2.4"
+    "grunt-html2js": "~0.2.4",
+    "grunt-bump": "0.0.13",
+    "grunt-conventional-changelog": "~1.1.0",
+    "grunt-npm": "0.0.2"
   },
   "scripts": {
     "test": "npm install && ./node_modules/.bin/grunt"
@@ -32,5 +35,6 @@
     "grunt-cli": "~0.1.10",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-node-webkit-builder": "~0.1.18"
-  }
+  },
+  "contributors": []
 }
