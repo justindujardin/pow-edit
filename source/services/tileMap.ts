@@ -31,6 +31,7 @@ module pow2.editor.tiled {
       tiles:any[] = []; // TODO: TilesetProperties
       bounds: pow2.Rect;
       private _loaded:boolean = false;
+      private _layerLookup:{[name:string]:ITiledLayer} = {};
 
       constructor(
          public platform:IAppPlatform,
@@ -38,8 +39,16 @@ module pow2.editor.tiled {
          this.bounds = new pow2.Rect(0, 0, 10,10);
       }
 
+      getLayer(name:string):tiled.ITiledLayer{
+         if(!this._layerLookup[name]){
+            this._layerLookup[name] = <tiled.ITiledLayer>_.where(this.map.layers,{name:name})[0];
+         }
+         return this._layerLookup[name];
+      }
+
       load(mapName:string=this.mapName,done?:(map:TileMap)=>any){
          this.platform.readFile(mapName,(data) => {
+            this._layerLookup = {};
             var tiledDocument = new pow2.editor.tiled.TiledTMX(this.platform,mapName,$(data));
             tiledDocument.prepare(() => {
                this.mapName = mapName;
@@ -84,10 +93,6 @@ module pow2.editor.tiled {
          this.loaded();
          done && done(this);
          return true;
-      }
-
-      getLayer(name:string):tiled.ITiledLayer{
-         return <tiled.ITiledLayer>_.where(this.map.layers,{name:name})[0];
       }
 
       getTerrain(layer:string, x:number, y:number) {

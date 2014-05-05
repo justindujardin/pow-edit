@@ -128,6 +128,9 @@ module pow2.editor {
                               scope.subtext = l.name;
                            });
                            var container = layerContainers[l.name] = new PIXI.DisplayObjectContainer();
+                           container.visible = l.visible;
+                           container.pivot = container.anchor = centerOrigin;
+                           sceneContainer.addChild(container);
                            for(var col:number = 0; col < t.bounds.extent.x; col++) {
                               for (var row:number = 0; row < t.bounds.extent.y; row++) {
                                  var gid:number = t.getTileGid(l.name,col, row);
@@ -145,9 +148,6 @@ module pow2.editor {
                                  }
                               }
                            }
-                           container.visible = l.visible;
-                           container.pivot = container.anchor = centerOrigin;
-                           sceneContainer.addChild(container);
                            //container.cacheAsBitmap = true;
                            return true;
                         },t.mapName);
