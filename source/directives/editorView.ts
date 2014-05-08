@@ -20,12 +20,14 @@ module pow2.editor {
    pow2.editor.app.directive("pixi", [
       "$timeout",
       "$rootScope",
+      "$interval",
       "$parse",
       "$document",
       "$tasks",
       "platform",
       ($timeout:ng.ITimeoutService,
        $rootScope:any,
+       $interval:ng.IIntervalService,
        $parse:ng.IParseService,
        $document,
        $tasks:pow2.editor.TasksService,
@@ -75,13 +77,22 @@ module pow2.editor {
                   /**
                    * Data binding
                    */
-                  var updateView = () => {
+                  var updateView = (value) => {
                      newUrl = source(scope);
                      if(!newUrl){
                         return;
                      }
-                     if(sceneContainer){
+                     if(t.mapName){
                         $tasks.killTaskGroup(t.mapName);
+                     }
+
+                     if(!value){
+                        destroyStage(stage);
+                        sceneContainer = null;
+                        return;
+                     }
+
+                     if(sceneContainer){
                         destroyStage(stage);
                      }
                      sceneContainer = new PIXI.DisplayObjectContainer();
@@ -98,27 +109,18 @@ module pow2.editor {
                   element.append(renderer.view);
 
                   var sceneContainer:any = null;
-
+                  var unwatchProgress:any = null;
                   var buildMapRender = () => {
-
-                     scope.$apply(()=>{
-                        scope.status = "Building Map...";
-                     });
-
                      sceneContainer.x = (element.width() / 2) - (t.map.width * t.map.tilewidth / 2);
                      sceneContainer.y = (element.height() / 2) - (t.map.height * t.map.tileheight / 2);
                      sceneContainer.pivot = sceneContainer.anchor = centerOrigin;
-
 
                      platform.setTitle(newUrl);
                      var spriteTextures:any = {};
                      var layerContainers:any = {};
                      var objectContainers:any = {};
-                     $tasks.add(() => {
-                        _.each(t.map.tilesets,(tsx:pow2.editor.tiled.TiledTSX) => {
-                           spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
-                        });
-                        return true;
+                     _.each(t.map.tilesets,(tsx:pow2.editor.tiled.TiledTSX) => {
+                        spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
                      });
 
                      // Each layer
@@ -179,10 +181,19 @@ module pow2.editor {
                      });
                      stage.addChild(sceneContainer);
 
+                     var total:number = $tasks.getRemainingTasks(t.mapName);
+                     scope.$apply(()=>{
+                        scope.total = total;
+                        scope.status = "Building Map...";
+                     });
+                     unwatchProgress = $interval(()=>{
+                        scope.current = total - $tasks.getRemainingTasks(t.mapName);
+                     },50);
 
                      $tasks.add(() => {
                         scope.$apply(()=>{
                            scope.status = null;
+                           $interval.cancel(unwatchProgress);
                         });
                         return true;
                      },t.mapName);
@@ -204,6 +215,10 @@ module pow2.editor {
 
                   /**
                    *  Pan/Zoom input listeners
+                   *
+                   *  TODO: Refactor into generic zoom/pan directive that
+                   *  takes generic x/y/scale props (rather than pixi specific
+                   *  sceneContainer props) and manipulates them.
                    */
                   var mouseMove = (event:MouseEvent) => {
                      if(!drag.active){
@@ -233,14 +248,21 @@ module pow2.editor {
                      $document.on('mouseup', mouseUp);
                   });
                   element.on("mousewheel DOMMouseScroll MozMousePixelScroll", (ev) => {
-                     var delta:number = (ev.originalEvent.detail ? ev.originalEvent.detail * -1 : ev.originalEvent.wheelDelta);
-                     var scale:number = sceneContainer.scale.x;
-                     var move:number = scale / 10;
-                     scale += (delta > 0 ? move : -move);
-                     sceneContainer.scale.x = sceneContainer.scale.y = scale;
-                     ev.stopImmediatePropagation();
-                     ev.preventDefault();
-                     return false;
+                     if(sceneContainer){
+                        var delta:number = (ev.originalEvent.detail ? ev.originalEvent.detail * -1 : ev.originalEvent.wheelDelta);
+                        var scale:number = sceneContainer.scale.x;
+                        var move:number = scale / 10;
+                        var save:number = scale;
+                        scale += (delta > 0 ? move : -move);
+                        var diffx = (renderer.width * save - renderer.width * scale);
+                        var diffy = (renderer.height * save - renderer.height * scale);
+                        sceneContainer.x += diffx;
+                        sceneContainer.y += diffy;
+                        sceneContainer.scale.x = sceneContainer.scale.y = scale;
+                        ev.stopImmediatePropagation();
+                        ev.preventDefault();
+                        return false;
+                     }
                   });
 
                   var scopeDestroyed:boolean = false;
@@ -254,8 +276,6 @@ module pow2.editor {
                      }
                   }
                   requestAnimFrame(animate);
-
-                  updateView();
 
                   /**
                    * Resize hacks.
@@ -279,7 +299,9 @@ module pow2.editor {
                   return scope.$on("$destroy", function() {
                      scopeDestroyed = true;
                      destroyStage(stage);
+                     $interval.cancel(unwatchProgress);
                      $tasks.killTaskGroup(t.mapName);
+                     t.reset();
                      angular.element(window).off('resize');
                   });
                };

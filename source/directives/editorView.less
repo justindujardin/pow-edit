@@ -21,18 +21,31 @@
     text-align: center;
     background-color:rgba(0,0,0,0.5);
     padding:20px 0;
-    h1 {
-      color: rgba(255, 255, 255, 0.85);
-      .extrude-stroke-text(2px,lighten(@powBlue,10%),@powBlue);
-      font-size:5em;
-      margin:0;
+    .fill {
+      position: absolute;
+      height:30px;
+      bottom:-30px;
+      left:0;
+      width:0;
+      background-color: rgba(0, 76, 98, 0.90);
+      z-index:-1;
     }
-    p {
-      font-size:2.5em;
-      margin:0;
-      text-transform: lowercase;
-      color:#FFF;
-      .stroke-text(2px,rgba(0,0,0,0.5));
+    .message {
+      z-index:1;
+      h1 {
+        color: rgba(255, 255, 255, 0.85);
+        .extrude-stroke-text(2px,lighten(@powBlue,10%),@powBlue);
+        font-size:5em;
+        margin:0;
+      }
+      p {
+        font-size:2.5em;
+        margin:0;
+        text-transform: lowercase;
+        color:#FFF;
+        .stroke-text(2px,rgba(0,0,0,0.5));
+      }
+
     }
   }
 }

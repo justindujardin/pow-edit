@@ -39,6 +39,16 @@ module pow2.editor.tiled {
          this.bounds = new pow2.Rect(0, 0, 10,10);
       }
 
+      reset(){
+         this.bounds.point.set(0,0);
+         this.bounds.extent.set(10,10);
+         this.mapName = null;
+         this.map = null;
+         this.tiles.length = 0;
+         this._layerLookup = {};
+         this._loaded = false;
+      }
+
       getLayer(name:string):tiled.ITiledLayer{
          if(!this._layerLookup[name]){
             this._layerLookup[name] = <tiled.ITiledLayer>_.where(this.map.layers,{name:name})[0];
@@ -127,14 +137,5 @@ module pow2.editor.tiled {
          return <ITileInstanceMeta>source.getTileMeta(gid);
       }
 
-//      // TODO: Calculate texture with two array index lookups like in getTerrain.  No need for FN call here.
-//      getTerrainTexture(x, y) {
-//         var terrain = this.getTerrain("Terrain", x, y);
-//         if (terrain) {
-//            return terrain.icon;
-//         } else {
-//            return null;
-//         }
-//      }
    }
 }

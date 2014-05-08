@@ -67,6 +67,7 @@ module pow2.editor {
             $scope.document.displayName = file.full;
             $scope.document.location = file.full;
             $scope.document.path = file.path;
+            $scope.document.data = null;
             if(!file.children || !file.children.length){
                $scope.mapUrl = null;
                platform.readFile(file.full, (data:any) => {
