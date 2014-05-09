@@ -46,6 +46,30 @@ body, html {
   }
 }
 
+// TODO: Move into image-view directive and .less file
+.image-view {
+  text-align: center;
+  overflow: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  img {
+
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin:auto;
+
+  }
+}
+
 
 
 
@@ -154,15 +178,17 @@ body, html {
 ::-webkit-scrollbar,::-webkit-scrollbar-corner,::-webkit-scrollbar-track {
   width: @scrollBarThickness;
   height: @scrollBarThickness;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: transparent;
 }
 
 
 
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: #222;
+  background-color: #666;
+  border: 1px solid transparent;
   &:hover {
-    background-color: #666;
+    background-color: #222;
+    border: 1px solid rgba(255,255,255,0.2);
   }
 }
