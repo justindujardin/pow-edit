@@ -1,3 +1,15 @@
+<a name="0.0.2"></a>
+### 0.0.2 (2014-05-09)
+
+
+#### Features
+
+* **editorView:**
+  * progress bar loading for maps ([ae3e9b53](http://github.com/justindujardin/pow-edit/commit/ae3e9b53308aa4d5fccdaf2344fe7319a12d4873))
+  * 500% faster file loading with layer lookup ([fb1db261](http://github.com/justindujardin/pow-edit/commit/fb1db261e0bed54a7d80924676020cc167a6b229))
+* **imageView:** make image view center its content and allow scrolling ([681651f4](http://github.com/justindujardin/pow-edit/commit/681651f498df4d2f8decd50bb70a260da217579a))
+
+
 <a name="0.0.1"></a>
 ### 0.0.1 (2014-05-04)
 
