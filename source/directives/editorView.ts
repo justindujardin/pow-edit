@@ -65,6 +65,10 @@ module pow2.editor {
             templateUrl: "source/directives/editorView.html",
             compile:(element,attributes) => {
                var source = $parse(attributes.url);
+               var cameraWidth:number;
+               var cameraHeight:number;
+               var cameraCenter:pow2.Point = new pow2.Point(0,0);
+               var cameraZoom:number = 1;
                return (scope, element, attrs:any) => {
 
                   var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
@@ -110,10 +114,19 @@ module pow2.editor {
 
                   var sceneContainer:any = null;
                   var unwatchProgress:any = null;
+                  var updateCamera = () => {
+                     sceneContainer.x = -cameraCenter.x * cameraZoom + (cameraWidth / 2);
+                     sceneContainer.y = -cameraCenter.y * cameraZoom + (cameraHeight / 2);
+                     sceneContainer.scale.x = sceneContainer.scale.y = cameraZoom;
+                  };
                   var buildMapRender = () => {
-                     sceneContainer.x = (element.width() / 2) - (t.map.width * t.map.tilewidth / 2);
-                     sceneContainer.y = (element.height() / 2) - (t.map.height * t.map.tileheight / 2);
+
+                     cameraCenter.set(t.map.width * t.map.tilewidth / 2, t.map.height * t.map.tileheight / 2);
+                     cameraHeight = element.height();
+                     cameraWidth = element.width();
+                     cameraZoom = 1;
                      sceneContainer.pivot = sceneContainer.anchor = centerOrigin;
+                     updateCamera();
 
                      platform.setTitle(newUrl);
                      var spriteTextures:any = {};
@@ -227,9 +240,10 @@ module pow2.editor {
                      drag.current.set(event.screenX,event.screenY);
                      drag.delta.set(drag.start.x - drag.current.x, drag.start.y - drag.current.y);
 
-                     sceneContainer.x = drag.scrollStart.x - drag.delta.x;
-                     sceneContainer.y = drag.scrollStart.y - drag.delta.y;
+                     cameraCenter.x = drag.scrollStart.x + drag.delta.x * (1 / cameraZoom);
+                     cameraCenter.y = drag.scrollStart.y + drag.delta.y * (1 /cameraZoom);
 
+                     updateCamera();
                      event.stopPropagation();
                      return false;
                   };
@@ -243,7 +257,7 @@ module pow2.editor {
                      drag.start = new Point(event.screenX,event.screenY);
                      drag.current = drag.start.clone();
                      drag.delta = new pow2.Point(0,0);
-                     drag.scrollStart = new Point(sceneContainer.x,sceneContainer.y);
+                     drag.scrollStart = new Point(cameraCenter.x,cameraCenter.y);
                      $document.on('mousemove', mouseMove);
                      $document.on('mouseup', mouseUp);
                   });
@@ -252,13 +266,9 @@ module pow2.editor {
                         var delta:number = (ev.originalEvent.detail ? ev.originalEvent.detail * -1 : ev.originalEvent.wheelDelta);
                         var scale:number = sceneContainer.scale.x;
                         var move:number = scale / 10;
-                        var save:number = scale;
                         scale += (delta > 0 ? move : -move);
-                        var diffx = (renderer.width * save - renderer.width * scale);
-                        var diffy = (renderer.height * save - renderer.height * scale);
-                        sceneContainer.x += diffx;
-                        sceneContainer.y += diffy;
-                        sceneContainer.scale.x = sceneContainer.scale.y = scale;
+                        cameraZoom = scale;
+                        updateCamera();
                         ev.stopImmediatePropagation();
                         ev.preventDefault();
                         return false;
@@ -280,19 +290,20 @@ module pow2.editor {
                   /**
                    * Resize hacks.
                    */
-                  setTimeout(()=>{
+                  var updateSize = () => {
                      var w:number = element.width();
                      var h:number = element.height();
                      renderer.resize(w,h);
-                  },50);
+                     cameraWidth = w;
+                     cameraHeight = h;
+                     updateCamera();
+                  };
+
+                  setTimeout(updateSize,50);
                   var debounce;
                   var resizeHack = () => {
                      clearTimeout(debounce);
-                     debounce = setTimeout(() => {
-                        var w:number = element.width();
-                        var h:number = element.height();
-                        renderer.resize(w,h);
-                     }, 20);
+                     debounce = setTimeout(updateSize, 20);
                   };
                   angular.element(window).on('resize',resizeHack);
                   element.on('resize',resizeHack);
