@@ -36,7 +36,10 @@ module.exports = function(grunt) {
       less: {
          editor: {
             options: {
-               paths: ["source/"]
+               paths: [
+                  "source/",
+                  "bower_components/"
+               ]
             },
             files: {
                'build/<%= pkg.name %>.css':'source/app.less'
