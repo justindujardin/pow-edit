@@ -16,63 +16,133 @@ module pow2.editor {
       scrollStart:pow2.Point;
    }
 
+   export class TileEditorController {
+      public cameraWidth:number;
+      public cameraHeight:number;
+      public cameraCenter:pow2.Point = new pow2.Point(0,0);
+      public cameraZoom:number = 1;
+      public renderer:any;
+      public sceneContainer:any = null;
+      public drag:IDragEvent = {
+         active:false,
+         start:null,
+         current:null,
+         scrollStart:null,
+         delta:null
+      };
+      public unwatchProgress:any = null;
 
-   pow2.editor.app.directive("tileEditorView", [
-      "$timeout",
-      "$rootScope",
-      "$interval",
-      "$parse",
-      "$document",
-      "$tasks",
-      "platform",
-      ($timeout:ng.ITimeoutService,
-       $rootScope:any,
-       $interval:ng.IIntervalService,
-       $parse:ng.IParseService,
-       $document,
-       $tasks:pow2.editor.TasksService,
-       platform:IAppPlatform) => {
 
-         var drag:IDragEvent = {
+      static $inject:string[] = ['$document'];
+      constructor(public $document:any){
+         console.log("instantiated!" + $document);
+      }
+      init(element){
+         // create a renderer instance
+         this.renderer = PIXI.autoDetectRenderer(element.height(),element.width());
+      }
+
+      resetDrag(){
+         this.drag = _.extend({},{
             active:false,
             start:null,
             current:null,
-            scrollStart:null,
             delta:null
-         };
-         var resetDrag = () => {
-            drag = _.extend({},{
-               active:false,
-               start:null,
-               current:null,
-               delta:null
-            });
-         };
-
-         var centerOrigin = new PIXI.Point(0.5,0.5);
-
-         var destroyStage = (stage) => {
-            if(stage){
-               for (var i = stage.children.length - 1; i >= 0; i--) {
-                  stage.removeChild(stage.children[i]);
-               }
+         });
+      }
+      destroyStage(stage) {
+         if(stage){
+            for (var i = stage.children.length - 1; i >= 0; i--) {
+               stage.removeChild(stage.children[i]);
             }
+         }
+      }
+
+      updateCamera() {
+         if(!this.sceneContainer){
+            return;
+         }
+         this.sceneContainer.x = -this.cameraCenter.x * this.cameraZoom + (this.cameraWidth / 2);
+         this.sceneContainer.y = -this.cameraCenter.y * this.cameraZoom + (this.cameraHeight / 2);
+         this.sceneContainer.scale.x = this.sceneContainer.scale.y = this.cameraZoom;
+      }
+
+
+      // INPUT
+      /**
+       *  Pan Input listener
+       *
+       *  TODO: Refactor into generic zoom/pan directive that
+       *  takes generic x/y/scale props (rather than pixi specific
+       *  sceneContainer props) and manipulates them.
+       */
+      handleMouseDown(event:MouseEvent) {
+         this.drag.active = true;
+         this.drag.start = new Point(event.screenX,event.screenY);
+         this.drag.current = this.drag.start.clone();
+         this.drag.delta = new pow2.Point(0,0);
+         this.drag.scrollStart = new Point(this.cameraCenter.x,this.cameraCenter.y);
+         var _mouseUp = (event:MouseEvent) => {
+            this.$document.off('mousemove',_mouseMove);
+            this.$document.off('mouseup',_mouseUp);
+            this.resetDrag();
          };
+         var _mouseMove = (event:MouseEvent) => {
+            if(!this.drag.active){
+               return;
+            }
+            this.drag.current.set(event.screenX,event.screenY);
+            this.drag.delta.set(this.drag.start.x - this.drag.current.x, this.drag.start.y - this.drag.current.y);
+
+            this.cameraCenter.x = this.drag.scrollStart.x + this.drag.delta.x * (1 / this.cameraZoom);
+            this.cameraCenter.y = this.drag.scrollStart.y + this.drag.delta.y * (1 / this.cameraZoom);
+
+            this.updateCamera();
+            event.stopPropagation();
+            return false;
+         };
+         this.$document.on('mousemove', _mouseMove);
+         this.$document.on('mouseup', _mouseUp);
+      }
+      /**
+       *  Zoom Input listener
+       */
+      handleMouseWheel(event) {
+         if(!this.sceneContainer) {
+            return;
+         }
+         var delta:number = (event.originalEvent.detail ? event.originalEvent.detail * -1 : event.originalEvent.wheelDelta);
+         var move:number = this.cameraZoom / 10;
+         this.cameraZoom += (delta > 0 ? move : -move);
+         this.updateCamera();
+         event.stopImmediatePropagation();
+         event.preventDefault();
+         return false;
+      }
+
+
+   }
+
+   pow2.editor.app.directive("tileEditorView", [
+      "$interval", "$parse","$document","$tasks","platform",
+      ($interval,$parse,$document,$tasks:TasksService,platform:IAppPlatform) => {
 
          return {
             restrict: "E",
             replace: true,
             templateUrl: "source/directives/editors/tileEditorView.html",
-            require:"^documentView",
+            require:["tileEditorView","^documentView"],
+            controller:TileEditorController,
+            controllerAs:'editor',
             compile:(element,attributes) => {
                var source = $parse(attributes.url);
-               var cameraWidth:number;
-               var cameraHeight:number;
-               var cameraCenter:pow2.Point = new pow2.Point(0,0);
-               var cameraZoom:number = 1;
-               return (scope, element, attrs:any,documentViewController:DocumentViewController) => {
+
+               return (scope, element, attributes:any,controllers:any[]) => {
+                  var tileEditor:TileEditorController = controllers[0];
+                  var documentViewController:DocumentViewController = controllers[1];
                   var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
 
+                  tileEditor.init(element);
                   // create an new instance of a pixi stage
                   var stage = new PIXI.Stage(0x111111, true);
                   var newUrl:string = source(scope);
@@ -90,42 +160,30 @@ module pow2.editor {
                      }
 
                      if(!value){
-                        destroyStage(stage);
-                        sceneContainer = null;
+                        tileEditor.destroyStage(stage);
+                        tileEditor.sceneContainer = null;
                         return;
                      }
 
-                     if(sceneContainer){
-                        destroyStage(stage);
+                     if(tileEditor.sceneContainer){
+                        tileEditor.destroyStage(stage);
                      }
-                     sceneContainer = new PIXI.DisplayObjectContainer();
-
+                     tileEditor.sceneContainer = new PIXI.DisplayObjectContainer();
                      documentViewController.showLoading('Loading...');
                      t.load(newUrl,buildMapRender);
                   };
-                  scope.$watch(attrs.url, updateView);
+                  scope.$watch(attributes.url, updateView);
 
 
-                  // create a renderer instance
-                  var renderer = PIXI.autoDetectRenderer(element.height(),element.width());
                   // add the renderer view element to the DOM
-                  element.append(renderer.view);
+                  element.append(tileEditor.renderer.view);
 
-                  var sceneContainer:any = null;
-                  var unwatchProgress:any = null;
-                  var updateCamera = () => {
-                     sceneContainer.x = -cameraCenter.x * cameraZoom + (cameraWidth / 2);
-                     sceneContainer.y = -cameraCenter.y * cameraZoom + (cameraHeight / 2);
-                     sceneContainer.scale.x = sceneContainer.scale.y = cameraZoom;
-                  };
                   var buildMapRender = () => {
-
-                     cameraCenter.set(t.map.width * t.map.tilewidth / 2, t.map.height * t.map.tileheight / 2);
-                     cameraHeight = element.height();
-                     cameraWidth = element.width();
-                     cameraZoom = 1;
-                     sceneContainer.pivot = sceneContainer.anchor = centerOrigin;
-                     updateCamera();
+                     tileEditor.cameraCenter.set(t.map.width * t.map.tilewidth / 2, t.map.height * t.map.tileheight / 2);
+                     tileEditor.cameraHeight = element.height();
+                     tileEditor.cameraWidth = element.width();
+                     tileEditor.cameraZoom = 1;
+                     tileEditor.updateCamera();
 
                      platform.setTitle(newUrl);
                      var spriteTextures:any = {};
@@ -141,8 +199,7 @@ module pow2.editor {
                            documentViewController.setLoadingDetails(l.name);
                            var container = layerContainers[l.name] = new PIXI.DisplayObjectContainer();
                            container.visible = l.visible;
-                           container.pivot = container.anchor = centerOrigin;
-                           sceneContainer.addChild(container);
+                           tileEditor.sceneContainer.addChild(container);
                            for(var col:number = 0; col < t.bounds.extent.x; col++) {
                               for (var row:number = 0; row < t.bounds.extent.y; row++) {
                                  var gid:number = t.getTileGid(l.name,col, row);
@@ -182,24 +239,23 @@ module pow2.editor {
                               container.addChild(box);
                            });
                            container.visible = o.visible;
-                           container.pivot = container.anchor = centerOrigin;
-                           sceneContainer.addChild(container);
+                           tileEditor.sceneContainer.addChild(container);
                            //container.cacheAsBitmap = true;
                            return true;
                         },t.mapName);
                      });
-                     stage.addChild(sceneContainer);
+                     stage.addChild(tileEditor.sceneContainer);
 
                      var total:number = $tasks.getRemainingTasks(t.mapName);
                      documentViewController.setLoadingTitle("Building Map...");
                      documentViewController.setTotal(total);
-                     unwatchProgress = $interval(()=>{
+                     tileEditor.unwatchProgress = $interval(()=>{
                         documentViewController.setCurrent(total - $tasks.getRemainingTasks(t.mapName));
                      },50);
 
                      $tasks.add(() => {
                         documentViewController.hideLoading();
-                        $interval.cancel(unwatchProgress);
+                        $interval.cancel(tileEditor.unwatchProgress);
                         return true;
                      },t.mapName);
                      // Debug map stats
@@ -218,53 +274,11 @@ module pow2.editor {
                      stage.addChild(text);
                   };
 
-                  /**
-                   *  Pan/Zoom input listeners
-                   *
-                   *  TODO: Refactor into generic zoom/pan directive that
-                   *  takes generic x/y/scale props (rather than pixi specific
-                   *  sceneContainer props) and manipulates them.
-                   */
-                  var mouseMove = (event:MouseEvent) => {
-                     if(!drag.active){
-                        return;
-                     }
-                     drag.current.set(event.screenX,event.screenY);
-                     drag.delta.set(drag.start.x - drag.current.x, drag.start.y - drag.current.y);
-
-                     cameraCenter.x = drag.scrollStart.x + drag.delta.x * (1 / cameraZoom);
-                     cameraCenter.y = drag.scrollStart.y + drag.delta.y * (1 /cameraZoom);
-
-                     updateCamera();
-                     event.stopPropagation();
-                     return false;
-                  };
-                  var mouseUp = (event:MouseEvent) => {
-                     $document.off('mousemove', mouseMove);
-                     $document.off('mouseup', mouseUp);
-                     resetDrag();
-                  };
-                  element.on('mousedown',(event:MouseEvent) => {
-                     drag.active = true;
-                     drag.start = new Point(event.screenX,event.screenY);
-                     drag.current = drag.start.clone();
-                     drag.delta = new pow2.Point(0,0);
-                     drag.scrollStart = new Point(cameraCenter.x,cameraCenter.y);
-                     $document.on('mousemove', mouseMove);
-                     $document.on('mouseup', mouseUp);
+                  element.on('mousedown',(e)=>{
+                     tileEditor.handleMouseDown(e);
                   });
-                  element.on("mousewheel DOMMouseScroll MozMousePixelScroll", (ev) => {
-                     if(sceneContainer){
-                        var delta:number = (ev.originalEvent.detail ? ev.originalEvent.detail * -1 : ev.originalEvent.wheelDelta);
-                        var scale:number = sceneContainer.scale.x;
-                        var move:number = scale / 10;
-                        scale += (delta > 0 ? move : -move);
-                        cameraZoom = scale;
-                        updateCamera();
-                        ev.stopImmediatePropagation();
-                        ev.preventDefault();
-                        return false;
-                     }
+                  element.on("mousewheel DOMMouseScroll MozMousePixelScroll",(e)=>{
+                     tileEditor.handleMouseWheel(e);
                   });
 
                   var scopeDestroyed:boolean = false;
@@ -272,7 +286,7 @@ module pow2.editor {
                    * Process loop
                    */
                   function animate() {
-                     renderer.render(stage);
+                     tileEditor.renderer.render(stage);
                      if(!scopeDestroyed){
                         requestAnimFrame(animate);
                      }
@@ -285,10 +299,10 @@ module pow2.editor {
                   var updateSize = () => {
                      var w:number = element.width();
                      var h:number = element.height();
-                     renderer.resize(w,h);
-                     cameraWidth = w;
-                     cameraHeight = h;
-                     updateCamera();
+                     tileEditor.renderer.resize(w,h);
+                     tileEditor.cameraWidth = w;
+                     tileEditor.cameraHeight = h;
+                     tileEditor.updateCamera();
                   };
 
                   setTimeout(updateSize,50);
@@ -301,8 +315,8 @@ module pow2.editor {
                   element.on('resize',resizeHack);
                   return scope.$on("$destroy", function() {
                      scopeDestroyed = true;
-                     destroyStage(stage);
-                     $interval.cancel(unwatchProgress);
+                     tileEditor.destroyStage(stage);
+                     $interval.cancel(tileEditor.unwatchProgress);
                      $tasks.killTaskGroup(t.mapName);
                      t.reset();
                      angular.element(window).off('resize');
