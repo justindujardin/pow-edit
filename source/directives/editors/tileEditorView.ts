@@ -70,12 +70,11 @@ module pow2.editor {
                var cameraHeight:number;
                var cameraCenter:pow2.Point = new pow2.Point(0,0);
                var cameraZoom:number = 1;
-               return (scope, element, attrs:any,docCtrl:DocumentViewController) => {
+               return (scope, element, attrs:any,documentViewController:DocumentViewController) => {
                   var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
 
                   // create an new instance of a pixi stage
                   var stage = new PIXI.Stage(0x111111, true);
-                  stage.pivot = centerOrigin;
                   var newUrl:string = source(scope);
 
                   /**
@@ -101,7 +100,7 @@ module pow2.editor {
                      }
                      sceneContainer = new PIXI.DisplayObjectContainer();
 
-                     docCtrl.showLoading('Loading...');
+                     documentViewController.showLoading('Loading...');
                      t.load(newUrl,buildMapRender);
                   };
                   scope.$watch(attrs.url, updateView);
@@ -139,7 +138,7 @@ module pow2.editor {
                      // Each layer
                      _.each(t.map.layers,(l:tiled.ITiledLayer) => {
                         $tasks.add(() => {
-                           docCtrl.setLoadingDetails(l.name);
+                           documentViewController.setLoadingDetails(l.name);
                            var container = layerContainers[l.name] = new PIXI.DisplayObjectContainer();
                            container.visible = l.visible;
                            container.pivot = container.anchor = centerOrigin;
@@ -165,10 +164,11 @@ module pow2.editor {
                            return true;
                         },t.mapName);
                      });
+
                      // Each object group
                      _.each(t.map.objectGroups,(o:tiled.ITiledObjectGroup) => {
                         $tasks.add(() => {
-                           docCtrl.setLoadingDetails(o.name);
+                           documentViewController.setLoadingDetails(o.name);
                            var container = objectContainers[o.name] = new PIXI.DisplayObjectContainer();
                            _.each(o.objects,(obj:tiled.ITiledObject) => {
                               var box = new PIXI.Graphics();
@@ -191,14 +191,14 @@ module pow2.editor {
                      stage.addChild(sceneContainer);
 
                      var total:number = $tasks.getRemainingTasks(t.mapName);
-                     docCtrl.setLoadingTitle("Building Map...");
-                     docCtrl.setTotal(total);
+                     documentViewController.setLoadingTitle("Building Map...");
+                     documentViewController.setTotal(total);
                      unwatchProgress = $interval(()=>{
-                        docCtrl.setCurrent(total - $tasks.getRemainingTasks(t.mapName));
+                        documentViewController.setCurrent(total - $tasks.getRemainingTasks(t.mapName));
                      },50);
 
                      $tasks.add(() => {
-                        docCtrl.hideLoading();
+                        documentViewController.hideLoading();
                         $interval.cancel(unwatchProgress);
                         return true;
                      },t.mapName);
