@@ -16,13 +16,38 @@ module pow2.editor {
       scrollStart:pow2.Point;
    }
 
+   export interface IEditableTileLayer {
+      objects:any; // PIXI.DisplayObjectContainer[]
+      name:string;
+      properties:{
+         [name:string]:any
+      };
+      opacity:number;
+   }
+
    export class TileEditorController {
+      // Dependency inject constructor
+      static $inject:string[] = ['$document','$tasks'];
+      constructor(public $document:any,public $tasks:any){}
+
+      // Layers
+      public layers:any[] = [];
+
+      // Camera
       public cameraWidth:number;
       public cameraHeight:number;
       public cameraCenter:pow2.Point = new pow2.Point(0,0);
       public cameraZoom:number = 1;
+
+      // Rendering
       public renderer:any;
+
+      public hideEmptyLayers:boolean = true;
+
+      // Scenegraph
       public sceneContainer:any = null;
+
+
       public drag:IDragEvent = {
          active:false,
          start:null,
@@ -32,14 +57,14 @@ module pow2.editor {
       };
       public unwatchProgress:any = null;
 
-
-      static $inject:string[] = ['$document'];
-      constructor(public $document:any){
-         console.log("instantiated!" + $document);
-      }
       init(element){
          // create a renderer instance
          this.renderer = PIXI.autoDetectRenderer(element.height(),element.width());
+      }
+
+      toggleLayerVisibility(layer:IEditableTileLayer){
+         console.log("Toggle layer " + layer.name + " to - " + layer.objects.visible ? "off" : "on");
+         layer.objects.visible = !layer.objects.visible;
       }
 
       resetDrag(){
@@ -178,7 +203,9 @@ module pow2.editor {
                   // add the renderer view element to the DOM
                   element.append(tileEditor.renderer.view);
 
+                  // Layer lists
                   var buildMapRender = () => {
+                     tileEditor.layers.length = 0;
                      tileEditor.cameraCenter.set(t.map.width * t.map.tilewidth / 2, t.map.height * t.map.tileheight / 2);
                      tileEditor.cameraHeight = element.height();
                      tileEditor.cameraWidth = element.width();
@@ -187,17 +214,26 @@ module pow2.editor {
 
                      platform.setTitle(newUrl);
                      var spriteTextures:any = {};
-                     var layerContainers:any = {};
                      var objectContainers:any = {};
                      _.each(t.map.tilesets,(tsx:pow2.editor.tiled.TiledTSX) => {
                         spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
                      });
 
+                     // Pre allocate display object containers.
+                     angular.forEach(t.map.layers,(layer:tiled.ITiledLayer) => {
+                        tileEditor.layers.push({
+                           objects:new PIXI.DisplayObjectContainer(),
+                           name:layer.name,
+                           properties:layer.properties,
+                           opacity:layer.opacity
+                        });
+                     });
+
                      // Each layer
-                     _.each(t.map.layers,(l:tiled.ITiledLayer) => {
+                     angular.forEach(t.map.layers,(l:tiled.ITiledLayer,index:number) => {
                         $tasks.add(() => {
                            documentViewController.setLoadingDetails(l.name);
-                           var container = layerContainers[l.name] = new PIXI.DisplayObjectContainer();
+                           var container = tileEditor.layers[index].objects;
                            container.visible = l.visible;
                            tileEditor.sceneContainer.addChild(container);
                            for(var col:number = 0; col < t.bounds.extent.x; col++) {
@@ -309,7 +345,7 @@ module pow2.editor {
                   var debounce;
                   var resizeHack = () => {
                      clearTimeout(debounce);
-                     debounce = setTimeout(updateSize, 20);
+                     debounce = setTimeout(updateSize, 100);
                   };
                   angular.element(window).on('resize',resizeHack);
                   element.on('resize',resizeHack);
