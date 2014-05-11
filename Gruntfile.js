@@ -23,8 +23,11 @@ module.exports = function(grunt) {
             src: [
                "source/app.ts",
                "source/controllers/*.ts",
+               "source/controllers/**/*.ts",
                "source/services/*.ts",
-               "source/directives/*.ts"
+               "source/services/**/*.ts",
+               "source/directives/*.ts",
+               "source/directives/**/*.ts"
             ],
             dest: 'build/<%= pkg.name %>.js'
          }
@@ -60,7 +63,7 @@ module.exports = function(grunt) {
 
          ui: {
             files: [
-               'source/directives/*.html'
+               'source/**/*.html'
             ],
             tasks: ['html2js:ui']
          },
@@ -84,7 +87,7 @@ module.exports = function(grunt) {
             }
          },
          ui: {
-            src: ['source/directives/*.html'],
+            src: ['source/**/*.html'],
             dest: 'build/<%= pkg.name %>.ui.js'
          }
       },

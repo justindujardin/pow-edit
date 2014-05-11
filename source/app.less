@@ -3,7 +3,9 @@
 
 @import "directives/fileTree";
 @import "directives/splitter";
-@import "directives/editorView";
+@import "directives/editors/tileEditorView";
+@import "directives/editors/textEditorView";
+@import "directives/editors/imageEditorView";
 @import "directives/paneItem";
 @import "directives/documentView";
 @import "fontawesome/less/font-awesome";
@@ -50,11 +52,6 @@ body, html {
   * {
     .box-sizing(border-box);
   }
-  .ace-container {
-    height: 100%;
-    width:100%;
-  }
-
 
   .split-panes {
     .split-pane1 {
@@ -65,33 +62,6 @@ body, html {
     border-left: 1px solid #000;
   }
 }
-
-// TODO: Move into image-view directive and .less file
-.image-view {
-  text-align: center;
-  overflow: auto;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  img {
-
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin:auto;
-
-  }
-}
-
-
-
 
 /* Source Code Pro Font */
 @font-face {

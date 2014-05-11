@@ -1,8 +1,8 @@
-///<reference path="../../types/ace/ace.d.ts"/>
-///<reference path="../../types/angular/angular.d.ts"/>
-///<reference path="../app.ts"/>
-///<reference path="../services/tileMap.ts"/>
-///<reference path="../services/tasks.ts"/>
+///<reference path="../../../types/ace/ace.d.ts"/>
+///<reference path="../../../types/angular/angular.d.ts"/>
+///<reference path="../../app.ts"/>
+///<reference path="../../services/tileMap.ts"/>
+///<reference path="../../services/tasks.ts"/>
 
 module pow2.editor {
    declare var requestAnimFrame:any;
@@ -17,7 +17,7 @@ module pow2.editor {
    }
 
 
-   pow2.editor.app.directive("pixi", [
+   pow2.editor.app.directive("tileEditorView", [
       "$timeout",
       "$rootScope",
       "$interval",
@@ -62,7 +62,7 @@ module pow2.editor {
          return {
             restrict: "E",
             replace: true,
-            templateUrl: "source/directives/editorView.html",
+            templateUrl: "source/directives/editors/tileEditorView.html",
             compile:(element,attributes) => {
                var source = $parse(attributes.url);
                var cameraWidth:number;

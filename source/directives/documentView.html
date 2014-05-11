@@ -1,5 +1,5 @@
 <div class="document-view" ng-switch="getDocumentType()">
-    <pixi ng-switch-when="tiled" url="document.location"></pixi>
-    <div ng-switch-when="image" class="image-view"><img ng-src="../{{document.location}}"/></div>
-    <ace-editor ng-switch-default ng-model="document.data" history="history"></ace-editor>
+    <tile-editor-view ng-switch-when="tiled" url="document.location"></tile-editor-view>
+    <image-editor-view ng-switch-when="image" class="image-view"><img ng-src="../{{document.location}}"/></image-editor-view>
+    <text-editor-view ng-switch-default ng-model="document.data" history="history"></text-editor-view>
 </div>

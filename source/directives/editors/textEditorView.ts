@@ -1,10 +1,10 @@
-///<reference path="../../types/ace/ace.d.ts"/>
-///<reference path="../../types/angular/angular.d.ts"/>
-///<reference path="../app.ts"/>
+///<reference path="../../../types/ace/ace.d.ts"/>
+///<reference path="../../../types/angular/angular.d.ts"/>
+///<reference path="../../app.ts"/>
 
 module pow2.editor {
 
-   pow2.editor.app.directive("aceEditor", [
+   pow2.editor.app.directive("textEditorView", [
       "$timeout",
       "$rootScope",
       ($timeout:ng.ITimeoutService,$rootScope:any) => {
@@ -17,7 +17,7 @@ module pow2.editor {
             scope:{
                history: "="
             },
-            template: "<div class=\"ace-container\"></div>",
+            templateUrl:"source/directives/editors/textEditorView.html",
             link: ($scope, $el, attrs:any, model) => {
                var editor:AceAjax.Editor = new Editor(new Renderer($el[0], "ace/theme/tomorrow_night"));
                var session:AceAjax.IEditSession = editor.getSession();
