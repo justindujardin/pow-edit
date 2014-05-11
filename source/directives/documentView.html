@@ -1,4 +1,11 @@
 <div class="document-view" ng-switch="getDocumentType()">
+    <div class="notify" ng-if="loading.visible">
+        <div class="fill" ng-style="loading.barStyle"></div>
+        <div class="message">
+            <h1 class="status">{{loading.title}}</h1>
+            <p class="subtext">{{loading.details}}</p>
+        </div>
+    </div>
     <tile-editor-view ng-switch-when="tiled" url="document.location"></tile-editor-view>
     <image-editor-view ng-switch-when="image" class="image-view"><img ng-src="../{{document.location}}"/></image-editor-view>
     <text-editor-view ng-switch-default ng-model="document.data" history="history"></text-editor-view>

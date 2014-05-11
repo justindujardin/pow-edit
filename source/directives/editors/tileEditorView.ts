@@ -63,14 +63,14 @@ module pow2.editor {
             restrict: "E",
             replace: true,
             templateUrl: "source/directives/editors/tileEditorView.html",
+            require:"^documentView",
             compile:(element,attributes) => {
                var source = $parse(attributes.url);
                var cameraWidth:number;
                var cameraHeight:number;
                var cameraCenter:pow2.Point = new pow2.Point(0,0);
                var cameraZoom:number = 1;
-               return (scope, element, attrs:any) => {
-
+               return (scope, element, attrs:any,docCtrl:DocumentViewController) => {
                   var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
 
                   // create an new instance of a pixi stage
@@ -101,7 +101,7 @@ module pow2.editor {
                      }
                      sceneContainer = new PIXI.DisplayObjectContainer();
 
-                     scope.status = "Loading...";
+                     docCtrl.showLoading('Loading...');
                      t.load(newUrl,buildMapRender);
                   };
                   scope.$watch(attrs.url, updateView);
@@ -139,9 +139,7 @@ module pow2.editor {
                      // Each layer
                      _.each(t.map.layers,(l:tiled.ITiledLayer) => {
                         $tasks.add(() => {
-                           scope.$apply(()=>{
-                              scope.subtext = l.name;
-                           });
+                           docCtrl.setLoadingDetails(l.name);
                            var container = layerContainers[l.name] = new PIXI.DisplayObjectContainer();
                            container.visible = l.visible;
                            container.pivot = container.anchor = centerOrigin;
@@ -170,9 +168,7 @@ module pow2.editor {
                      // Each object group
                      _.each(t.map.objectGroups,(o:tiled.ITiledObjectGroup) => {
                         $tasks.add(() => {
-                           scope.$apply(()=>{
-                              scope.subtext = o.name;
-                           });
+                           docCtrl.setLoadingDetails(o.name);
                            var container = objectContainers[o.name] = new PIXI.DisplayObjectContainer();
                            _.each(o.objects,(obj:tiled.ITiledObject) => {
                               var box = new PIXI.Graphics();
@@ -195,19 +191,15 @@ module pow2.editor {
                      stage.addChild(sceneContainer);
 
                      var total:number = $tasks.getRemainingTasks(t.mapName);
-                     scope.$apply(()=>{
-                        scope.total = total;
-                        scope.status = "Building Map...";
-                     });
+                     docCtrl.setLoadingTitle("Building Map...");
+                     docCtrl.setTotal(total);
                      unwatchProgress = $interval(()=>{
-                        scope.current = total - $tasks.getRemainingTasks(t.mapName);
+                        docCtrl.setCurrent(total - $tasks.getRemainingTasks(t.mapName));
                      },50);
 
                      $tasks.add(() => {
-                        scope.$apply(()=>{
-                           scope.status = null;
-                           $interval.cancel(unwatchProgress);
-                        });
+                        docCtrl.hideLoading();
+                        $interval.cancel(unwatchProgress);
                         return true;
                      },t.mapName);
                      // Debug map stats
