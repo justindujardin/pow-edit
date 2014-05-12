@@ -47,6 +47,7 @@ treecontrol {
         padding: 4px 0px;
         font-size:14px;
         i {
+          .icon(@fa-var-file-text);
           width:12px;
           text-align:center;
           font-size: 1em;
@@ -67,6 +68,21 @@ treecontrol {
       }
       &.tmx {
         color:#fff;
+        > a.item i {
+          .icon(@fa-var-file);
+        }
+      }
+      &.branch {
+        &.collapsed {
+          > a.item i {
+            .icon(@fa-var-folder);
+          }
+        }
+        &.expanded {
+          > a.item i {
+            .icon(@fa-var-folder-open);
+          }
+        }
       }
       &.leaf {
         > a.item i {
