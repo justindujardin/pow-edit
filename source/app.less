@@ -40,6 +40,8 @@
   box-sizing: @boxmodel;
 }
 
+@leftNavDefaultWidth:20%;
+
 body, html {
   min-height:100%;
   height:100%;
@@ -53,13 +55,19 @@ body, html {
     .box-sizing(border-box);
   }
 
-  .split-panes {
-    .split-pane1 {
+  .content.split-panes.horizontal {
+    >.split-pane1 {
+      width:@leftNavDefaultWidth;
       overflow: auto;
     }
-  }
-  .split-panes > .split-handler {
-    border-left: 1px solid #000;
+    > .split-pane2 {
+      left:@leftNavDefaultWidth;
+    }
+    > .split-handler {
+      left:@leftNavDefaultWidth;
+      border-left: 1px solid #000;
+    }
+
   }
 }
 
