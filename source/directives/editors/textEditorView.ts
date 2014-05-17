@@ -12,7 +12,7 @@ module pow2.editor {
          var Renderer:any = ace.require("ace/virtual_renderer").VirtualRenderer;
          return {
             restrict: "E",
-            require: "ngModel",
+            require: "^ngModel",
             replace: true,
             scope:{
                history: "="
@@ -21,7 +21,7 @@ module pow2.editor {
             link: ($scope, $el, attrs:any, model) => {
                var editor:AceAjax.Editor = new Editor(new Renderer($el[0], "ace/theme/tomorrow_night"));
                var session:AceAjax.IEditSession = editor.getSession();
-               session.setMode("ace/mode/typescript");
+               session.setMode(attrs.mode || "ace/mode/xml");
                session.setUndoManager(<AceAjax.UndoManager>$scope.history);
                model.$render = function() {
                   return session.setValue(model.$modelValue);
