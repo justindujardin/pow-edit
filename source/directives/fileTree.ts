@@ -32,8 +32,9 @@ module pow2.editor {
                var results = ['depth-' + node.depth];
                if (!node || typeof node[$scope.nodeChildren] === 'undefined'){
                   results.push('leaf');
-                  if(node.label.indexOf('.tmx') !== -1){
-                     results.push('tmx');
+                  // If the file has an extension, apply it as a class to the item.
+                  if(node.label.lastIndexOf('.') !== -1){
+                     results.push(node.label.substr(node.label.lastIndexOf('.') + 1));
                   }
                }
                else {
