@@ -6,7 +6,7 @@
     "type": "git",
     "url": "git://github.com/justindujardin/pow-edit.git"
   },
-  "author": "Justin DuJardin",
+  "author": "Justin DuJardin <justin@dujardinconsulting.com>",
   "license": "Apache2",
   "dependencies": {
     "grunt": "~0.4.0",
