@@ -1,21 +1,22 @@
 ///<reference path="../../types/angular/angular.d.ts"/>
 ///<reference path="../../types/ace/ace.d.ts"/>
-///<reference path="../app.ts"/>
+///<reference path="../interfaces/IAppPlatform.ts"/>
 
 module pow2.editor {
+
    declare var requestAnimFrame:any;
 
    app.controller('AppController', [
       '$scope',
       '$tasks',
-      'platform',
+      '$platform',
       'rootPath',
-      function($scope,$tasks:pow2.editor.TasksService,platform:IAppPlatform,rootPath) {
+      function($scope,$tasks:pow2.editor.TasksService,$platform:IAppPlatform,rootPath) {
          $scope.document = {
             extension:'tmx',
             displayName:'wilderness.tmx',
-            location:'assets/maps/eburp/wilderness.tmx',
-            path:'assets/maps/eburp/'
+            location:rootPath + '/BrowserQuest/map-small.tmx',
+            path:rootPath + '/BrowserQuest/'
          };
 
          $scope.getDocumentType = ():string => {
@@ -51,7 +52,7 @@ module pow2.editor {
             }
             return result;
          };
-         platform.enumPath(rootPath,(error:any,fileList?:IFileInfo[]) => {
+         $platform.enumPath(rootPath,(error:any,fileList?:IFileInfo[]) => {
             var mountFiles:any[] = [];
             angular.forEach(fileList,(file:IFileInfo) => {
                // Skip hidden files
@@ -73,8 +74,8 @@ module pow2.editor {
             $scope.document.data = null;
             if(!file.children || !file.children.length){
                $scope.mapUrl = null;
-               platform.readFile(file.full, (data:any) => {
-                  platform.setTitle(file.full);
+               $platform.readFile(file.full, (data:any) => {
+                  $platform.setTitle(file.full);
                   $scope.$apply(()=>{
                      $scope.document.data = data;
                   });

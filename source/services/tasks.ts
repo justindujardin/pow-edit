@@ -1,5 +1,6 @@
 ///<reference path="../../types/ace/ace.d.ts"/>
 ///<reference path="../../types/angular/angular.d.ts"/>
+///<reference path="../interfaces/IAppPlatform.ts"/>
 
 module pow2.editor {
 
@@ -11,11 +12,6 @@ module pow2.editor {
 
    export class TasksService {
       static DEFAULT:string = "global";
-      static EVENTS = {
-         Started: "start",
-         Stopped: "stop",
-         Repeated: "repeat"
-      };
       private _tasks:{
          [group:string]:IWorkTask[]
       } = {};

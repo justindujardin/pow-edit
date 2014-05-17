@@ -149,8 +149,8 @@ module pow2.editor {
    }
 
    pow2.editor.app.directive("tileEditorView", [
-      "$interval", "$parse","$document","$tasks","platform",
-      ($interval,$parse,$document,$tasks:TasksService,platform:IAppPlatform) => {
+      "$interval", "$parse","$document","$tasks","$platform",
+      ($interval,$parse,$document,$tasks:TasksService,$platform:IAppPlatform) => {
 
          return {
             restrict: "E",
@@ -165,7 +165,7 @@ module pow2.editor {
                return (scope, element, attributes:any,controllers:any[]) => {
                   var tileEditor:TileEditorController = controllers[0];
                   var documentViewController:DocumentViewController = controllers[1];
-                  var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap(platform);
+                  var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap($platform);
 
                   tileEditor.init(element);
                   // create an new instance of a pixi stage
@@ -212,7 +212,7 @@ module pow2.editor {
                      tileEditor.cameraZoom = 1;
                      tileEditor.updateCamera();
 
-                     platform.setTitle(newUrl);
+                     $platform.setTitle(newUrl);
                      var spriteTextures:any = {};
                      var objectContainers:any = {};
                      _.each(t.map.tilesets,(tsx:pow2.editor.tiled.TiledTSX) => {

@@ -6,7 +6,7 @@ module pow2.editor {
 
    declare var Showdown:any;
 
-   pow2.editor.app.directive("markdownEditorView", ['$sce', 'platform', ($sce:ng.ISCEService,platform:IAppPlatform) => {
+   pow2.editor.app.directive("markdownEditorView", ['$sce', '$platform', ($sce:ng.ISCEService,$platform:IAppPlatform) => {
       var renderer = new Showdown.converter();
       return {
          restrict: "E",
@@ -17,7 +17,7 @@ module pow2.editor {
                if(!url){
                   return;
                }
-               platform.readFile(url,(data:any) => {
+               $platform.readFile(url,(data:any) => {
                   scope.$apply(() => {
                      scope.markdownRendered = $sce.trustAsHtml(renderer.makeHtml(data));
                   });

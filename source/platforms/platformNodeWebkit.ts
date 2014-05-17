@@ -1,11 +1,23 @@
 ///<reference path="../../types/node/node.d.ts"/>
-///<reference path="../app.ts"/>
 
 module pow2.editor {
    var fs = require('fs');
    var path = require('path');
    var gui:any = require('nw.gui');
 
+
+   export var app = angular.module("PowEdit", [
+      'templates-ui',
+      'uiTree',
+      'uiSplitter'
+   ]);
+
+   app.value('rootPath','./assets/maps/');
+
+
+   app.factory('$platform', ():IAppPlatform => {
+      return new PlatformNodeWebkit();
+   });
 
    export class PlatformNodeWebkit implements IAppPlatform {
       win:any;
@@ -89,7 +101,5 @@ module pow2.editor {
          this.win.title = text;
       }
    }
-   app.factory('platform', ():IAppPlatform => {
-      return new PlatformNodeWebkit();
-   });
+
 }

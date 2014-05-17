@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="PowEdit">
+<html>
 <head>
     <meta charset="utf-8">
     <title>pow-edit</title>
@@ -17,17 +17,48 @@
         <document-view type="getDocumentType()" source="document"></document-view>
     </bg-pane>
 </bg-splitter>
-
-<script src="../bower_components/underscore/underscore.js"></script>
-<script src="../bower_components/jquery/dist/jquery.js"></script>
-<script src="../bower_components/backbone/backbone.js"></script>
-<script src="../assets/vendor/ace/src-min-noconflict/ace.js"></script>
-<script src="../bower_components/showdown/compressed/showdown.js"></script>
-<script src="../assets/vendor/pow2/pow2.js"></script>
-<script src="../bower_components/pixi/bin/pixi.dev.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js"></script>
-<script src="../build/pow-edit.js"></script>
-<script src="../build/pow-edit.ui.js"></script>
-
+<script type="text/javascript">
+    /* Based on: http://jeremyhixon.com/snippet/loading-javascript-files-asynchronously/ */
+    function loadScripts(urls,success){
+        var toLoad = urls.slice(0);
+        function _next(){
+            if(toLoad.length === 0){
+                return success && success();
+            }
+            var url = toLoad.shift();
+            var script = document.createElement('script');
+            script.src = url;
+            script.async = !0;
+            var head = document.getElementsByTagName('head')[0];
+            script.onload = script.onreadystatechange = script.onerror = function(d){
+                if (!script.readyState || script.readyState == 'loaded' || script.readyState == 'complete') {
+                    script.onerror = script.onload = script.onreadystatechange = null;
+                    head.removeChild(script);
+                    _next();
+                }
+            };
+            head.appendChild(script);
+        }
+        _next();
+    }
+    window.onload = function() {
+        var platform = (typeof require !== 'undefined') ? '../build/pow-edit.nw.js' : '../build/pow-edit.browser.js';
+        loadScripts([
+            "../bower_components/underscore/underscore.js",
+            "../bower_components/jquery/dist/jquery.js",
+            "../bower_components/backbone/backbone.js",
+            "../assets/vendor/ace/src-min-noconflict/ace.js",
+            "../bower_components/showdown/compressed/showdown.js",
+            "../assets/vendor/pow2/pow2.js",
+            "../bower_components/pixi/bin/pixi.dev.js",
+            "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js",
+            platform,
+            "../build/pow-edit.js",
+            "../build/pow-edit.ui.js"
+        ],function(){
+            angular.bootstrap(document, ["PowEdit"]);
+        });
+    };
+</script>
 </body>
 </html>

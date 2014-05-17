@@ -30,6 +30,12 @@ module.exports = function(grunt) {
                "source/directives/**/*.ts"
             ],
             dest: 'build/<%= pkg.name %>.js'
+         },
+         platforms:{
+            files:{
+               'build/<%= pkg.name %>.nw.js':'source/platforms/platformNodeWebkit.ts',
+               'build/<%= pkg.name %>.browser.js':'source/platforms/platformBrowser.ts'
+            }
          }
       },
 
@@ -60,6 +66,12 @@ module.exports = function(grunt) {
             ],
             tasks: ['typescript:editor']
          },
+         platforms: {
+            files: [
+               'source/platforms/*.ts'
+            ],
+            tasks: ['typescript:platforms']
+         },
 
          ui: {
             files: [
@@ -76,9 +88,15 @@ module.exports = function(grunt) {
          }
       },
 
+      connect: {
+         editor: {
+            options: {
+               port: 9001,
+               base: './'
+            }
+         }
+      },
       /**
-       *
-       *
        */
       html2js: {
          options: {
@@ -138,7 +156,7 @@ module.exports = function(grunt) {
       type = type || 'patch';
       grunt.task.run([
          'npm-contributors',
-         "bump:" + type + ":bump-only",
+            "bump:" + type + ":bump-only",
          'changelog',
          'bump-commit'
       ]);
@@ -146,6 +164,7 @@ module.exports = function(grunt) {
    grunt.loadNpmTasks('grunt-contrib-clean');
    grunt.loadNpmTasks('grunt-typescript');
    grunt.loadNpmTasks('grunt-contrib-less');
+   grunt.loadNpmTasks('grunt-contrib-connect');
    grunt.loadNpmTasks('grunt-node-webkit-builder');
    grunt.loadNpmTasks('grunt-html2js');
    if(!process || !process.env || process.env.NODE_ENV !== 'production'){
@@ -156,4 +175,5 @@ module.exports = function(grunt) {
       grunt.registerTask('default', ['typescript','less','html2js']);
    }
    grunt.registerTask('develop', ['default','watch']);
+   grunt.registerTask('develop:web', ['default','connect','watch']);
 };
