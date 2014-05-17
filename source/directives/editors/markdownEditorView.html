@@ -1,0 +1,12 @@
+<div class="markdown-editor-view" ng-dblclick="edit=!edit">
+    <text-editor-view
+            ng-if="edit"
+            ng-model="document.data"
+            mode="ace/mode/markdown"
+            history="history">
+    </text-editor-view>
+    <div class="rendered"
+         ng-if="!edit"
+         ng-bind-html="markdownRendered">
+    </div>
+</div>

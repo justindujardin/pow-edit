@@ -28,6 +28,9 @@ module pow2.editor {
                   return 'image';
                case 'tmx':
                   return 'tiled';
+               case 'md':
+               case 'markdown':
+                  return 'markdown';
                default:
                   return 'unknown';
             }
