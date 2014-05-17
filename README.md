@@ -35,6 +35,7 @@ Grunt js and bower are required to use the developer workflow.  Install them glo
 
 Open Source Components:
 
+ - Font Awesome by Dave Gandy - http://fontawesome.io
  - Ace editor : http://ace.c9.io/
  - Source Code Pro font : http://blogs.adobe.com/typblography/2012/09/source-code-pro.html
  - Typescript definitions for Ace, Angular, Jquery, and Node.JS : https://github.com/borisyankov/DefinitelyTyped
