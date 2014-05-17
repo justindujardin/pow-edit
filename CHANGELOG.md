@@ -1,3 +1,19 @@
+<a name="0.0.3"></a>
+### 0.0.3 (2014-05-17)
+
+
+#### Features
+
+* **documentView:** directive for viewing documents of any type ([4ce3b91a](http://github.com/justindujardin/pow-edit/commit/4ce3b91aa5b82f6a6c653b156027ff85cbdc1bba))
+* **editorView:** zoom camera on screen center ([67e13e46](http://github.com/justindujardin/pow-edit/commit/67e13e46d875efae96b86026e50453978c1a622f))
+* **fileTree:** add file tree icons based on extension ([9a6a7caa](http://github.com/justindujardin/pow-edit/commit/9a6a7caae647d9e27920c0fb710bd53e2eda8950))
+* **markdownEditorView:** add basic editor for markdown files ([cd14ae80](http://github.com/justindujardin/pow-edit/commit/cd14ae809cf2f17e8c17aa0cfe774cfb3266e298))
+* **paneItem:** directive for grouped sections in left pane ([0fe55a59](http://github.com/justindujardin/pow-edit/commit/0fe55a59c1b11be00676721daac3ca2ba33b84da))
+* **platform:** run in node-webkit and the browser ([b385fd89](http://github.com/justindujardin/pow-edit/commit/b385fd8928dc5a81d94a2c9529fb33b3118be3c6))
+* **textEditorView:** support specifying document mode ([ee498995](http://github.com/justindujardin/pow-edit/commit/ee498995bb89665b4c09a3cc0fe18623dcebaf50))
+* **tileEditorView:** layer list with click to toggle visibility ([dd21851a](http://github.com/justindujardin/pow-edit/commit/dd21851a5a87f5e27542fd57c45421270a22756c))
+
+
 <a name="0.0.2"></a>
 ### 0.0.2 (2014-05-09)
 
