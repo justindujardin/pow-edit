@@ -1,20 +1,17 @@
 .image-editor-view {
   text-align: center;
-  overflow: auto;
+  overflow: auto !important;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  padding:auto;
+  .box-sizing(content-box);
   img {
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin:auto;
+    margin-top:auto;
   }
 }

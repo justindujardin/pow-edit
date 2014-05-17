@@ -12,7 +12,7 @@ module.exports = function(grunt) {
        */
       typescript: {
          options: {
-            module: 'amd', //or commonjs
+            module: 'commonjs', //or commonjs
             target: 'es5', //or es3
             basePath: 'source',
             sourceMap: true,
@@ -35,6 +35,11 @@ module.exports = function(grunt) {
             files:{
                'build/<%= pkg.name %>.nw.js':'source/platforms/platformNodeWebkit.ts',
                'build/<%= pkg.name %>.browser.js':'source/platforms/platformBrowser.ts'
+            }
+         },
+         server:{
+            files:{
+               'build/<%= pkg.name %>.server.js':'source/server/server.ts'
             }
          }
       },
@@ -73,6 +78,14 @@ module.exports = function(grunt) {
             tasks: ['typescript:platforms']
          },
 
+         server: {
+            files:  [ 'source/server/server.ts' ],
+            tasks:  [ 'typescript:server','express' ],
+            options: {
+               nospawn: true
+            }
+         },
+
          ui: {
             files: [
                'source/**/*.html'
@@ -88,14 +101,21 @@ module.exports = function(grunt) {
          }
       },
 
-      connect: {
-         editor: {
+      /**
+       * Express server for Browser platform integration
+       */
+      express: {
+         options: {
+            script: 'build/<%= pkg.name %>.server.js',
+            port: 5216
+         },
+         production: {
             options: {
-               port: 9001,
-               base: './'
+               node_env: 'production'
             }
          }
       },
+
       /**
        */
       html2js: {
@@ -164,7 +184,7 @@ module.exports = function(grunt) {
    grunt.loadNpmTasks('grunt-contrib-clean');
    grunt.loadNpmTasks('grunt-typescript');
    grunt.loadNpmTasks('grunt-contrib-less');
-   grunt.loadNpmTasks('grunt-contrib-connect');
+   grunt.loadNpmTasks('grunt-express-server');
    grunt.loadNpmTasks('grunt-node-webkit-builder');
    grunt.loadNpmTasks('grunt-html2js');
    if(!process || !process.env || process.env.NODE_ENV !== 'production'){
@@ -175,5 +195,5 @@ module.exports = function(grunt) {
       grunt.registerTask('default', ['typescript','less','html2js']);
    }
    grunt.registerTask('develop', ['default','watch']);
-   grunt.registerTask('develop:web', ['default','connect','watch']);
+   grunt.registerTask('develop:web', ['default','express','watch']);
 };

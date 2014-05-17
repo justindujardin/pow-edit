@@ -18,9 +18,8 @@ module pow2.editor {
                   return;
                }
                $platform.readFile(url,(data:any) => {
-                  scope.$apply(() => {
-                     scope.markdownRendered = $sce.trustAsHtml(renderer.makeHtml(data));
-                  });
+                  scope.markdownRendered = $sce.trustAsHtml(renderer.makeHtml(data));
+                  scope.$$phase || scope.$digest();
                });
             };
             scope.markdownMode = "preview";

@@ -17,7 +17,10 @@
     "grunt-html2js": "~0.2.4",
     "grunt-bump": "0.0.13",
     "grunt-conventional-changelog": "~1.1.0",
-    "grunt-npm": "0.0.2"
+    "grunt-npm": "0.0.2",
+    "underscore": "~1.6.0",
+    "express": "~3.0.0",
+    "ejs": "~1.0.0"
   },
   "scripts": {
     "test": "npm install && ./node_modules/.bin/grunt"
@@ -38,7 +41,8 @@
     "grunt-npm": "0.0.2",
     "grunt-conventional-changelog": "~1.1.0",
     "grunt-bump": "0.0.13",
-    "grunt-contrib-connect": "~0.7.1"
+    "grunt-contrib-connect": "~0.7.1",
+    "grunt-express-server": "~0.4.17"
   },
   "contributors": []
 }

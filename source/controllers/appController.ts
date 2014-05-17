@@ -13,10 +13,10 @@ module pow2.editor {
       'rootPath',
       function($scope,$tasks:pow2.editor.TasksService,$platform:IAppPlatform,rootPath) {
          $scope.document = {
-            extension:'tmx',
-            displayName:'wilderness.tmx',
-            location:rootPath + '/BrowserQuest/map-small.tmx',
-            path:rootPath + '/BrowserQuest/'
+            extension:'md',
+            displayName:'README.md',
+            location:rootPath + '/../../README.md',
+            path:rootPath + '/../../'
          };
 
          $scope.getDocumentType = ():string => {
@@ -61,9 +61,8 @@ module pow2.editor {
                }
                mountFiles.push($scope.makeNode(file,0));
             });
-            $scope.$$phase || $scope.$apply(() => {
-               $scope.mount = mountFiles;
-            });
+            $scope.mount = mountFiles;
+            $scope.$$phase || $scope.$digest();
          });
          $scope.selectFile = (node:any) => {
             var file:IFileInfo = node.data;
@@ -76,9 +75,8 @@ module pow2.editor {
                $scope.mapUrl = null;
                $platform.readFile(file.full, (data:any) => {
                   $platform.setTitle(file.full);
-                  $scope.$apply(()=>{
-                     $scope.document.data = data;
-                  });
+                  $scope.document.data = data;
+                  $scope.$$phase || $scope.$digest();
                });
             }
          };

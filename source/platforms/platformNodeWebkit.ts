@@ -1,4 +1,6 @@
 ///<reference path="../../types/node/node.d.ts"/>
+///<reference path="../../types/angular/angular.d.ts"/>
+///<reference path="../interfaces/IAppPlatform.ts"/>
 
 module pow2.editor {
    var fs = require('fs');

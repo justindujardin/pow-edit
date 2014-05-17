@@ -1,5 +1,4 @@
 .markdown-editor-view {
-  overflow-y:auto;
   // Force child text editor view to fill our rect
   > .text-editor-view {
     width:100%;
@@ -7,10 +6,12 @@
   }
 
   > .rendered {
+    overflow-y:auto;
+    height:100%;
     font-size: 1.9em;
     color:#fff;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
-    padding:50px;
+    padding:15px 30px;
 
     a {
       color:@powBlue;
