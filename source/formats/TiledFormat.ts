@@ -14,10 +14,53 @@
  limitations under the License.
  */
 
-/// <reference path="../interfaces/ITiledMap.ts"/>
+module pow2.editor.formats.tiled {
+   // -------------------------------------------------------------------------
 
-module pow2.editor.tiled {
+    export interface ITileInstanceMeta {
+        image: HTMLImageElement;
+        url: string;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        data?: any;
+    }
 
+   export interface ITiledBase {
+      name:string;
+      x:number;
+      y:number;
+      width:number;
+      height:number;
+      visible:boolean;
+   }
+
+   // <layer>, <objectgroup>
+   export interface ITiledLayerBase extends ITiledBase {
+      opacity:number; // 0-1
+      properties?:any;
+   }
+   export interface ITiledLayer extends ITiledLayerBase {
+      data?:any;
+   }
+
+   // <object>
+   export interface ITiledObject extends ITiledBase {
+      properties?:any;
+      rotation?:number;
+      type?:string;
+      gid?:number;
+   }
+
+   // <objectgroup>
+   export interface ITiledObjectGroup extends ITiledLayerBase {
+      color:string;
+      objects:ITiledObject[];
+   }
+
+
+   // -------------------------------------------------------------------------
    export class TiledLoader {
 
       data:JQuery;
@@ -36,6 +79,7 @@ module pow2.editor.tiled {
    }
 
 
+   // TMX Map:  some properties, (n) tilesets, (n) layers, (n) object groups.
    export class TiledTMX extends TiledLoader {
       $map:JQuery; // The <map> element
       width:number = 0;

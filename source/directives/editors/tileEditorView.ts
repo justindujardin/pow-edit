@@ -165,7 +165,7 @@ module pow2.editor {
                return (scope, element, attributes:any,controllers:any[]) => {
                   var tileEditor:TileEditorController = controllers[0];
                   var documentViewController:DocumentViewController = controllers[1];
-                  var t:pow2.editor.tiled.TileMap = new pow2.editor.tiled.TileMap($platform);
+                  var t:pow2.editor.TileMap = new pow2.editor.TileMap($platform);
 
                   tileEditor.init(element);
                   // create an new instance of a pixi stage
@@ -203,6 +203,15 @@ module pow2.editor {
                   // add the renderer view element to the DOM
                   element.append(tileEditor.renderer.view);
 
+                  /**
+                   * TODO: Map refactoring:
+                   *
+                   * - `pow2.editor.formats.tiled` references indicate coupling to Tiled format
+                   *   and opportunity to decouple with accessor methods on editable document
+                   *   class object.
+                   *
+                   */
+
                   // Layer lists
                   var buildMapRender = () => {
                      tileEditor.layers.length = 0;
@@ -215,12 +224,12 @@ module pow2.editor {
                      $platform.setTitle(newUrl);
                      var spriteTextures:any = {};
                      var objectContainers:any = {};
-                     _.each(t.map.tilesets,(tsx:pow2.editor.tiled.TiledTSX) => {
+                     _.each(t.map.tilesets,(tsx:pow2.editor.formats.tiled.TiledTSX) => {
                         spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
                      });
 
                      // Pre allocate display object containers.
-                     angular.forEach(t.map.layers,(layer:tiled.ITiledLayer) => {
+                     angular.forEach(t.map.layers,(layer:pow2.editor.formats.tiled.ITiledLayer) => {
                         tileEditor.layers.push({
                            objects:new PIXI.DisplayObjectContainer(),
                            name:layer.name,
@@ -230,7 +239,7 @@ module pow2.editor {
                      });
 
                      // Each layer
-                     angular.forEach(t.map.layers,(l:tiled.ITiledLayer,index:number) => {
+                     angular.forEach(t.map.layers,(l:pow2.editor.formats.tiled.ITiledLayer,index:number) => {
                         $tasks.add(() => {
                            documentViewController.setLoadingDetails(l.name);
                            var container = tileEditor.layers[index].objects;
@@ -239,7 +248,7 @@ module pow2.editor {
                            for(var col:number = 0; col < t.bounds.extent.x; col++) {
                               for (var row:number = 0; row < t.bounds.extent.y; row++) {
                                  var gid:number = t.getTileGid(l.name,col, row);
-                                 var meta:tiled.ITileInstanceMeta = t.getTileMeta(gid);
+                                 var meta:pow2.editor.formats.tiled.ITileInstanceMeta = t.getTileMeta(gid);
                                  if (meta) {
                                     var frame = new PIXI.Rectangle(meta.x,meta.y,meta.width,meta.height);
                                     var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
@@ -259,11 +268,11 @@ module pow2.editor {
                      });
 
                      // Each object group
-                     _.each(t.map.objectGroups,(o:tiled.ITiledObjectGroup) => {
+                     _.each(t.map.objectGroups,(o:pow2.editor.formats.tiled.ITiledObjectGroup) => {
                         $tasks.add(() => {
                            documentViewController.setLoadingDetails(o.name);
                            var container = objectContainers[o.name] = new PIXI.DisplayObjectContainer();
-                           _.each(o.objects,(obj:tiled.ITiledObject) => {
+                           _.each(o.objects,(obj:pow2.editor.formats.tiled.ITiledObject) => {
                               var box = new PIXI.Graphics();
                               box.beginFill(0xFFFFFF);
                               box.alpha = 0.6;

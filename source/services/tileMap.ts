@@ -17,9 +17,9 @@
 
 /// <reference path="../../assets/vendor/pow2/pow2.d.ts"/>
 /// <reference path="../app.ts"/>
-/// <reference path="./tiledLoader.ts"/>
+/// <reference path="../formats/tiledFormat.ts"/>
 
-module pow2.editor.tiled {
+module pow2.editor {
 
    declare var PIXI:any;
 
@@ -27,11 +27,18 @@ module pow2.editor.tiled {
     * Map for Tiled editor format
     */
    export class TileMap {
-      map: TiledTMX;
+
+      // ----------------------------------------------------------------------
+      // SERVICE THIS AWAY.  Should be editable document format when returned.
+      //
+      map: pow2.editor.formats.tiled.TiledTMX;
+      //
+      // ----------------------------------------------------------------------
+
       tiles:any[] = []; // TODO: TilesetProperties
       bounds: pow2.Rect;
       private _loaded:boolean = false;
-      private _layerLookup:{[name:string]:ITiledLayer} = {};
+      private _layerLookup:{[name:string]:pow2.editor.formats.tiled.ITiledLayer} = {};
 
       constructor(
          public platform:IAppPlatform,
@@ -49,9 +56,9 @@ module pow2.editor.tiled {
          this._loaded = false;
       }
 
-      getLayer(name:string):tiled.ITiledLayer{
+      getLayer(name:string):pow2.editor.formats.tiled.ITiledLayer{
          if(!this._layerLookup[name]){
-            this._layerLookup[name] = <tiled.ITiledLayer>_.where(this.map.layers,{name:name})[0];
+            this._layerLookup[name] = <pow2.editor.formats.tiled.ITiledLayer>_.where(this.map.layers,{name:name})[0];
          }
          return this._layerLookup[name];
       }
@@ -59,7 +66,7 @@ module pow2.editor.tiled {
       load(mapName:string=this.mapName,done?:(map:TileMap)=>any){
          this.platform.readFile(mapName,(data) => {
             this._layerLookup = {};
-            var tiledDocument = new pow2.editor.tiled.TiledTMX(this.platform,mapName,$(data));
+            var tiledDocument = new pow2.editor.formats.tiled.TiledTMX(this.platform,mapName,$(data));
             tiledDocument.prepare(() => {
                this.mapName = mapName;
                this.setMap(tiledDocument,done);
@@ -81,7 +88,7 @@ module pow2.editor.tiled {
          this._loaded = false;
       }
 
-      setMap(map:TiledTMX,done?:(map:TileMap)=>any) {
+      setMap(map:pow2.editor.formats.tiled.TiledTMX,done?:(map:TileMap)=>any) {
          if (!map) {
             return false;
          }
@@ -106,7 +113,7 @@ module pow2.editor.tiled {
       }
 
       getTerrain(layer:string, x:number, y:number) {
-         var terrain:tiled.ITiledLayer = this.getLayer(layer);
+         var terrain:pow2.editor.formats.tiled.ITiledLayer = this.getLayer(layer);
          if (!this.map || !terrain || !this.bounds.pointInRect(x, y)) {
             return null;
          }
@@ -116,7 +123,7 @@ module pow2.editor.tiled {
       }
 
       getTileGid(layer:string, x:number, y:number):number {
-         var terrain:tiled.ITiledLayer = this.getLayer(layer);
+         var terrain:pow2.editor.formats.tiled.ITiledLayer = this.getLayer(layer);
          if (!this.map || !terrain || !this.bounds.pointInRect(x, y)) {
             return null;
          }
@@ -124,17 +131,17 @@ module pow2.editor.tiled {
          return terrain.data[terrainIndex];
       }
 
-      getTileMeta(gid:number):ITileInstanceMeta {
+      getTileMeta(gid:number):pow2.editor.formats.tiled.ITileInstanceMeta {
          if(this.tiles.length <= gid){
             return null;
          }
-         var source = _.find(this.map.tilesets,(t:TiledTSX) => {
+         var source = _.find(this.map.tilesets,(t:pow2.editor.formats.tiled.TiledTSX) => {
             return t.hasGid(gid);
          });
          if(!source){
             return null;
          }
-         return <ITileInstanceMeta>source.getTileMeta(gid);
+         return <pow2.editor.formats.tiled.ITileInstanceMeta>source.getTileMeta(gid);
       }
 
    }
