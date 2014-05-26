@@ -14,6 +14,7 @@
  limitations under the License.
  */
 
+/// <reference path="../../types/underscore/underscore.d.ts"/>
 /// <reference path="../interfaces/ITileMap.ts"/>
 /// <reference path="../interfaces/IMapLoader.ts"/>
 
@@ -62,7 +63,7 @@ module pow2.editor {
                   var y = Math.floor((index- x) / tilesX);
                   return <ITileData>{
                      url:tiles.url,
-                     image:tiles.image,
+                     image:tiles.image.data,
                      imageSize:new pow2.Point(tiles.imageWidth,tiles.imageHeight),
                      imagePoint:new pow2.Point(x * tiles.tilewidth,y * tiles.tileheight),
                      properties: t
@@ -78,7 +79,8 @@ module pow2.editor {
                   tiles:tsr.tiles,
                   url:tsr.url,
                   image:tsr.image,
-                  imageSize:new pow2.Point(tsr.imageWidth,tsr.imageHeight)
+                  imageSize:new pow2.Point(tsr.imageWidth,tsr.imageHeight),
+                  name:tsr.name
                });
             });
 

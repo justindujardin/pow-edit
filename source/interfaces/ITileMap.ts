@@ -35,7 +35,7 @@ module pow2.editor {
       url: string;
       image: HTMLImageElement;
       imageSize:pow2.Point;
-      imagePoint:pow2.Point;
+      imagePoint?:pow2.Point;
       visible?:boolean;
       opacity?:number; // 0-1
    }

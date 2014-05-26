@@ -1,3 +1,4 @@
+///<reference path="../../../assets/vendor/pow2/pow2.d.ts"/>
 ///<reference path="../../../types/ace/ace.d.ts"/>
 ///<reference path="../../../types/angular/angular.d.ts"/>
 ///<reference path="../../app.ts"/>
