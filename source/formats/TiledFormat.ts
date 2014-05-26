@@ -14,18 +14,114 @@
  limitations under the License.
  */
 
-module pow2.editor.formats.tiled {
-   // -------------------------------------------------------------------------
+/// <reference path="../interfaces/ITileMap.ts"/>
+/// <reference path="../interfaces/IMapLoader.ts"/>
 
-    export interface ITileInstanceMeta {
-        image: HTMLImageElement;
-        url: string;
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-        data?: any;
-    }
+module pow2.editor {
+
+   export class TiledMapLoader implements IMapLoader {
+      static $inject:string[] = ['$q','$platform'];
+      constructor(
+         public $q:ng.IQService,
+         public $platform:IAppPlatform){
+      }
+
+      load(location:string, data:any):ng.IPromise<ITileMap> {
+         var deferred:ng.IDeferred<ITileMap> = this.$q.defer();
+         var tiledDocument = new pow2.editor.formats.tiled.TiledTMX(this.$platform,location,$(data));
+         tiledDocument.prepare(() => {
+            var result:ITileMap = {
+               size:new pow2.Point(tiledDocument.width,tiledDocument.height),
+               point:new pow2.Point(0,0),
+               tileSize:new pow2.Point(tiledDocument.tilewidth,tiledDocument.tileheight),
+               layers:_.map(tiledDocument.layers,(l:pow2.editor.formats.tiled.ITiledLayer)=>{
+                  return <ITileLayer>{
+                     tiles:l.data,
+                     size:new pow2.Point(l.width,l.height),
+                     name:l.name,
+                     point:new pow2.Point(l.x,l.y),
+                     visible:l.visible,
+                     opacity:l.opacity
+                  }
+               }),
+               tileSets:[],
+               tileInfo:[],
+               name:tiledDocument.mapName
+            };
+
+            var idSortedSets:any = _.sortBy(tiledDocument.tilesets, (o:TiledTSXResource) => {
+               return o.firstgid;
+            });
+            _.each(idSortedSets,(tiles:TiledTSXResource) => {
+               while(result.tileInfo.length < tiles.firstgid){
+                  result.tileInfo.push(null);
+               }
+               var mapTiles:ITileData[] = _.map(tiles.tiles,(t:any,index:number) => {
+                  var tilesX = tiles.imageWidth / tiles.tilewidth;
+                  var x = index % tilesX;
+                  var y = Math.floor((index- x) / tilesX);
+                  return <ITileData>{
+                     url:tiles.url,
+                     image:tiles.image,
+                     imageSize:new pow2.Point(tiles.imageWidth,tiles.imageHeight),
+                     imagePoint:new pow2.Point(x * tiles.tilewidth,y * tiles.tileheight),
+                     properties: t
+                  };
+               });
+               result.tileInfo = result.tileInfo.concat(mapTiles);
+            });
+
+            _.each(tiledDocument.tilesets,(tsr:pow2.editor.formats.tiled.TiledTSX) => {
+
+               result.tileSets.push({
+                  tileSize:new pow2.Point(tsr.tilewidth,tsr.tileheight),
+                  tiles:tsr.tiles,
+                  url:tsr.url,
+                  image:tsr.image,
+                  imageSize:new pow2.Point(tsr.imageWidth,tsr.imageHeight)
+               });
+            });
+
+            deferred.resolve(result);
+         });
+
+         return deferred.promise;
+      }
+
+      save(location:string, data:ITileMap):ng.IPromise<ITileMap> {
+         var deferred:ng.IDeferred<ITileMap> = this.$q.defer();
+
+         return deferred.promise;
+      }
+
+   }
+}
+
+module pow2.editor.formats.tiled {
+
+   // -------------------------------------------------------------------------
+   // Implement a subset of the Tiled editor format:
+   //
+   // https://github.com/bjorn/tiled/wiki/TMX-Map-Format
+
+   export interface ITileInstanceMeta {
+      image: HTMLImageElement;
+      url: string;
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      data?: any;
+   }
+
+   export interface ITiledMap {
+      version:string; // Tiled map version
+      width:number;
+      height:number;
+      tilewidth:number;
+      tileheight:number;
+      orientation:string; // Only supports 'orthogonal'
+   }
 
    export interface ITiledBase {
       name:string;
@@ -43,6 +139,8 @@ module pow2.editor.formats.tiled {
    }
    export interface ITiledLayer extends ITiledLayerBase {
       data?:any;
+      color?:string;
+      objects?:ITiledObject[];
    }
 
    // <object>
@@ -52,13 +150,6 @@ module pow2.editor.formats.tiled {
       type?:string;
       gid?:number;
    }
-
-   // <objectgroup>
-   export interface ITiledObjectGroup extends ITiledLayerBase {
-      color:string;
-      objects:ITiledObject[];
-   }
-
 
    // -------------------------------------------------------------------------
    export class TiledLoader {
@@ -72,12 +163,15 @@ module pow2.editor.formats.tiled {
       }
    }
 
-   interface TileSetDependency {
+   export interface TileSetDependency {
       source?:string; // Path to URL source from which to load data.
       data?:any; // Data instead of source.
       firstgid:number; // First global id.
    }
 
+
+
+   /////////////////////////////////////////////////////////////////
 
    // TMX Map:  some properties, (n) tilesets, (n) layers, (n) object groups.
    export class TiledTMX extends TiledLoader {
@@ -89,12 +183,9 @@ module pow2.editor.formats.tiled {
       tilewidth:number = 16;
       version:number = 1;
       properties:any = {};
-      tilesets:any = {};
+      tilesets:TiledTSX[] = [];
       layers:any[] = [];
       objectGroups:any[] = [];
-
-
-
       prepare(done:(res:TiledTMX)=>any) {
          this.$map = getRootNode(this.data,'map');
          this.version = parseInt(getElAttribute(this.$map,'version'));
@@ -124,11 +215,10 @@ module pow2.editor.formats.tiled {
                   firstgid:parseInt(getElAttribute(ts,'firstgid') || "-1")
                })
             }
-            // TODO: IF no source then create a resource with the given data.
          });
 
-         // Extract tile <layer>s
-         var layers = getChildren(this.$map,'layer');
+         // Extract tile <layer>s and <objectgroup>s
+         var layers = getChildren(this.$map,'layer,objectgroup');
          _.each(layers,(layer) => {
             var tileLayer = <tiled.ITiledLayer>tiled.readITiledLayerBase(layer);
             this.layers.push(tileLayer);
@@ -142,25 +232,21 @@ module pow2.editor.formats.tiled {
                }
                tileLayer.data = JSON.parse('[' + $.trim(data.text()) + ']');
             }
-         });
 
-         // Extract tile <objectgroup>s
-         var objectGroups = getChildren(this.$map,'objectgroup');
-         _.each(objectGroups,($group) => {
-
-            // Base layer properties.
-            var objectGroup = <tiled.ITiledObjectGroup>tiled.readITiledLayerBase($group);
-            objectGroup.objects = [];
-            var color:string = getElAttribute($group,'color');
+            // Any custom color for this layer?
+            var color:string = getElAttribute(layer,'color');
             if(color){
-               objectGroup.color = color;
+               tileLayer.color = color;
             }
-            // Read any objects
-            var objects = getChildren($group,'object');
-            _.each(objects,(object) => {
-               objectGroup.objects.push(<tiled.ITiledObject>tiled.readITiledLayerBase(object));
-            });
-            this.objectGroups.push(objectGroup);
+
+            // Read any child objects
+            var objects = getChildren(layer,'object');
+            if(objects){
+               tileLayer.objects = [];
+               _.each(objects,(object) => {
+                  tileLayer.objects.push(<tiled.ITiledObject>tiled.readITiledLayerBase(object));
+               });
+            }
          });
 
 
@@ -173,7 +259,7 @@ module pow2.editor.formats.tiled {
             var loadTileset = (data:any) => {
                var tsr:TiledTSX = new TiledTSX(this.platform,dep.source,data);
                tsr.prepare(() => {
-                  this.tilesets[tsr.name] = tsr;
+                  this.tilesets.push(tsr);
                   tsr.firstgid = dep.firstgid;
                   _next();
                });

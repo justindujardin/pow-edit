@@ -27,7 +27,9 @@ module.exports = function(grunt) {
                "source/services/*.ts",
                "source/services/**/*.ts",
                "source/directives/*.ts",
-               "source/directives/**/*.ts"
+               "source/directives/**/*.ts",
+               "source/interfaces/*.ts",
+               "source/formats/*.ts"
             ],
             dest: 'build/<%= pkg.name %>.js'
          },
@@ -84,6 +86,11 @@ module.exports = function(grunt) {
             options: {
                nospawn: true
             }
+         },
+
+         outputs: {
+           files: ['build/*.*'],
+            tasks: ['express']
          },
 
          ui: {

@@ -1,8 +1,8 @@
 ///<reference path="../../../types/ace/ace.d.ts"/>
 ///<reference path="../../../types/angular/angular.d.ts"/>
 ///<reference path="../../app.ts"/>
-///<reference path="../../services/tileMap.ts"/>
 ///<reference path="../../services/tasks.ts"/>
+///<reference path="../../formats/tiledFormat.ts"/>
 
 module pow2.editor {
    declare var requestAnimFrame:any;
@@ -27,8 +27,12 @@ module pow2.editor {
 
    export class TileEditorController {
       // Dependency inject constructor
-      static $inject:string[] = ['$document','$tasks'];
-      constructor(public $document:any,public $tasks:any){}
+      static $inject:string[] = ['$document','$tasks','$injector'];
+      constructor(public $document:any,public $tasks:any,public $injector:any){
+         this.loader = this.$injector.instantiate(TiledMapLoader);
+      }
+
+      public loader:TiledMapLoader;
 
       // Layers
       public layers:any[] = [];
@@ -165,7 +169,8 @@ module pow2.editor {
                return (scope, element, attributes:any,controllers:any[]) => {
                   var tileEditor:TileEditorController = controllers[0];
                   var documentViewController:DocumentViewController = controllers[1];
-                  var t:pow2.editor.TileMap = new pow2.editor.TileMap($platform);
+
+                  var t:pow2.editor.ITileMap = null;
 
                   tileEditor.init(element);
                   // create an new instance of a pixi stage
@@ -180,8 +185,8 @@ module pow2.editor {
                      if(!newUrl){
                         return;
                      }
-                     if(t.mapName){
-                        $tasks.killTaskGroup(t.mapName);
+                     if(t && t.name){
+                        $tasks.killTaskGroup(t.name);
                      }
 
                      if(!value){
@@ -195,7 +200,16 @@ module pow2.editor {
                      }
                      tileEditor.sceneContainer = new PIXI.DisplayObjectContainer();
                      documentViewController.showLoading('Loading...');
-                     t.load(newUrl,buildMapRender);
+                     $platform.readFile(newUrl,(data) => {
+                        var promise:ng.IPromise<ITileMap> = tileEditor.loader.load(newUrl,data);
+                        promise.then((tileMap:ITileMap)=>{
+                           t = tileMap;
+                           buildMapRender();
+                        }).catch((e:any)=>{
+                           console.error(e);
+                        });
+                     });
+                     //t.load(newUrl,buildMapRender);
                   };
                   scope.$watch(attributes.url, updateView);
 
@@ -215,7 +229,7 @@ module pow2.editor {
                   // Layer lists
                   var buildMapRender = () => {
                      tileEditor.layers.length = 0;
-                     tileEditor.cameraCenter.set(t.map.width * t.map.tilewidth / 2, t.map.height * t.map.tileheight / 2);
+                     tileEditor.cameraCenter.set(t.size.x * t.tileSize.x / 2, t.size.y * t.tileSize.y / 2);
                      tileEditor.cameraHeight = element.height();
                      tileEditor.cameraWidth = element.width();
                      tileEditor.cameraZoom = 1;
@@ -224,55 +238,50 @@ module pow2.editor {
                      $platform.setTitle(newUrl);
                      var spriteTextures:any = {};
                      var objectContainers:any = {};
-                     _.each(t.map.tilesets,(tsx:pow2.editor.formats.tiled.TiledTSX) => {
+                     _.each(t.tileSets,(tsx:pow2.editor.ITileSet) => {
                         spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
                      });
 
                      // Pre allocate display object containers.
-                     angular.forEach(t.map.layers,(layer:pow2.editor.formats.tiled.ITiledLayer) => {
-                        tileEditor.layers.push({
-                           objects:new PIXI.DisplayObjectContainer(),
+                     angular.forEach(t.layers,(layer:pow2.editor.formats.tiled.ITiledLayer) => {
+                        var container = new PIXI.DisplayObjectContainer();
+                        tileEditor.layers.push(<IEditableTileLayer>{
+                           objects:container,
                            name:layer.name,
                            properties:layer.properties,
                            opacity:layer.opacity
                         });
+                        container.visible = layer.visible;
+                        tileEditor.sceneContainer.addChild(container);
                      });
 
                      // Each layer
-                     angular.forEach(t.map.layers,(l:pow2.editor.formats.tiled.ITiledLayer,index:number) => {
+                     angular.forEach(t.layers,(l:pow2.editor.ITileLayer,index:number) => {
                         $tasks.add(() => {
                            documentViewController.setLoadingDetails(l.name);
                            var container = tileEditor.layers[index].objects;
-                           container.visible = l.visible;
-                           tileEditor.sceneContainer.addChild(container);
-                           for(var col:number = 0; col < t.bounds.extent.x; col++) {
-                              for (var row:number = 0; row < t.bounds.extent.y; row++) {
-                                 var gid:number = t.getTileGid(l.name,col, row);
-                                 var meta:pow2.editor.formats.tiled.ITileInstanceMeta = t.getTileMeta(gid);
-                                 if (meta) {
-                                    var frame = new PIXI.Rectangle(meta.x,meta.y,meta.width,meta.height);
-                                    var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
-                                    var sprite = new PIXI.Sprite(texture);
-                                    sprite.x = col * t.map.tileheight;
-                                    sprite.y = row * t.map.tilewidth;
-                                    sprite.width = t.map.tilewidth;
-                                    sprite.height = t.map.tileheight;
-                                    //sprite.anchor = centerOrigin;
-                                    container.addChild(sprite);
+                           if(l.tiles){
+                              for(var col:number = 0; col < t.size.x; col++) {
+                                 for (var row:number = 0; row < t.size.y; row++) {
+                                    // y * w + x = tile id from col/row
+                                    var tileIndex:number = row * t.size.x + col;
+                                    var gid:number = l.tiles[tileIndex];
+                                    var meta:ITileData = t.tileInfo[gid];
+                                    if (meta) {
+                                       var frame = new PIXI.Rectangle(meta.imagePoint.x,meta.imagePoint.y,t.tileSize.x,t.tileSize.y);
+                                       var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
+                                       var sprite = new PIXI.Sprite(texture);
+                                       sprite.x = col * t.tileSize.y;
+                                       sprite.y = row * t.tileSize.x;
+                                       sprite.width = t.tileSize.x;
+                                       sprite.height = t.tileSize.y;
+                                       //sprite.anchor = centerOrigin;
+                                       container.addChild(sprite);
+                                    }
                                  }
                               }
                            }
-                           //container.cacheAsBitmap = true;
-                           return true;
-                        },t.mapName);
-                     });
-
-                     // Each object group
-                     _.each(t.map.objectGroups,(o:pow2.editor.formats.tiled.ITiledObjectGroup) => {
-                        $tasks.add(() => {
-                           documentViewController.setLoadingDetails(o.name);
-                           var container = objectContainers[o.name] = new PIXI.DisplayObjectContainer();
-                           _.each(o.objects,(obj:pow2.editor.formats.tiled.ITiledObject) => {
+                           _.each(l.objects,(obj:pow2.editor.formats.tiled.ITiledObject) => {
                               var box = new PIXI.Graphics();
                               box.beginFill(0xFFFFFF);
                               box.alpha = 0.6;
@@ -283,31 +292,28 @@ module pow2.editor {
                               box.position.y = obj.y;
                               container.addChild(box);
                            });
-                           container.visible = o.visible;
-                           tileEditor.sceneContainer.addChild(container);
-                           //container.cacheAsBitmap = true;
                            return true;
-                        },t.mapName);
+                        },t.name);
                      });
+
                      stage.addChild(tileEditor.sceneContainer);
 
-                     var total:number = $tasks.getRemainingTasks(t.mapName);
+                     var total:number = $tasks.getRemainingTasks(t.name);
                      documentViewController.setLoadingTitle("Building Map...");
                      documentViewController.setTotal(total);
                      tileEditor.unwatchProgress = $interval(()=>{
-                        documentViewController.setCurrent(total - $tasks.getRemainingTasks(t.mapName));
+                        documentViewController.setCurrent(total - $tasks.getRemainingTasks(t.name));
                      },50);
 
                      $tasks.add(() => {
                         documentViewController.hideLoading();
                         $interval.cancel(tileEditor.unwatchProgress);
                         return true;
-                     },t.mapName);
+                     },t.name);
                      // Debug map stats
                      var stats:string = [
-                           'Layers: ' + t.map.layers.length,
-                           'Groups: ' + t.map.objectGroups.length,
-                           'Size: ' + t.bounds.extent
+                           'Layers: ' + t.layers.length,
+                           'Size: ' + t.size
                      ].join('\n');
                      var text = new PIXI.Text(stats, {
                         font:"16px courier",
@@ -362,8 +368,8 @@ module pow2.editor {
                      scopeDestroyed = true;
                      tileEditor.destroyStage(stage);
                      $interval.cancel(tileEditor.unwatchProgress);
-                     $tasks.killTaskGroup(t.mapName);
-                     t.reset();
+                     $tasks.killTaskGroup(t.name);
+                     t = null;
                      angular.element(window).off('resize');
                   });
                };
