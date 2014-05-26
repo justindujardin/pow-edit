@@ -29,7 +29,10 @@ module pow2.editor {
    export class TileEditorController {
       // Dependency inject constructor
       static $inject:string[] = ['$document','$tasks','$injector'];
-      constructor(public $document:any,public $tasks:any,public $injector:any){
+      constructor(
+         public $document:any,
+         public $tasks:any,
+         public $injector:any) {
          this.loader = this.$injector.instantiate(TiledMapLoader);
       }
 

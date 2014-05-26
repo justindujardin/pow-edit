@@ -38,6 +38,7 @@ module pow2.editor {
                layers:_.map(tiledDocument.layers,(l:pow2.editor.formats.tiled.ITiledLayer)=>{
                   return <ITileLayer>{
                      tiles:l.data,
+                     objects:l.objects,
                      size:new pow2.Point(l.width,l.height),
                      name:l.name,
                      point:new pow2.Point(l.x,l.y),
@@ -115,16 +116,6 @@ module pow2.editor.formats.tiled {
       height: number;
       data?: any;
    }
-
-   export interface ITiledMap {
-      version:string; // Tiled map version
-      width:number;
-      height:number;
-      tilewidth:number;
-      tileheight:number;
-      orientation:string; // Only supports 'orthogonal'
-   }
-
    export interface ITiledBase {
       name:string;
       x:number;
@@ -133,7 +124,6 @@ module pow2.editor.formats.tiled {
       height:number;
       visible:boolean;
    }
-
    // <layer>, <objectgroup>
    export interface ITiledLayerBase extends ITiledBase {
       opacity:number; // 0-1
@@ -155,7 +145,6 @@ module pow2.editor.formats.tiled {
 
    // -------------------------------------------------------------------------
    export class TiledLoader {
-
       data:JQuery;
       constructor(
          public platform:IAppPlatform,
@@ -165,7 +154,7 @@ module pow2.editor.formats.tiled {
       }
    }
 
-   export interface TileSetDependency {
+   interface TileSetDependency {
       source?:string; // Path to URL source from which to load data.
       data?:any; // Data instead of source.
       firstgid:number; // First global id.
@@ -343,7 +332,6 @@ module pow2.editor.formats.tiled {
                _.each(this.tiles,(tile) => {
                   tileLookup[tile.id] = tile.properties;
                });
-               // TODO: uh-oh overwriting tiles...?
                this.tiles = tileLookup;
                done(this);
             };
