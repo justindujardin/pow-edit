@@ -109,22 +109,30 @@ module pow2.editor {
        *  takes generic x/y/scale props (rather than pixi specific
        *  sceneContainer props) and manipulates them.
        */
-      handleMouseDown(event:MouseEvent) {
+      handleMouseDown(event:any) {
+         var e = event;
+         if(event.originalEvent.touches) {
+            e = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+         }
+         this.drag.start = new Point(e.screenX,e.screenY);
          this.drag.active = true;
-         this.drag.start = new Point(event.screenX,event.screenY);
+         this.drag.start = new Point(e.screenX,e.screenY);
          this.drag.current = this.drag.start.clone();
          this.drag.delta = new pow2.Point(0,0);
          this.drag.scrollStart = new Point(this.cameraCenter.x,this.cameraCenter.y);
-         var _mouseUp = (event:MouseEvent) => {
-            this.$document.off('mousemove',_mouseMove);
-            this.$document.off('mouseup',_mouseUp);
+         var _mouseUp = () => {
+            this.$document.off('mousemove touchmove',_mouseMove);
+            this.$document.off('mouseup touchend',_mouseUp);
             this.resetDrag();
          };
-         var _mouseMove = (event:MouseEvent) => {
+         var _mouseMove = (evt:any) => {
             if(!this.drag.active){
                return;
             }
-            this.drag.current.set(event.screenX,event.screenY);
+            if(evt.originalEvent.touches) {
+               evt = evt.originalEvent.touches[0] || evt.originalEvent.changedTouches[0];
+            }
+            this.drag.current.set(evt.screenX,evt.screenY);
             this.drag.delta.set(this.drag.start.x - this.drag.current.x, this.drag.start.y - this.drag.current.y);
 
             this.cameraCenter.x = this.drag.scrollStart.x + this.drag.delta.x * (1 / this.cameraZoom);
@@ -134,8 +142,10 @@ module pow2.editor {
             event.stopPropagation();
             return false;
          };
-         this.$document.on('mousemove', _mouseMove);
-         this.$document.on('mouseup', _mouseUp);
+         this.$document.on('mousemove touchmove', _mouseMove);
+         this.$document.on('mouseup touchend', _mouseUp);
+         event.stopPropagation();
+         return false;
       }
       /**
        *  Zoom Input listener
@@ -241,7 +251,6 @@ module pow2.editor {
 
                      $platform.setTitle(newUrl);
                      var spriteTextures:any = {};
-                     var objectContainers:any = {};
                      _.each(t.tileSets,(tsx:pow2.editor.ITileSet) => {
                         spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
                      });
@@ -329,7 +338,7 @@ module pow2.editor {
                      stage.addChild(text);
                   };
 
-                  element.on('mousedown',(e)=>{
+                  element.on('mousedown touchstart',(e)=>{
                      tileEditor.handleMouseDown(e);
                   });
                   element.on("mousewheel DOMMouseScroll MozMousePixelScroll",(e)=>{
