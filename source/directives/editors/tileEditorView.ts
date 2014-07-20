@@ -18,12 +18,24 @@ module pow2.editor {
    }
 
    export interface IEditableTileLayer {
+      tiles:IEditableTileInfo[]; // y * w + x = tile index from col/row
       objects:any; // PIXI.DisplayObjectContainer[]
+      data:ITileLayer;
       name:string;
       properties:{
          [name:string]:any
       };
       opacity:number;
+   }
+
+   export interface IEditableTileInfo {
+      x:number;
+      y:number;
+      width:number;
+      height:number;
+      _gid:number;
+      _tileIndex:number;
+      _meta:ITileData;
    }
 
    export class TileEditorController {
@@ -38,8 +50,12 @@ module pow2.editor {
 
       public loader:TiledMapLoader;
 
-      // Layers
+      // Data
       public layers:any[] = [];
+      public tileMap:ITileMap = null;
+      public spriteTextures:{
+         [url:string]:any // PIXI.BaseTexture
+      } = {};
 
       // Camera
       public cameraWidth:number;
@@ -68,6 +84,45 @@ module pow2.editor {
       init(element){
          // create a renderer instance
          this.renderer = PIXI.autoDetectRenderer(element.height(),element.width());
+      }
+
+      setMap(tileMap:ITileMap){
+         this.tileMap = tileMap;
+      }
+
+      loadTextures(tileSets:ITileSet[]){
+         this.spriteTextures = {};
+         _.each(tileSets,(tsx:pow2.editor.ITileSet) => {
+            this.spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
+         });
+         return this.spriteTextures;
+      }
+
+      /**
+       * Returns a random integer between min (inclusive) and max (inclusive)
+       * Using Math.round() will give you a non-uniform distribution!
+       */
+      getRandomInt(min, max) {
+         return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      treeAt(point:pow2.Point,layer:IEditableTileLayer){
+         // y * w + x = tile id from col/row
+         var index = point.y * layer.data.size.x + point.x;
+         if(index > layer.tiles.length || index < 0){
+            console.error("treeAt: index out of range");
+            return;
+         }
+         var newGid:number = this.getRandomInt(1,this.tileMap.tileInfo.length - 1); // ?
+         var meta:ITileData = this.tileMap.tileInfo[newGid];
+         if(!meta){
+            console.error("No meta for GID: " + newGid);
+            return;
+         }
+         var frame = new PIXI.Rectangle(meta.imagePoint.x,meta.imagePoint.y,this.tileMap.tileSize.x,this.tileMap.tileSize.y);
+         var texture = new PIXI.Texture(this.spriteTextures[meta.url],frame);
+         var sprite:any = layer.tiles[index];
+         sprite.setTexture(texture);
       }
 
       toggleLayerVisibility(layer:IEditableTileLayer){
@@ -114,15 +169,18 @@ module pow2.editor {
          if(event.originalEvent.touches) {
             e = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
          }
-         this.drag.start = new Point(e.screenX,e.screenY);
          this.drag.active = true;
-         this.drag.start = new Point(e.screenX,e.screenY);
+         this.drag.start = new pow2.Point(e.screenX,e.screenY);
          this.drag.current = this.drag.start.clone();
          this.drag.delta = new pow2.Point(0,0);
          this.drag.scrollStart = new Point(this.cameraCenter.x,this.cameraCenter.y);
          var _mouseUp = () => {
             this.$document.off('mousemove touchmove',_mouseMove);
             this.$document.off('mouseup touchend',_mouseUp);
+            if(this.drag.delta && this.drag.delta.x < 5 && this.drag.delta.y < 5){
+               var pos:pow2.Point = new pow2.Point((-this.sceneContainer.x + e.clientX) / this.tileMap.tileSize.x,(-this.sceneContainer.y + e.clientY) / this.tileMap.tileSize.y).round();
+               this.treeAt(pos,this.layers[0]);
+            }
             this.resetDrag();
          };
          var _mouseMove = (evt:any) => {
@@ -217,13 +275,13 @@ module pow2.editor {
                      $platform.readFile(newUrl,(data) => {
                         var promise:ng.IPromise<ITileMap> = tileEditor.loader.load(newUrl,data);
                         promise.then((tileMap:ITileMap)=>{
+                           tileEditor.setMap(tileMap);
                            t = tileMap;
                            buildMapRender();
                         }).catch((e:any)=>{
                            console.error(e);
                         });
                      });
-                     //t.load(newUrl,buildMapRender);
                   };
                   scope.$watch(attributes.url, updateView);
 
@@ -250,16 +308,18 @@ module pow2.editor {
                      tileEditor.updateCamera();
 
                      $platform.setTitle(newUrl);
-                     var spriteTextures:any = {};
-                     _.each(t.tileSets,(tsx:pow2.editor.ITileSet) => {
-                        spriteTextures[tsx.url] = new PIXI.BaseTexture(tsx.image,PIXI.scaleModes.NEAREST);
-                     });
+                     var spriteTextures:{
+                        [url:string]:any // PIXI.BaseTexture
+                     } = tileEditor.loadTextures(t.tileSets);
+
 
                      // Pre allocate display object containers.
-                     angular.forEach(t.layers,(layer:pow2.editor.formats.tiled.ITiledLayer) => {
+                     angular.forEach(t.layers,(layer:any) => {
                         var container = new PIXI.DisplayObjectContainer();
                         tileEditor.layers.push(<IEditableTileLayer>{
+                           tiles: new Array(layer.tiles ? layer.tiles.length : 0),
                            objects:container,
+                           data:layer,
                            name:layer.name,
                            properties:layer.properties,
                            opacity:layer.opacity
@@ -272,7 +332,8 @@ module pow2.editor {
                      angular.forEach(t.layers,(l:pow2.editor.ITileLayer,index:number) => {
                         $tasks.add(() => {
                            documentViewController.setLoadingDetails(l.name);
-                           var container = tileEditor.layers[index].objects;
+                           var editable:IEditableTileLayer = tileEditor.layers[index];
+                           var container = editable.objects;
                            if(l.tiles){
                               for(var col:number = 0; col < t.size.x; col++) {
                                  for (var row:number = 0; row < t.size.y; row++) {
@@ -283,13 +344,17 @@ module pow2.editor {
                                     if (meta) {
                                        var frame = new PIXI.Rectangle(meta.imagePoint.x,meta.imagePoint.y,t.tileSize.x,t.tileSize.y);
                                        var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
-                                       var sprite = new PIXI.Sprite(texture);
+                                       var sprite:IEditableTileInfo = new PIXI.Sprite(texture);
                                        sprite.x = col * t.tileSize.y;
                                        sprite.y = row * t.tileSize.x;
                                        sprite.width = t.tileSize.x;
                                        sprite.height = t.tileSize.y;
+                                       sprite._gid = gid;
+                                       sprite._tileIndex = tileIndex;
+                                       sprite._meta = meta;
                                        //sprite.anchor = centerOrigin;
                                        container.addChild(sprite);
+                                       editable.tiles[tileIndex] = sprite;
                                     }
                                  }
                               }
