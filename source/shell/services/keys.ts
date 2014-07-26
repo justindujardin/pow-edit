@@ -1,5 +1,4 @@
-///<reference path="../../types/ace/ace.d.ts"/>
-///<reference path="../../types/angular/angular.d.ts"/>
+///<reference path="../../../types/angular/angular.d.ts"/>
 
 module pow2.editor {
 
@@ -179,19 +178,19 @@ module pow2.editor {
             var kp = 0;
             // Some modifiers key
             var modifiers = {
-               shift: {
+               SHIFT: {
                   wanted:		false,
                   pressed:	!!e.shiftKey
                },
-               ctrl : {
+               CTRL : {
                   wanted:		false,
                   pressed:	!!e.ctrlKey
                },
-               alt  : {
+               ALT  : {
                   wanted:		false,
                   pressed:	!!e.altKey
                },
-               meta : { //Meta is Mac specific
+               META : { //Meta is Mac specific
                   wanted:		false,
                   pressed:	!!e.metaKey
                }
@@ -202,7 +201,7 @@ module pow2.editor {
                   case 'CTRL':
                   case 'CONTROL':
                      kp++;
-                     modifiers.ctrl.wanted = true;
+                     modifiers.CTRL.wanted = true;
                      break;
                   case 'SHIFT':
                   case 'ALT':
@@ -228,10 +227,10 @@ module pow2.editor {
                }
             });
             if(kp == keys.length &&
-               modifiers.ctrl.pressed == modifiers.ctrl.wanted &&
-               modifiers.shift.pressed == modifiers.shift.wanted &&
-               modifiers.alt.pressed == modifiers.alt.wanted &&
-               modifiers.meta.pressed == modifiers.meta.wanted) {
+               modifiers.CTRL.pressed == modifiers.CTRL.wanted &&
+               modifiers.SHIFT.pressed == modifiers.SHIFT.wanted &&
+               modifiers.ALT.pressed == modifiers.ALT.wanted &&
+               modifiers.META.pressed == modifiers.META.wanted) {
                $timeout(function() {
                   callback(e);
                }, 1);
