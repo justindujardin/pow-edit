@@ -11,7 +11,7 @@ module pow2.editor {
          transclude:true,
          controller: DocumentViewController,
          controllerAs:"loading",
-         templateUrl: 'source/directives/documentView.html'
+         templateUrl: 'source/shell/directives/documentView.html'
       };
    }]);
 

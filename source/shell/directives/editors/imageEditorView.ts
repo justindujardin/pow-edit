@@ -8,7 +8,7 @@ module pow2.editor {
       return {
          restrict: "E",
          replace: true,
-         templateUrl: 'source/directives/editors/imageEditorView.html'
+         templateUrl: 'source/shell/directives/editors/imageEditorView.html'
       };
    }]);
 }

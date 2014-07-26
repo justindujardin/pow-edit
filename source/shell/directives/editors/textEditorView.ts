@@ -17,7 +17,7 @@ module pow2.editor {
             scope:{
                history: "="
             },
-            templateUrl:"source/directives/editors/textEditorView.html",
+            templateUrl:"source/shell/directives/editors/textEditorView.html",
             link: ($scope, $el, attrs:any, model) => {
                var editor:AceAjax.Editor = new Editor(new Renderer($el[0], "ace/theme/tomorrow_night"));
                var session:AceAjax.IEditSession = editor.getSession();

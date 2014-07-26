@@ -11,7 +11,7 @@ module pow2.editor {
       return {
          restrict: "E",
          replace: true,
-         templateUrl: 'source/directives/editors/markdownEditorView.html',
+         templateUrl: 'source/shell/directives/editors/markdownEditorView.html',
          link:(scope,element,attrs) => {
             var setUrl = (url:string) => {
                if(!url){
