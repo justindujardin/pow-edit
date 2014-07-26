@@ -1,6 +1,6 @@
-///<reference path="../../../types/ace/ace.d.ts"/>
-///<reference path="../../../types/angular/angular.d.ts"/>
-///<reference path="../../app.ts"/>
+///<reference path="../../../../types/ace/ace.d.ts"/>
+///<reference path="../../../../types/angular/angular.d.ts"/>
+///<reference path="../../../app.ts"/>
 
 module pow2.editor {
 
@@ -11,7 +11,7 @@ module pow2.editor {
       return {
          restrict: "E",
          replace: true,
-         templateUrl: 'source/directives/editors/markdownEditorView.html',
+         templateUrl: 'source/shell/directives/editors/markdownEditorView.html',
          link:(scope,element,attrs) => {
             var setUrl = (url:string) => {
                if(!url){

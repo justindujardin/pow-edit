@@ -36,6 +36,9 @@ module pow2.editor {
       getMountPath(fromBase:string):string {
          return '../../' + fromBase;
       }
+      normalizePath(url:string):string{
+         return url;
+      }
       enumPath(location:string,done:(err:any,files?:IFileInfo[]) => any) {
          this.$http({method: 'GET', url: '/files'}).
             success(function(data, status, headers, config) {

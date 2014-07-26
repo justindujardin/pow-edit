@@ -29,6 +29,8 @@ module pow2.editor {
        * @param fromBase The path relative to the root directory.
        */
       getMountPath(fromBase:string):string;
+
+      normalizePath(url:string):string;
    }
 
    export interface IFileInfo {

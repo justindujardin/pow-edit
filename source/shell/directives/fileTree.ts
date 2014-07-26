@@ -1,6 +1,6 @@
-///<reference path="../../types/ace/ace.d.ts"/>
-///<reference path="../../types/angular/angular.d.ts"/>
-///<reference path="../app.ts"/>
+///<reference path="../../../types/ace/ace.d.ts"/>
+///<reference path="../../../types/angular/angular.d.ts"/>
+///<reference path="../../app.ts"/>
 
 /**
  * File System Tree directive

@@ -52,6 +52,10 @@ module pow2.editor {
          return '../' + fromBase;
       }
 
+      normalizePath(url:string):string{
+         return path.normalize(url);
+      }
+
       enumPath(location:string,done:(err:any,files?:IFileInfo[]) => any) {
          var results:IFileInfo[] = [];
          fs.readdir(location, (err, list) => {
