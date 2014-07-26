@@ -26,7 +26,6 @@ module pow2.editor {
    export class EditableTile {
       _gid:number;
       _tileIndex:number;
-      _meta:ITileData;
       sprite:IEditableSprite;
       constructor(
          public tileEditor:TileEditorController,

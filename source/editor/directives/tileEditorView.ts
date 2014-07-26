@@ -145,7 +145,6 @@ module pow2.editor {
                                        tile.sprite.height = t.tileSize.y;
                                        tile._gid = gid;
                                        tile._tileIndex = tileIndex;
-                                       tile._meta = meta;
 
                                        //sprite.anchor = centerOrigin;
                                        container.addChild(tile.sprite);
@@ -194,7 +193,8 @@ module pow2.editor {
                         stroke:"black",
                         strokeThickness:3
                      });
-                     debugText.x = debugText.y = 10;
+                     debugText.x = 75;
+                     debugText.y = 10;
                      stage.addChild(debugText);
                      tileEditor.on('debug',setDebugText);
                   };
@@ -281,6 +281,10 @@ module pow2.editor {
          }));
       }
 
+
+      public blankTile:PIXI.Texture = null;
+      public ctx:IContext;
+
       public loader:TiledMapLoader;
       public tileMap:ITileMap = null;
 
@@ -307,6 +311,8 @@ module pow2.editor {
 
       // tile gid to paint, or -1 if no painting
       public dragPaint:number = -1;
+
+      private _activeTool:string = 'move';
 
       public drag:IDragEvent = {
          active:false,
@@ -353,9 +359,12 @@ module pow2.editor {
 
       // TODO: Cache these textures by GID.
       getGidTexture(gid:number):PIXI.Texture{
+         if(!this.blankTile && this.tileMap){
+            this.blankTile = new PIXI.RenderTexture(this.tileMap.tileSize.x, this.tileMap.tileSize.y);
+         }
          var meta:ITileData = this.tileMap.tileInfo[gid];
          if(gid <= 0 || !meta){
-            return null; // TODO: return an empty texture of tile size here?
+            return this.blankTile;
          }
          var frame = new PIXI.Rectangle(
             meta.imagePoint.x,
@@ -411,7 +420,7 @@ module pow2.editor {
             current:null,
             delta:null
          });
-         this.setDebugText(JSON.stringify(this.drag,null,3));
+         //this.setDebugText(JSON.stringify(this.drag,null,3));
       }
       destroyStage(stage) {
          if(stage){
@@ -431,6 +440,12 @@ module pow2.editor {
       }
 
 
+      setTool(name:string){
+         this._activeTool = name;
+         this.trigger('debug','Activate ' + name);
+      }
+
+
       // INPUT
       /**
        *  Pan Input listener
@@ -444,47 +459,60 @@ module pow2.editor {
          if(event.originalEvent.touches) {
             e = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
          }
-         if(e.which !== 3){
-            this.dragPaint = !!e.shiftKey ? 0 : 46;
-            var _stopPaint = () => {
-               this.dragPaint = -1;
-               this.$document.off('mouseup touchend',_stopPaint);
-            };
-            this.$document.on('mouseup touchend', _stopPaint);
-            return;
-         }
-         this.dragPaint = -1;
-         this.drag.active = true;
-         this.drag.start = new pow2.Point(e.clientX,e.clientY);
-         this.drag.current = this.drag.start.clone();
-         this.drag.delta = new pow2.Point(0,0);
-         this.drag.cameraStart = new Point(this.cameraCenter.x,this.cameraCenter.y);
-         var _mouseUp = () => {
-            this.$document.off('mousemove touchmove',_mouseMove);
-            this.$document.off('mouseup touchend',_mouseUp);
-            this.resetDrag();
-         };
-         var _mouseMove = (evt:any) => {
-            if(!this.drag.active){
+         switch(this._activeTool){
+            case 'paint':
+               this.dragPaint = 46;
+               var _stopPaint = () => {
+                  this.dragPaint = -1;
+                  this.$document.off('mouseup touchend',_stopPaint);
+               };
+               this.$document.on('mouseup touchend', _stopPaint);
                return;
-            }
-            if(evt.originalEvent.touches) {
-               evt = evt.originalEvent.touches[0] || evt.originalEvent.changedTouches[0];
-            }
-            this.drag.current.set(evt.clientX,evt.clientY);
-            this.drag.delta.set(this.drag.start.x - this.drag.current.x, this.drag.start.y - this.drag.current.y);
+               break;
+            case 'erase':
+               this.dragPaint = 0;
+               var _stopPaint = () => {
+                  this.dragPaint = -1;
+                  this.$document.off('mouseup touchend',_stopPaint);
+               };
+               this.$document.on('mouseup touchend', _stopPaint);
+               return;
+               break;
+            case 'move':
+               this.dragPaint = -1;
+               this.drag.active = true;
+               this.drag.start = new pow2.Point(e.clientX,e.clientY);
+               this.drag.current = this.drag.start.clone();
+               this.drag.delta = new pow2.Point(0,0);
+               this.drag.cameraStart = new Point(this.cameraCenter.x,this.cameraCenter.y);
+               var _mouseUp = () => {
+                  this.$document.off('mousemove touchmove',_mouseMove);
+                  this.$document.off('mouseup touchend',_mouseUp);
+                  this.resetDrag();
+               };
+               var _mouseMove = (evt:any) => {
+                  if(!this.drag.active){
+                     return;
+                  }
+                  if(evt.originalEvent.touches) {
+                     evt = evt.originalEvent.touches[0] || evt.originalEvent.changedTouches[0];
+                  }
+                  this.drag.current.set(evt.clientX,evt.clientY);
+                  this.drag.delta.set(this.drag.start.x - this.drag.current.x, this.drag.start.y - this.drag.current.y);
 
-            this.cameraCenter.x = this.drag.cameraStart.x + this.drag.delta.x * (1 / this.cameraZoom);
-            this.cameraCenter.y = this.drag.cameraStart.y + this.drag.delta.y * (1 / this.cameraZoom);
+                  this.cameraCenter.x = this.drag.cameraStart.x + this.drag.delta.x * (1 / this.cameraZoom);
+                  this.cameraCenter.y = this.drag.cameraStart.y + this.drag.delta.y * (1 / this.cameraZoom);
 
-            this.updateCamera();
-            event.stopPropagation();
-            return false;
-         };
-         this.$document.on('mousemove touchmove', _mouseMove);
-         this.$document.on('mouseup touchend', _mouseUp);
-         event.stopPropagation();
-         return false;
+                  this.updateCamera();
+                  event.stopPropagation();
+                  return false;
+               };
+               this.$document.on('mousemove touchmove', _mouseMove);
+               this.$document.on('mouseup touchend', _mouseUp);
+               event.stopPropagation();
+               return false;
+               break;
+         }
       }
       /**
        *  Zoom Input listener

@@ -10,25 +10,21 @@ module pow2.editor {
          if(index > layer.tiles.length || index < 0){
             throw new Error("TileEraseAction: layer tile index out of range");
          }
+         var tile:EditableTile = this.layer.tiles[this.index];
+         if(!tile){
+            throw new Error("Cannot erase undefined tile at index " + this.index);
+         }
+         this._lastGid = tile._gid;
       }
-
-      private _lastGid:number = 0;
-      private _lastMeta:ITileData = null;
+      private _lastGid:number;
 
       execute():boolean {
          if(!super.execute()){
             return false;
          }
          var tile:EditableTile = this.layer.tiles[this.index];
-         if(!tile){
-            return false;
-         }
-         this._lastGid = tile._gid;
-         this._lastMeta = tile._meta;
          tile._gid = 0;
-         tile._meta = null;
-         // TODO: Cache this "blank" render texture somewhere.  Maybe a static?
-         tile.sprite.setTexture(new PIXI.RenderTexture(this.tileEditor.tileMap.tileSize.x, this.tileEditor.tileMap.tileSize.y));
+         tile.sprite.setTexture(this.tileEditor.getGidTexture(0));
          return true;
       }
 
@@ -37,15 +33,7 @@ module pow2.editor {
             return false;
          }
          var tile:EditableTile = this.layer.tiles[this.index];
-         if(!tile){
-            return false;
-         }
-
-         if(!this._lastGid || !this._lastMeta){
-            return false;
-         }
          tile._gid = this._lastGid;
-         tile._meta = this._lastMeta;
          tile.sprite.setTexture(this.tileEditor.getGidTexture(this._lastGid));
          return true;
       }

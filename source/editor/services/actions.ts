@@ -72,6 +72,7 @@ module pow2.editor {
          }
          var last:IAction = this._redoStack[this._redoStack.length-1];
          if(!this._executeAction(last)){
+            console.error("Failed to redo action: " + last.name,last);
             return null;
          }
          this._redoStack.pop();
@@ -84,6 +85,7 @@ module pow2.editor {
          }
          var last:IAction = this._undoStack[this._undoStack.length-1];
          if(!this._undoAction(last)){
+            console.error("Failed to undo action: " + last.name,last);
             return null;
          }
          this._undoStack.pop();

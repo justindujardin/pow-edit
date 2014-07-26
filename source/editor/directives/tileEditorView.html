@@ -6,4 +6,13 @@
             <a><i></i><span>{{layer.name}}</span></a>
         </li>
     </ul>
+
+    <nav class="navbar navbar-inverse" role="navigation">
+        <ul>
+            <li><a href="javascript:void(0);" ng-click="editor.setTool('move')"><i class="fa fa-arrows"></i></a></li>
+            <li><a href="javascript:void(0);" ng-click="editor.setTool('paint')"><i class="fa fa-pencil"></i></a></li>
+            <li><a href="javascript:void(0);" ng-click="editor.setTool('erase')"><i class="fa fa-eraser"></i></a></li>
+            <li><a href="javascript:void(0);" class="disabled"><i class="fa fa-magic"></i></a></li>
+        </ul>
+    </nav>
 </div>

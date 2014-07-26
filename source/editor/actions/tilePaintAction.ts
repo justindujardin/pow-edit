@@ -12,6 +12,11 @@ module pow2.editor {
          if(index > layer.tiles.length || index < 0){
             throw new Error("PaintAction: layer tile index out of range");
          }
+         var tile:EditableTile = this.layer.tiles[this.index];
+         if(!tile){
+            throw new Error("Cannot paint to undefined tile at index " + this.index);
+         }
+         this._lastGid = tile._gid;
       }
 
       private _lastGid:number = 0;
@@ -21,10 +26,6 @@ module pow2.editor {
             return false;
          }
          var tile:EditableTile = this.layer.tiles[this.index];
-         if(!tile || tile._gid === this.gid){
-            return false;
-         }
-         this._lastGid = tile._gid;
          tile.sprite.setTexture(this.tileEditor.getGidTexture(this.gid));
          tile._gid = this.gid;
          return true;
@@ -35,12 +36,6 @@ module pow2.editor {
             return false;
          }
          var tile:EditableTile = this.layer.tiles[this.index];
-         if(!tile){
-            return false;
-         }
-         if(!this._lastGid){
-            return false;
-         }
          tile._gid = this._lastGid;
          tile.sprite.setTexture(this.tileEditor.getGidTexture(this._lastGid));
          return true;

@@ -1,5 +1,8 @@
 .tile-editor-view {
   overflow:hidden !important;
+  > * {
+    z-index:1;
+  }
   canvas {
     z-index:0;
     position: absolute;
@@ -9,8 +12,34 @@
     right: 0;
   }
 
+  nav {
+    background-color:rgba(0,0,0,0.85);
+    position: absolute;
+    top: 0;
+    left: 0;
+    ul {
+      padding:0;
+      margin:0;
+      li{
+        padding:0;
+        margin:0;
+        height:auto;
+        list-style-type:none;
+        a {
+          display:inline-block;
+          padding:0.5em;
+          font-size:2em;
+          color:rgba(255,255,255,0.9);
+          &.disabled {
+            color:rgba(128,128,128,0.5);
+          }
+        }
+      }
+
+    }
+  }
+
   .layer-list {
-    z-index:1;
     position: absolute;
     right:0;
     top:0;
