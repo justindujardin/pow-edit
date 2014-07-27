@@ -8,11 +8,11 @@
     </ul>
 
     <nav class="navbar navbar-inverse" role="navigation">
-        <ul>
-            <li><a href="javascript:void(0);" ng-click="editor.setTool('move')"><i class="fa fa-arrows"></i></a></li>
-            <li><a href="javascript:void(0);" ng-click="editor.setTool('paint')"><i class="fa fa-pencil"></i></a></li>
-            <li><a href="javascript:void(0);" ng-click="editor.setTool('erase')"><i class="fa fa-eraser"></i></a></li>
-            <li><a href="javascript:void(0);" class="disabled"><i class="fa fa-magic"></i></a></li>
+        <ul class="toolbox">
+            <li ng-class="{active:editor.activeTool=='move'}" ng-click="editor.setTool('move'); $event.stopPropagation();"><i class="fa fa-arrows"></i></li>
+            <li ng-class="{active:editor.activeTool=='paint'}" ng-click="editor.setTool('paint'); $event.stopPropagation();"><i class="fa fa-pencil"></i></li>
+            <li ng-class="{active:editor.activeTool=='erase'}" ng-click="editor.setTool('erase'); $event.stopPropagation();"><i class="fa fa-eraser"></i></li>
+            <li ng-class="{active:editor.activeTool=='magic'}" class="disabled"><i class="fa fa-magic"></i></li>
         </ul>
     </nav>
 </div>

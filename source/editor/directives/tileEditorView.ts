@@ -312,7 +312,7 @@ module pow2.editor {
       // tile gid to paint, or -1 if no painting
       public dragPaint:number = -1;
 
-      private _activeTool:string = 'move';
+      private activeTool:string = 'move';
 
       public drag:IDragEvent = {
          active:false,
@@ -441,7 +441,7 @@ module pow2.editor {
 
 
       setTool(name:string){
-         this._activeTool = name;
+         this.activeTool = name;
          this.trigger('debug','Activate ' + name);
       }
 
@@ -459,7 +459,7 @@ module pow2.editor {
          if(event.originalEvent.touches) {
             e = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
          }
-         switch(this._activeTool){
+         switch(this.activeTool){
             case 'paint':
                this.dragPaint = 46;
                var _stopPaint = () => {
