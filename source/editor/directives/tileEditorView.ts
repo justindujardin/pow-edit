@@ -312,6 +312,9 @@ module pow2.editor {
       // tile gid to paint, or -1 if no painting
       public dragPaint:number = -1;
 
+      // The selected tile to paint
+      private _tileIndex:number = 46;
+
       private activeTool:string = 'move';
 
       public drag:IDragEvent = {
@@ -335,6 +338,16 @@ module pow2.editor {
 
       setMap(tileMap:ITileMap){
          this.tileMap = tileMap;
+      }
+
+      setPaintTile(tileSet:ITileSet,at:pow2.Point){
+         console.log(tileSet,at);
+         var tilesX:number = tileSet.imageSize.x / tileSet.tileSize.x;
+         // y * w + x = tile id from col/row
+         var index = (at.y * tilesX + at.x) + tileSet.firstIndex;
+         if(index > 0 && index < tileSet.tiles.length){
+            this._tileIndex = index;
+         }
       }
 
       loadTextures(tileSets:ITileSet[]){
@@ -461,7 +474,7 @@ module pow2.editor {
          }
          switch(this.activeTool){
             case 'paint':
-               this.dragPaint = 46;
+               this.dragPaint = this._tileIndex;
                var _stopPaint = () => {
                   this.dragPaint = -1;
                   this.$document.off('mouseup touchend',_stopPaint);

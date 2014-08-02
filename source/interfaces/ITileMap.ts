@@ -43,6 +43,7 @@ module pow2.editor {
    export interface ITileSet extends ITileNamed, ITileData {
       tileSize:pow2.Point;
       tiles:ITileData[];
+      firstIndex:number;
    }
 
    // Layers ---

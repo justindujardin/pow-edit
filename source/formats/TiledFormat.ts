@@ -80,6 +80,7 @@ module pow2.editor {
                   tiles:tsr.tiles,
                   url:tsr.url,
                   image:tsr.image,
+                  firstIndex:tsr.firstgid,
                   imageSize:new pow2.Point(tsr.imageWidth,tsr.imageHeight),
                   name:tsr.name
                });

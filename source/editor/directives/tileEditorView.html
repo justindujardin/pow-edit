@@ -1,13 +1,16 @@
 <div class="tile-editor-view">
-    <ul class="layer-list" ng-hide="loading.visible" ng-dblclick="editor.hideEmptyLayers = !editor.hideEmptyLayers">
-        <li ng-repeat="layer in editor.layers track by $index"
-            ng-click="editor.toggleLayerVisibility(layer)"
-            ng-class="{visible:layer.objects.visible,empty:layer.objects.children.length==0,force:editor.hideEmptyLayers}">
-            <a><i></i><span>{{layer.name}}</span></a>
-        </li>
-    </ul>
 
-    <nav class="navbar navbar-inverse" role="navigation">
+    <aside>
+        <ul class="layer-list" ng-hide="loading.visible" ng-dblclick="editor.hideEmptyLayers = !editor.hideEmptyLayers">
+            <li ng-repeat="layer in editor.layers track by $index"
+                ng-click="editor.toggleLayerVisibility(layer)"
+                ng-class="{visible:layer.objects.visible,empty:layer.objects.children.length==0,force:editor.hideEmptyLayers}">
+                <a><i></i><span>{{layer.name}}</span></a>
+            </li>
+        </ul>
+    </aside>
+
+    <nav role="navigation">
         <ul class="toolbox">
             <li ng-class="{active:editor.activeTool=='move'}" ng-click="editor.setTool('move'); $event.stopPropagation();"><i class="fa fa-arrows"></i></li>
             <li ng-class="{active:editor.activeTool=='paint'}" ng-click="editor.setTool('paint'); $event.stopPropagation();"><i class="fa fa-pencil"></i></li>
@@ -15,4 +18,13 @@
             <li ng-class="{active:editor.activeTool=='magic'}" class="disabled"><i class="fa fa-magic"></i></li>
         </ul>
     </nav>
+
+    <section class="tile-sets" ng-if="editor.activeTool=='paint'">
+        <tile-set-tile-picker
+                ng-repeat="set in editor.tileMap.tileSets"
+                url="{{set.url}}"
+                on-pick="editor.setPaintTile(set,tilePoint)"
+                tile-height="{{set.tileSize.y}}"
+                tile-width="{{set.tileSize.x}}"/>
+    </section>
 </div>
