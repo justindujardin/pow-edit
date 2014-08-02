@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-/// <reference path="../../types/underscore/underscore.d.ts"/>
+/// <reference path="../../bower_components/pow-core/lib/pow-core.d.ts"/>
 /// <reference path="../interfaces/ITileMap.ts"/>
 /// <reference path="../interfaces/IMapLoader.ts"/>
 
@@ -51,7 +51,7 @@ module pow2.editor {
                name:tiledDocument.mapName
             };
 
-            var idSortedSets:any = _.sortBy(tiledDocument.tilesets, (o:TiledTSXResource) => {
+            var idSortedSets:any = _.sortBy(tiledDocument.tilesets, (o:pow2.TiledTSXResource) => {
                return o.firstgid;
             });
             _.each(idSortedSets,(tiles:TiledTSXResource) => {

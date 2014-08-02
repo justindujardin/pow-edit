@@ -1,6 +1,6 @@
 ///<reference path="../../types/node/node.d.ts"/>
-///<reference path="../../types/underscore/underscore.d.ts"/>
-///<reference path="../../build/pow-edit.d.ts"/>
+/// <reference path="../../build/pow-edit.d.ts"/>
+/// <reference path="../../bower_components/pow-core/lib/pow-core.d.ts"/>
 module pow2.editor {
 
    "use strict";

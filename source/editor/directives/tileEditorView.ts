@@ -1,4 +1,4 @@
-///<reference path="../../../assets/vendor/pow2/pow2.d.ts"/>
+///<reference path="../../../bower_components/pow-core/lib/pow-core.d.ts"/>
 ///<reference path="../../../types/ace/ace.d.ts"/>
 ///<reference path="../../../types/pixi/PIXI.d.ts"/>
 ///<reference path="../../../types/angular/angular.d.ts"/>

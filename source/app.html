@@ -45,11 +45,10 @@
         var platform = (typeof require !== 'undefined') ? '../build/pow-edit.nw.js' : '../build/pow-edit.browser.js';
         loadScripts([
             "../bower_components/underscore/underscore.js",
+            "../bower_components/pow-core/lib/pow-core.min.js",
             "../bower_components/jquery/dist/jquery.js",
-            "../bower_components/backbone/backbone.js",
             "../assets/vendor/ace/src-min-noconflict/ace.js",
             "../bower_components/showdown/compressed/showdown.js",
-            "../assets/vendor/pow2/pow2.js",
             "../bower_components/pixi/bin/pixi.dev.js",
             "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js",
             platform,
