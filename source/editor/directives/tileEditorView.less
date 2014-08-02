@@ -24,12 +24,13 @@
     }
   }
 
-  nav {
+  nav.toolbox {
     background-color:rgba(0,0,0,0.85);
     position: absolute;
     top: 0;
     left: 0;
-    ul.toolbox {
+    .no-selection;
+    ul {
       padding:0;
       margin:0;
       li{
@@ -53,15 +54,14 @@
     }
   }
 
-  .layer-list {
+  nav.layer-list {
     position: absolute;
     right:0;
     top:0;
     bottom:0;
     width:auto;
     margin:0;
-    padding:5px;
-    list-style-type: none;
+    padding:0;
     overflow-y:auto;
     overflow-x:hidden;
     height:100%;
@@ -69,23 +69,38 @@
     background-color: rgba(34, 34, 34, 0.71);
     text-decoration: none;
     font-family: @font-family-scp;
+    .no-selection;
+    ul {
+      margin:0;
+      padding:0;
+      list-style-type: none;
+    }
     li {
       cursor: pointer;
       width: 100%;
-      height: 20px;
-      padding-left: 5px;
+      height: 30px;
+      padding:5px;
       color: #bbb;
       font-size: 16px;
-      line-height: 20px;
       text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
       text-wrap: none;
       white-space: nowrap;
+      line-height:1.1em;
+      font-size:1em;
+      &.active {
+        background-color:@powBlue;
+      }
+      > a {
+        > i {
+          margin:0 5px;
+        }
+      }
 
       &.visible {
         color:#fff;
         > a {
           > i {
-            .icon(@fa-var-circle);
+            .icon(@fa-var-eye);
           }
         }
       }
@@ -94,7 +109,7 @@
         text-shadow: -1px -1px 0 rgba(0,0,0,0.5);
         > a {
           > i {
-            .icon(@fa-var-circle-o);
+            .icon(@fa-var-eye-slash);
           }
         }
         &.force {
@@ -105,9 +120,7 @@
 
       > a {
         > i {
-          .icon(@fa-var-ban);
-          font-size: 12px;
-          line-height:20px;
+          .icon(@fa-var-eye-slash);
         }
         > span {
           padding-left:5px;

@@ -7,6 +7,8 @@
 ///<reference path="../services/tasks.ts"/>
 ///<reference path="../services/keys.ts"/>
 ///<reference path="../../formats/tiledFormat.ts"/>
+///<reference path="../actions/layerSelectAction.ts"/>
+///<reference path="../actions/layerVisibilityAction.ts"/>
 ///<reference path="../actions/tileEraseAction.ts"/>
 ///<reference path="../actions/tilePaintAction.ts"/>
 
@@ -290,10 +292,13 @@ module pow2.editor {
 
       // Data
       public keyBinds:number[] = [];
-      public layers:any[] = [];
+      public layers:IEditableTileLayer[] = [];
       public spriteTextures:{
          [url:string]:any // PIXI.BaseTexture
       } = {};
+
+      // STATE
+      public activeLayerIndex:number = 0; // Current layer index for tools to act on
 
       // Camera
       public cameraWidth:number;
@@ -341,13 +346,24 @@ module pow2.editor {
       }
 
       setPaintTile(tileSet:ITileSet,at:pow2.Point){
-         console.log(tileSet,at);
          var tilesX:number = tileSet.imageSize.x / tileSet.tileSize.x;
          // y * w + x = tile id from col/row
          var index = (at.y * tilesX + at.x) + tileSet.firstIndex;
          if(index > 0 && index < tileSet.tiles.length){
             this._tileIndex = index;
          }
+      }
+
+      setLayerVisibility(index:number){
+         var layer:IEditableTileLayer = this.layers[index];
+         if(!layer){
+            throw new Error("Invalid layer to toggle visibility of");
+         }
+         this.$actions.executeAction(new LayerVisibilityAction(this,index,!layer.objects.visible));
+      }
+
+      setActiveLayer(index:number) {
+         this.$actions.executeAction(new LayerSelectAction(this,index));
       }
 
       loadTextures(tileSets:ITileSet[]){
@@ -387,10 +403,10 @@ module pow2.editor {
          return new PIXI.Texture(this.spriteTextures[meta.url], frame);
       }
 
-      treeAt(index:number){
-         var layer:IEditableTileLayer = this.layers[0];
-         if(index > layer.tiles.length || index < 0){
-            console.error("treeAt: index out of range");
+      paintAt(index:number){
+         var layer:IEditableTileLayer = this.layers[this.activeLayerIndex];
+         if(!layer || index > layer.tiles.length || index < 0){
+            console.error("paintAt: index out of range");
             return;
          }
          var newGid:number = this.dragPaint;//this.getRandomInt(1,this.tileMap.tileInfo.length - 1); // ?
@@ -419,11 +435,6 @@ module pow2.editor {
          if(this.$actions.executeAction(action)){
             this.setDebugText(action.name);
          }
-      }
-
-      toggleLayerVisibility(layer:IEditableTileLayer){
-         console.log("Toggle layer " + layer.name + " to - " + layer.objects.visible ? "off" : "on");
-         layer.objects.visible = !layer.objects.visible;
       }
 
       resetDrag(){

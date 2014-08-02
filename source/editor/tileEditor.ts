@@ -36,7 +36,7 @@ module pow2.editor {
          this.sprite.mouseover = (mouseData:PIXI.InteractionData) => {
             //console.log(mouseData.target);
             if(this.tileEditor.dragPaint !== -1){
-               this.tileEditor.treeAt(this._tileIndex);
+               this.tileEditor.paintAt(this._tileIndex);
             }
             mouseData.target.tint = 0x00FF00;
          };

@@ -1,17 +1,17 @@
 <div class="tile-editor-view">
 
-    <aside>
-        <ul class="layer-list" ng-hide="loading.visible" ng-dblclick="editor.hideEmptyLayers = !editor.hideEmptyLayers">
+    <nav class="layer-list" ng-hide="loading.visible" ng-dblclick="editor.hideEmptyLayers = !editor.hideEmptyLayers">
+        <ul>
             <li ng-repeat="layer in editor.layers track by $index"
-                ng-click="editor.toggleLayerVisibility(layer)"
-                ng-class="{visible:layer.objects.visible,empty:layer.objects.children.length==0,force:editor.hideEmptyLayers}">
-                <a><i></i><span>{{layer.name}}</span></a>
+                ng-click="editor.setActiveLayer($index)"
+                ng-class="{visible:layer.objects.visible,empty:layer.objects.children.length==0,force:editor.hideEmptyLayers,active:editor.activeLayerIndex==$index}">
+                <a><i ng-click="editor.setLayerVisibility($index);$event.stopPropagation();"></i><span>{{layer.name}}</span></a>
             </li>
         </ul>
-    </aside>
+    </nav>
 
-    <nav role="navigation">
-        <ul class="toolbox">
+    <nav class="toolbox" role="toolbox">
+        <ul>
             <li ng-class="{active:editor.activeTool=='move'}" ng-click="editor.setTool('move'); $event.stopPropagation();"><i class="fa fa-arrows"></i></li>
             <li ng-class="{active:editor.activeTool=='paint'}" ng-click="editor.setTool('paint'); $event.stopPropagation();"><i class="fa fa-pencil"></i></li>
             <li ng-class="{active:editor.activeTool=='erase'}" ng-click="editor.setTool('erase'); $event.stopPropagation();"><i class="fa fa-eraser"></i></li>
@@ -25,6 +25,6 @@
                 url="{{set.url}}"
                 on-pick="editor.setPaintTile(set,tilePoint)"
                 tile-height="{{set.tileSize.y}}"
-                tile-width="{{set.tileSize.x}}"/>
+                tile-width="{{set.tileSize.x}}"></tile-set-tile-picker>
     </section>
 </div>
