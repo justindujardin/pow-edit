@@ -14,7 +14,6 @@
  limitations under the License.
  */
 
-
 module pow2.editor {
 
    export interface IAppPlatform {
