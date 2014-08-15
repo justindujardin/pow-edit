@@ -40,29 +40,7 @@ module pow2.editor {
       bind(combination:string, callback, opt?:IKeyBindOptions):any;
       unbind(bindingId:number):any;
    }
-   
-   // Work around for stupid Shift key bug created by using lowercase - as a result the shift+num combination was broken
-   var SHIFT_NUMS = {
-      "`":"~",
-      "1":"!",
-      "2":"@",
-      "3":"#",
-      "4":"$",
-      "5":"%",
-      "6":"^",
-      "7":"&",
-      "8":"*",
-      "9":"(",
-      "0":")",
-      "-":"_",
-      "=":"+",
-      ";":":",
-      "'":"\"",
-      ",":"<",
-      ".":">",
-      "/":"?",
-      "\\":"|"
-   };
+
    // Special Keys - and their codes
    var SPECIAL_KEYS = {
       ESC:27,
@@ -235,10 +213,6 @@ module pow2.editor {
                } else if(character == k) {
                   // The special keys did not match
                   kp++;
-               }
-               else if(SHIFT_NUMS[character] && e.shiftKey) { // Stupid Shift key bug created by using lowercase
-                  character = SHIFT_NUMS[character];
-                  if(character == k) kp++;
                }
             });
             if(kp == keys.length &&
