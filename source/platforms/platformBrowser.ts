@@ -18,7 +18,7 @@
 
 module pow2.editor {
 
-   export var app = angular.module("PowEdit", [
+   export var app = angular.module("pow-edit", [
       'templates-ui',
       'uiTree',
       'uiSplitter'
@@ -40,7 +40,7 @@ module pow2.editor {
                // when the response is available
             }).
             error(function(data, status, headers, config) {
-               console.error(status);
+               done(null);
                // called asynchronously if an error occurs
                // or server returns response with an error status.
             });

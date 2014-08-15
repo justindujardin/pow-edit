@@ -45,6 +45,15 @@ module.exports = function(grunt) {
             files:{
                'build/<%= pkg.name %>.server.js':'source/server/server.ts'
             }
+         },
+         tests: {
+            src: [
+               "test/fixtures/*.ts",
+               "test/fixtures/**/*.ts",
+               "test/*.ts",
+               "test/**/*.ts"
+            ],
+            dest: 'build/test/<%= pkg.name %>.tests.js'
          }
       },
 
@@ -88,6 +97,12 @@ module.exports = function(grunt) {
             options: {
                nospawn: true
             }
+         },
+         tests: {
+            files: [
+               '<%= typescript.tests.src %>'
+            ],
+            tasks: ['typescript:tests']
          },
 
          outputs: {
@@ -174,8 +189,26 @@ module.exports = function(grunt) {
          options: {
             commitMessage: 'chore(attribution): update contributors'
          }
+      },
+
+      /**
+       * Code Coverage
+       */
+      coveralls: {
+         options: {
+            coverage_dir: '.coverage/',
+            debug: process.env.TRAVIS ? false : true,
+            dryRun: process.env.TRAVIS ? false : true,
+            force: true,
+            recursive: true
+         }
       }
+
    });
+
+   // Testing
+   grunt.loadNpmTasks('grunt-karma-coveralls');
+
 
    // Release/Deploy
    grunt.loadNpmTasks('grunt-bump');

@@ -39,7 +39,7 @@ module pow2.editor {
             restrict: "E",
             replace: true,
             templateUrl: "source/editor/directives/tileEditorView.html",
-            require:["tileEditorView","^documentView"],
+            require:["tileEditorView","?^documentView"],
             controller:TileEditorController,
             controllerAs:'editor',
             compile:(element,attributes) => {
@@ -48,6 +48,9 @@ module pow2.editor {
                return (scope, element, attributes:any,controllers:any[]) => {
                   var tileEditor:TileEditorController = controllers[0];
                   var documentViewController:DocumentViewController = controllers[1];
+                  if(!documentViewController){
+                     console.log("No DocumentViewController found for editor.  Some loading information will be unavailable.");
+                  }
 
                   var t:pow2.editor.ITileMap = null;
 
@@ -78,7 +81,9 @@ module pow2.editor {
                         tileEditor.destroyStage(stage);
                      }
                      tileEditor.sceneContainer = new PIXI.DisplayObjectContainer();
-                     documentViewController.showLoading('Loading...');
+                     if(documentViewController){
+                        documentViewController.showLoading('Loading...');
+                     }
                      $platform.readFile(newUrl,(data) => {
                         var promise:ng.IPromise<ITileMap> = tileEditor.loader.load(newUrl,data);
                         promise.then((tileMap:ITileMap)=>{
@@ -142,7 +147,9 @@ module pow2.editor {
                      // Each layer
                      angular.forEach(t.layers,(l:pow2.editor.ITileLayer,index:number) => {
                         $tasks.add(() => {
-                           documentViewController.setLoadingDetails(l.name);
+                           if(documentViewController){
+                              documentViewController.setLoadingDetails(l.name);
+                           }
                            var editable:IEditableTileLayer = tileEditor.layers[index];
                            var container = editable.objects;
                            if(l.tiles){
@@ -188,14 +195,20 @@ module pow2.editor {
                      stage.addChild(tileEditor.sceneContainer);
 
                      var total:number = $tasks.getRemainingTasks(t.name);
-                     documentViewController.setLoadingTitle("Building Map...");
-                     documentViewController.setTotal(total);
+                     if(documentViewController){
+                        documentViewController.setLoadingTitle("Building Map...");
+                        documentViewController.setTotal(total);
+                     }
                      tileEditor.unwatchProgress = $interval(()=>{
-                        documentViewController.setCurrent(total - $tasks.getRemainingTasks(t.name));
+                        if(documentViewController){
+                           documentViewController.setCurrent(total - $tasks.getRemainingTasks(t.name));
+                        }
                      },50);
 
                      $tasks.add(() => {
-                        documentViewController.hideLoading();
+                        if(documentViewController){
+                           documentViewController.hideLoading();
+                        }
                         $interval.cancel(tileEditor.unwatchProgress);
                         return true;
                      },t.name);
@@ -327,8 +340,6 @@ module pow2.editor {
 
       // Rendering
       public renderer:any;
-
-      public hideEmptyLayers:boolean = true;
 
       // Scenegraph
       public sceneContainer:any = null;

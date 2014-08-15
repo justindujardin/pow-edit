@@ -52,7 +52,7 @@ module pow2.editor {
       }
 
       private _updateProgressStyle() {
-         var value = (this.total > 0) ? ((this.current / this.total) * 100) : 0;
+         var value = this.getPercent();
          this.barStyle = {width:value + "%"};
       }
 
@@ -82,6 +82,9 @@ module pow2.editor {
       setCurrent(value:number){
          this.current = value;
          this._updateProgressStyle();
+      }
+      getPercent():number {
+         return (this.total > 0) ? ((this.current / this.total) * 100) : 0;
       }
 
    }

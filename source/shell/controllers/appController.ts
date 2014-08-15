@@ -21,52 +21,21 @@ module pow2.editor {
 
    declare var requestAnimFrame:any;
 
-   app.controller('AppController', [
-      '$scope',
-      '$tasks',
-      '$platform',
-      'rootPath',
-      function($scope,$tasks:pow2.editor.TasksService,$platform:IAppPlatform,rootPath) {
-         $scope.document = {
-            extension:'md',
-            displayName:'README.md',
-            location:rootPath + '/../../README.md',
-            path:rootPath + '/../../'
-         };
+   export class AppController {
+      static $inject:string[] = [
+         '$scope',
+         '$tasks',
+         '$platform',
+         'rootPath'
+      ];
+      public document:IDocument;
+      private _id:number = 1337;
+      constructor(public $scope:any,
+                  public $tasks:TasksService,
+                  public $platform:IAppPlatform,
+                  public rootPath:string){
 
-         $scope.getDocumentType = ():string => {
-            switch($scope.document.extension.toLowerCase()){
-               case 'png':
-               case 'gif':
-               case 'jpg':
-               case 'jpeg':
-               case 'bmp':
-                  return 'image';
-               case 'tmx':
-                  return 'tiled';
-               case 'md':
-               case 'markdown':
-                  return 'markdown';
-               default:
-                  return 'unknown';
-            }
-         };
-
-         var id = 1337;
-         $scope.makeNode = (file:IFileInfo,depth:number) => {
-            var result:any = {
-               label: file.name,
-               id:id++,
-               data:file,
-               depth:depth
-            };
-            if(file.children){
-               result.children = file.children.map((f:IFileInfo) => {
-                  return $scope.makeNode(f,depth+1);
-               });
-            }
-            return result;
-         };
+         // ENUMERATE Files for Tree
          $platform.enumPath(rootPath,(error:any,fileList?:IFileInfo[]) => {
             var mountFiles:any[] = [];
             angular.forEach(fileList,(file:IFileInfo) => {
@@ -74,32 +43,34 @@ module pow2.editor {
                if(file.name[0] === '.'){
                   return;
                }
-               mountFiles.push($scope.makeNode(file,0));
+               mountFiles.push(this.makeNode(file,0));
             });
             $scope.mount = mountFiles;
             $scope.$$phase || $scope.$digest();
          });
-         $scope.selectFile = (node:any) => {
-            var file:IFileInfo = node.data;
-            $scope.document.extension = file.name.split('.').pop();
-            $scope.document.displayName = file.full;
-            $scope.document.location = file.full;
-            $scope.document.path = file.path;
-            $scope.document.data = null;
-            if(!file.children || !file.children.length){
-               $scope.mapUrl = null;
-               $platform.readFile(file.full, (data:any) => {
-                  $platform.setTitle(file.full);
-                  $scope.document.data = data;
-                  $scope.$$phase || $scope.$digest();
-               });
-            }
+         // ACT when clicking on Files in tree
+
+
+         // Expose information about the current document.
+         //
+         // TODO: Document manager.  Should support multiple
+         // documents AND have a notion of the active one.
+         this.document = {
+            extension:'md',
+            type:this.getDocumentType('md'),
+            dirty:false,
+            file:'README.md',
+            url:rootPath + '/../../README.md',
+            path:rootPath + '/../../',
+            data:null
          };
 
 
+         // TODO: Move to ace specific editors
          var UndoManager:any = ace.require("ace/undomanager").UndoManager;
          $scope.history = new UndoManager();
 
+         // TODO: Use pow time class for RAF updates.
          var scopeDestroyed:boolean = false;
          /**
           * Process loop
@@ -110,10 +81,64 @@ module pow2.editor {
                requestAnimationFrame(animate);
             }
          }
+
          requestAnimFrame(animate);
-         return $scope.$on("$destroy", function() {
+         $scope.$on("$destroy", function() {
             scopeDestroyed = true;
          });
+         return this;
       }
-   ]);
+
+      getDocumentType (type:string = this.document.extension):string {
+         switch(type.toLowerCase()){
+            case 'png':
+            case 'gif':
+            case 'jpg':
+            case 'jpeg':
+            case 'bmp':
+               return 'image';
+            case 'tmx':
+               return 'tiled';
+            case 'md':
+            case 'markdown':
+               return 'markdown';
+            default:
+               return 'unknown';
+         }
+      }
+
+      makeNode(file:IFileInfo,depth:number) {
+         var result:any = {
+            label: file.name,
+            id:this._id++,
+            data:file,
+            depth:depth
+         };
+         if(file.children){
+            result.children = file.children.map((f:IFileInfo) => {
+               return this.makeNode(f,depth+1);
+            });
+         }
+         return result;
+      }
+      selectFile(node:any) {
+         var file:IFileInfo = node.data;
+         this.document.extension = file.name.split('.').pop();
+         this.document.file = file.name;
+         this.document.url = file.full;
+         this.document.path = file.path;
+         this.document.data = null;
+         if(!file.children || !file.children.length){
+            this.$scope.mapUrl = null;
+            this.$platform.readFile(file.full, (data:any) => {
+               this.$platform.setTitle(file.full);
+               this.document.data = data;
+               this.document.type = this.getDocumentType(this.document.extension);
+               this.$scope.$$phase || this.$scope.$digest();
+            });
+         }
+      }
+   }
+
+   app.controller('AppController', AppController);
 }

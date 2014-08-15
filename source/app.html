@@ -5,16 +5,14 @@
     <title>pow-edit</title>
     <link rel="stylesheet" href="../build/pow-edit.css">
 </head>
-<body ng-controller="AppController">
+<body ng-controller="AppController as app">
 
 <bg-splitter orientation="horizontal" class="content">
     <bg-pane min-size="150" class="">
-        <pane-item name="Files" class="files">
-            <treecontrol tree-model="mount" node-children="children" on-selection="selectFile(node)">{{node.label}}</treecontrol>
-        </pane-item>
+        <treecontrol tree-model="mount" node-children="children" on-selection="app.selectFile(node)">{{node.label}}</treecontrol>
     </bg-pane>
     <bg-pane min-size="200">
-        <document-view type="getDocumentType()" source="document"></document-view>
+        <document-view type="app.getDocumentType()" source="app.document"></document-view>
     </bg-pane>
 </bg-splitter>
 <script type="text/javascript">

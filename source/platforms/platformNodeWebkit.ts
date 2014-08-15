@@ -44,7 +44,8 @@ module pow2.editor {
       readFile(location:string,done:(data:any) => any){
          fs.readFile(location,(err,data) => {
             if(err){
-               console.error(err);
+               done(null);
+               return;
             }
             done('' + data);
          });

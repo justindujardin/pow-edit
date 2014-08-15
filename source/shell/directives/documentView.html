@@ -1,4 +1,4 @@
-<div class="document-view" ng-switch="getDocumentType()">
+<div class="document-view" ng-switch="app.getDocumentType()">
     <div class="notify" ng-if="loading.visible">
         <div class="fill" ng-style="loading.barStyle"></div>
         <div class="message">
@@ -8,20 +8,20 @@
     </div>
     <tile-editor-view
             ng-switch-when="tiled"
-            url="document.location">
+            url="app.document.url">
     </tile-editor-view>
     <markdown-editor-view
             ng-switch-when="markdown"
-            url="document.location">
+            url="app.document.url">
     </markdown-editor-view>
     <image-editor-view
             ng-switch-when="image"
             class="image-view">
-        <img ng-src="../{{document.location}}"/>
+        <img ng-src="../{{app.document.url}}"/>
     </image-editor-view>
     <text-editor-view
             ng-switch-default
-            ng-model="document.data"
+            ng-model="app.document.data"
             history="history">
     </text-editor-view>
 </div>

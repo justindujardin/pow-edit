@@ -1,10 +1,10 @@
 <div class="tile-editor-view">
 
-    <nav class="layer-list" ng-hide="loading.visible" ng-dblclick="editor.hideEmptyLayers = !editor.hideEmptyLayers">
+    <nav class="layer-list" ng-hide="loading.visible">
         <ul>
             <li ng-repeat="layer in editor.layers track by $index"
                 ng-click="editor.setActiveLayer($index)"
-                ng-class="{visible:layer.objects.visible,empty:layer.objects.children.length==0,force:editor.hideEmptyLayers,active:editor.activeLayerIndex==$index}">
+                ng-class="{visible:layer.objects.visible,empty:layer.objects.children.length==0,active:editor.activeLayerIndex==$index}">
                 <a><i ng-click="editor.setLayerVisibility($index);$event.stopPropagation();"></i><span>{{layer.name}}</span></a>
             </li>
         </ul>
