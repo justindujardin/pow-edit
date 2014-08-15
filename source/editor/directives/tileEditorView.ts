@@ -283,19 +283,23 @@ module pow2.editor {
          public $actions:pow2.editor.IActionsService) {
          super();
          this.loader = this.$injector.instantiate(TiledMapLoader);
-         var i:number =0;
-         this.keyBinds.push($keys.bind('ctrl+z',(e)=>{
-            var action:IAction = this.$actions.undo();
-            if(action){
-               this.setDebugText('Undo ' + action.name);
-            }
-         }));
-         this.keyBinds.push($keys.bind('ctrl+shift+z',(e)=>{
-            var action:IAction = this.$actions.redo();
-            if(action){
-               this.setDebugText('Redo ' + action.name);
-            }
-         }));
+
+         angular.forEach(['ctrl+z','cmd+z'],(c:string)=>{
+            this.keyBinds.push($keys.bind(c,()=>{
+               var action:IAction = this.$actions.undo();
+               if(action){
+                  this.setDebugText('Undo ' + action.name);
+               }
+            }));
+         });
+         angular.forEach(['ctrl+shift+z','cmd+shift+z'],(c:string)=>{
+            this.keyBinds.push($keys.bind(c,(e)=>{
+               var action:IAction = this.$actions.redo();
+               if(action){
+                  this.setDebugText('Redo ' + action.name);
+               }
+            }));
+         });
       }
 
 
