@@ -19,10 +19,12 @@ module pow2.editor {
             },
             templateUrl:"source/shell/directives/editors/textEditorView.html",
             link: ($scope, $el, attrs:any, model) => {
+               var UndoManager:any = ace.require("ace/undomanager").UndoManager;
+               var history:AceAjax.UndoManager = new UndoManager();
                var editor:AceAjax.Editor = new Editor(new Renderer($el[0], "ace/theme/tomorrow_night"));
                var session:AceAjax.IEditSession = editor.getSession();
                session.setMode(attrs.mode || "ace/mode/xml");
-               session.setUndoManager(<AceAjax.UndoManager>$scope.history);
+               session.setUndoManager(history);
                model.$render = function() {
                   return session.setValue(model.$modelValue);
                };

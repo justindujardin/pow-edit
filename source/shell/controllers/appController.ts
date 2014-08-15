@@ -65,11 +65,6 @@ module pow2.editor {
             data:null
          };
 
-
-         // TODO: Move to ace specific editors
-         var UndoManager:any = ace.require("ace/undomanager").UndoManager;
-         $scope.history = new UndoManager();
-
          // TODO: Use pow time class for RAF updates.
          var scopeDestroyed:boolean = false;
          /**
