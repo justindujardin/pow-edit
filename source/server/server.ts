@@ -14,8 +14,8 @@
  limitations under the License.
  */
 ///<reference path="../../types/node/node.d.ts"/>
-/// <reference path="../../build/pow-edit.d.ts"/>
-/// <reference path="../../bower_components/pow-core/lib/pow-core.d.ts"/>
+/// <reference path="../../assets/build/pow-edit.d.ts"/>
+/// <reference path="../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
 module pow2.editor {
 
    "use strict";

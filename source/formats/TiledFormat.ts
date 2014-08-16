@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-/// <reference path="../../bower_components/pow-core/lib/pow-core.d.ts"/>
+/// <reference path="../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
 /// <reference path="../interfaces/ITileMap.ts"/>
 /// <reference path="../interfaces/IMapLoader.ts"/>
 

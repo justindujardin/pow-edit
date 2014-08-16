@@ -24,7 +24,7 @@ module pow2.editor {
       'uiSplitter'
    ]);
 
-   app.value('rootPath','../assets/maps');
+   app.value('rootPath','app://pow-edit/');
 
    app.factory('$platform', ['$http', ($http):IAppPlatform => {
       return new PlatformBrowser($http);

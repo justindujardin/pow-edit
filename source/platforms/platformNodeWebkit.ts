@@ -22,14 +22,16 @@ module pow2.editor {
    var path = require('path');
    var gui:any = require('nw.gui');
 
+   export var APP_PROTOCOL_PATH:string = 'app://pow-edit/';
 
-   export var app = angular.module("PowEdit", [
+
+   export var app = angular.module("pow-edit", [
       'templates-ui',
       'uiTree',
       'uiSplitter'
    ]);
 
-   app.value('rootPath','./assets/maps/');
+   app.value('rootPath',pow2.editor.APP_PROTOCOL_PATH);
 
 
    app.factory('$platform', ():IAppPlatform => {
@@ -41,7 +43,13 @@ module pow2.editor {
       constructor() {
          this.win = gui.Window.get();
       }
+
+      appToFilePath(location:string):string {
+         return location.replace(pow2.editor.APP_PROTOCOL_PATH,process.cwd() + '/');
+      }
       readFile(location:string,done:(data:any) => any){
+         location = this.appToFilePath(location);
+         console.log(location);
          fs.readFile(location,(err,data) => {
             if(err){
                done(null);
@@ -54,18 +62,8 @@ module pow2.editor {
          return path.dirname(location);
       }
 
-      /**
-       * The current build output is in the build/ directory, so
-       * make inputs relative to one up from there.
-       *
-       *    var url = platform.getMountPath('assets/images/some.png');
-       *    var img = new Image();
-       *    img.src = url;
-       *
-       * TODO: This is pretty bad.  Do something less... bad.
-       */
       getMountPath(fromBase:string):string {
-         return '../' + fromBase;
+         return fromBase;
       }
 
       normalizePath(url:string):string{
@@ -74,6 +72,7 @@ module pow2.editor {
 
       enumPath(location:string,done:(err:any,files?:IFileInfo[]) => any) {
          var results:IFileInfo[] = [];
+         location = this.appToFilePath(location);
          fs.readdir(location, (err, list) => {
             if (err) {
                return done(err);
@@ -95,7 +94,7 @@ module pow2.editor {
                      this.enumPath(name, (err:any, res?:IFileInfo[]) => {
 
                         // Sort by folder/file and alpha files.
-                        result.children = res.sort((a,b)=>{
+                        result.children = <IFileInfo[]>res.sort((a:any,b:any)=>{
                            if(!a.children || a.children.length === 0){
                               return 1;
                            }

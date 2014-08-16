@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>pow-edit</title>
-    <link rel="stylesheet" href="../build/pow-edit.css">
+    <link rel="stylesheet" href="./build/pow-edit.css">
 </head>
 <body ng-controller="AppController as app">
 
@@ -40,20 +40,20 @@
         _next();
     }
     window.onload = function() {
-        var platform = (typeof require !== 'undefined') ? '../build/pow-edit.nw.js' : '../build/pow-edit.browser.js';
+        var platform = (typeof require !== 'undefined') ? './build/pow-edit.nw.js' : './build/pow-edit.browser.js';
         loadScripts([
-            "../bower_components/underscore/underscore.js",
-            "../bower_components/pow-core/lib/pow-core.min.js",
-            "../bower_components/jquery/dist/jquery.js",
-            "../assets/vendor/ace/src-min-noconflict/ace.js",
-            "../bower_components/showdown/compressed/showdown.js",
-            "../bower_components/pixi/bin/pixi.dev.js",
+            "./bower_components/underscore/underscore.js",
+            "./bower_components/pow-core/lib/pow-core.min.js",
+            "./bower_components/jquery/dist/jquery.js",
+            "./vendor/ace/src-min-noconflict/ace.js",
+            "./bower_components/showdown/compressed/showdown.js",
+            "./bower_components/pixi/bin/pixi.dev.js",
             "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js",
             platform,
-            "../build/pow-edit.js",
-            "../build/pow-edit.ui.js"
+            "./build/pow-edit.js",
+            "./build/pow-edit.ui.js"
         ],function(){
-            angular.bootstrap(document, ["PowEdit"]);
+            angular.bootstrap(document, ["pow-edit"]);
         });
     };
 </script>

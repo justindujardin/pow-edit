@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../../../bower_components/pow-core/lib/pow-core.d.ts"/>
+///<reference path="../../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
 ///<reference path="../../../types/ace/ace.d.ts"/>
 ///<reference path="../../../types/pixi/PIXI.d.ts"/>
 ///<reference path="../../../types/angular/angular.d.ts"/>
