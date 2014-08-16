@@ -47,6 +47,7 @@ module pow2.editor {
             });
             $scope.mount = mountFiles;
             $scope.$$phase || $scope.$digest();
+            $scope.$emit('fs-enumerated');
          });
          // ACT when clicking on Files in tree
 
@@ -59,9 +60,9 @@ module pow2.editor {
             extension:'md',
             type:this.getDocumentType('md'),
             dirty:false,
-            file:'README.md',
-            url:rootPath + '/../../README.md',
-            path:rootPath + '/../../',
+            file:'about.md',
+            url:rootPath + 'about.md',
+            path:rootPath,
             data:null
          };
 
@@ -102,7 +103,7 @@ module pow2.editor {
          }
       }
 
-      makeNode(file:IFileInfo,depth:number) {
+      makeNode(file:IFileInfo,depth:number=0) {
          var result:any = {
             label: file.name,
             id:this._id++,
@@ -130,6 +131,7 @@ module pow2.editor {
                this.document.data = data;
                this.document.type = this.getDocumentType(this.document.extension);
                this.$scope.$$phase || this.$scope.$digest();
+               this.$scope.$emit('document-loaded');
             });
          }
       }
