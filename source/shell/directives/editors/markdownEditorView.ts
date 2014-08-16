@@ -18,6 +18,9 @@ module pow2.editor {
                   return;
                }
                $platform.readFile(url,(data:any) => {
+                  if(!data){
+                     data = "#Error Reading File: " + url;
+                  }
                   scope.markdownRendered = $sce.trustAsHtml(renderer.makeHtml(data));
                   scope.$$phase || scope.$digest();
                });
