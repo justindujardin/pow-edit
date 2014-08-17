@@ -40,16 +40,13 @@ module pow2.editor {
 
    export class PlatformNodeWebkit implements IAppPlatform {
       win:any;
+      appRoot:string = process.cwd() + '/';
       constructor() {
          this.win = gui.Window.get();
       }
 
-      appToFilePath(location:string):string {
-         return location.replace(pow2.editor.APP_PROTOCOL_PATH,process.cwd() + '/');
-      }
       readFile(location:string,done:(data:any) => any){
-         location = this.appToFilePath(location);
-         console.log(location);
+         location = this.pathAsFile(location);
          fs.readFile(location,(err,data) => {
             if(err){
                done(null);
@@ -62,17 +59,27 @@ module pow2.editor {
          return path.dirname(location);
       }
 
-      getMountPath(fromBase:string):string {
-         return fromBase;
-      }
-
       normalizePath(url:string):string{
          return path.normalize(url);
       }
 
+      pathAsAppProtocol(url:string):string {
+         if(url.indexOf(pow2.editor.APP_PROTOCOL_PATH) === -1){
+            url = url.replace(this.appRoot,pow2.editor.APP_PROTOCOL_PATH);
+         }
+         return url;
+      }
+      pathAsFile(url:string):string {
+         if(url.indexOf(pow2.editor.APP_PROTOCOL_PATH) === 0){
+            url = url.replace(pow2.editor.APP_PROTOCOL_PATH,this.appRoot);
+         }
+         return url
+      }
+
+
       enumPath(location:string,done:(err:any,files?:IFileInfo[]) => any) {
          var results:IFileInfo[] = [];
-         location = this.appToFilePath(location);
+         location = this.pathAsFile(location);
          fs.readdir(location, (err, list) => {
             if (err) {
                return done(err);
@@ -85,8 +92,8 @@ module pow2.editor {
                var name = path.join(location,file);
                var result:IFileInfo = {
                   name:file,
-                  path:location,
-                  full:name
+                  path:this.pathAsAppProtocol(location),
+                  full:this.pathAsAppProtocol(name)
                };
                results.push(result);
                fs.stat(name, (err, stat) => {

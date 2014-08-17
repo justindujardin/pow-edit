@@ -24,7 +24,7 @@ module pow2.editor {
       'uiSplitter'
    ]);
 
-   app.value('rootPath','app://pow-edit/');
+   app.value('rootPath','/');
 
    app.factory('$platform', ['$http', ($http):IAppPlatform => {
       return new PlatformBrowser($http);
@@ -48,12 +48,13 @@ module pow2.editor {
       getDirName(location:string):string {
          return location.substr(0,location.lastIndexOf('/'));
       }
-      getMountPath(fromBase:string):string {
-         return '../../' + fromBase;
-      }
       normalizePath(url:string):string{
          return url;
       }
+
+      pathAsAppProtocol(url:string):string { return url; }
+      pathAsFile(url:string):string { return url; }
+
       enumPath(location:string,done:(err:any,files?:IFileInfo[]) => any) {
          this.$http({method: 'GET', url: '/files'}).
             success(function(data, status, headers, config) {

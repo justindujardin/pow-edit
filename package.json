@@ -25,14 +25,6 @@
   "scripts": {
     "test": "npm install && ./node_modules/.bin/grunt"
   },
-  "main": "source/app.html",
-  "window": {
-    "width": 1024,
-    "height": 768,
-    "show": true,
-    "title": "pow-edit / loading",
-    "toolbar": true
-  },
   "devDependencies": {
     "grunt-contrib-watch": "~0.5.3",
     "grunt-cli": "~0.1.10",

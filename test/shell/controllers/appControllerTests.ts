@@ -20,8 +20,9 @@ describe("pow2.editor.AppController",()=>{
             readFile: (location:string,done:(data:any) => any) => { setTimeout(()=>{ done(selectedFileData); },100); },
             setTitle:(text:string) => {},
             getDirName:(location:string):string => { return location; },
-            getMountPath:(fromBase:string):string => { return fromBase; },
-            normalizePath:(url:string):string => { return url; }
+            normalizePath:(url:string):string => { return url; },
+            pathAsAppProtocol:(url:string):string => { return url; },
+            pathAsFile:(url:string):string => { return url; }
          }
       });
    }));

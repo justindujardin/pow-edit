@@ -26,8 +26,10 @@
 @import "editor/directives/tileEditorView";
 
 @import "fontawesome/less/font-awesome";
-@fa-font-path:'app://pow-edit/bower_components/fontawesome/fonts';
+@fa-font-path:'../bower_components/fontawesome/fonts';
 @powBlue:#004c62;
+@powBgDark:#5d5f60;
+@powBgLight:#ededff;
 
 .no-selection {
   -webkit-touch-callout: none;
@@ -74,7 +76,7 @@ body, html {
   font-family:@font-family-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  background-color: #222;
+  background-color: @powBgDark;
   .box-sizing(border-box);
   * {
     .box-sizing(border-box);
@@ -99,71 +101,71 @@ body, html {
 /* Source Code Pro Font */
 @font-face {
   font-family : "SourceCodePro-Black";
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Black.eot");
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Black.eot?#iefix") format("embedded-opentype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Black.otf.woff") format("woff"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Black.ttf.woff") format("truetype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Black.svg#pow2") format("svg");
+  src:url("../fonts/scp/SourceCodePro-Black.eot");
+  src:url("../fonts/scp/SourceCodePro-Black.eot?#iefix") format("embedded-opentype"),
+  url("../fonts/scp/SourceCodePro-Black.otf.woff") format("woff"),
+  url("../fonts/scp/SourceCodePro-Black.ttf.woff") format("truetype"),
+  url("../fonts/scp/SourceCodePro-Black.svg#pow2") format("svg");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family : "SourceCodePro-Bold";
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Bold.eot");
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Bold.eot?#iefix") format("embedded-opentype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Bold.otf.woff") format("woff"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Bold.ttf.woff") format("truetype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Bold.svg#pow2") format("svg");
+  src:url("../fonts/scp/SourceCodePro-Bold.eot");
+  src:url("../fonts/scp/SourceCodePro-Bold.eot?#iefix") format("embedded-opentype"),
+  url("../fonts/scp/SourceCodePro-Bold.otf.woff") format("woff"),
+  url("../fonts/scp/SourceCodePro-Bold.ttf.woff") format("truetype"),
+  url("../fonts/scp/SourceCodePro-Bold.svg#pow2") format("svg");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family : "SourceCodePro-Semibold";
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Semibold.eot");
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Semibold.eot?#iefix") format("embedded-opentype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Semibold.otf.woff") format("woff"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Semibold.ttf.woff") format("truetype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Semibold.svg#pow2") format("svg");
+  src:url("../fonts/scp/SourceCodePro-Semibold.eot");
+  src:url("../fonts/scp/SourceCodePro-Semibold.eot?#iefix") format("embedded-opentype"),
+  url("../fonts/scp/SourceCodePro-Semibold.otf.woff") format("woff"),
+  url("../fonts/scp/SourceCodePro-Semibold.ttf.woff") format("truetype"),
+  url("../fonts/scp/SourceCodePro-Semibold.svg#pow2") format("svg");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family : "SourceCodePro-Medium";
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Medium.eot");
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Medium.eot?#iefix") format("embedded-opentype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Medium.otf.woff") format("woff"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Medium.ttf.woff") format("truetype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Medium.svg#pow2") format("svg");
+  src:url("../fonts/scp/SourceCodePro-Medium.eot");
+  src:url("../fonts/scp/SourceCodePro-Medium.eot?#iefix") format("embedded-opentype"),
+  url("../fonts/scp/SourceCodePro-Medium.otf.woff") format("woff"),
+  url("../fonts/scp/SourceCodePro-Medium.ttf.woff") format("truetype"),
+  url("../fonts/scp/SourceCodePro-Medium.svg#pow2") format("svg");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family : "SourceCodePro-Regular";
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Regular.eot");
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Regular.eot?#iefix") format("embedded-opentype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Regular.otf.woff") format("woff"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Regular.ttf.woff") format("truetype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Regular.svg#pow2") format("svg");
+  src:url("../fonts/scp/SourceCodePro-Regular.eot");
+  src:url("../fonts/scp/SourceCodePro-Regular.eot?#iefix") format("embedded-opentype"),
+  url("../fonts/scp/SourceCodePro-Regular.otf.woff") format("woff"),
+  url("../fonts/scp/SourceCodePro-Regular.ttf.woff") format("truetype"),
+  url("../fonts/scp/SourceCodePro-Regular.svg#pow2") format("svg");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family : "SourceCodePro-Light";
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Light.eot");
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-Light.eot?#iefix") format("embedded-opentype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Light.otf.woff") format("woff"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Light.ttf.woff") format("truetype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-Light.svg#pow2") format("svg");
+  src:url("../fonts/scp/SourceCodePro-Light.eot");
+  src:url("../fonts/scp/SourceCodePro-Light.eot?#iefix") format("embedded-opentype"),
+  url("../fonts/scp/SourceCodePro-Light.otf.woff") format("woff"),
+  url("../fonts/scp/SourceCodePro-Light.ttf.woff") format("truetype"),
+  url("../fonts/scp/SourceCodePro-Light.svg#pow2") format("svg");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family : "SourceCodePro-ExtraLight";
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-ExtraLight.eot");
-  src:url("app://pow-edit/fonts/scp/SourceCodePro-ExtraLight.eot?#iefix") format("embedded-opentype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-ExtraLight.otf.woff") format("woff"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-ExtraLight.ttf.woff") format("truetype"),
-  url("app://pow-edit/fonts/scp/SourceCodePro-ExtraLight.svg#pow2") format("svg");
+  src:url("../fonts/scp/SourceCodePro-ExtraLight.eot");
+  src:url("../fonts/scp/SourceCodePro-ExtraLight.eot?#iefix") format("embedded-opentype"),
+  url("../fonts/scp/SourceCodePro-ExtraLight.otf.woff") format("woff"),
+  url("../fonts/scp/SourceCodePro-ExtraLight.ttf.woff") format("truetype"),
+  url("../fonts/scp/SourceCodePro-ExtraLight.svg#pow2") format("svg");
   font-weight: normal;
   font-style: normal;
 }

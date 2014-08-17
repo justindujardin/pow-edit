@@ -23,10 +23,18 @@ module pow2.editor {
                var history:AceAjax.UndoManager = new UndoManager();
                var editor:AceAjax.Editor = new Editor(new Renderer($el[0], "ace/theme/tomorrow_night"));
                var session:AceAjax.IEditSession = editor.getSession();
+//
+//               var modelist = ace.require('ace/ext/modelist')
+//               var filePath = 'blahblah/weee/some.js'
+//               var mode = modelist.getModeForPath(filePath).mode
+//               editor.session.setMode(mode)
+//
                session.setMode(attrs.mode || "ace/mode/xml");
                session.setUndoManager(history);
                model.$render = function() {
-                  return session.setValue(model.$modelValue);
+                  if(model.$modelValue){
+                     return session.setValue(model.$modelValue);
+                  }
                };
                var updateViewValue = () => {
                   $rootScope.$$phase || $scope.$$phase || $scope.$apply(() => {

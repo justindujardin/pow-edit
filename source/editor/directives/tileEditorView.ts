@@ -21,7 +21,7 @@
 ///<reference path="../services/actions.ts"/>
 ///<reference path="../services/tasks.ts"/>
 ///<reference path="../services/keys.ts"/>
-///<reference path="../../formats/tiledFormat.ts"/>
+///<reference path="../../formats/TiledLoader.ts"/>
 ///<reference path="../actions/layerSelectAction.ts"/>
 ///<reference path="../actions/layerVisibilityAction.ts"/>
 ///<reference path="../actions/tileEraseAction.ts"/>
@@ -57,13 +57,13 @@ module pow2.editor {
                   tileEditor.init(element);
                   // create an new instance of a pixi stage
                   var stage = new PIXI.Stage(0x111111, true);
-                  var newUrl:string = source(scope);
+                  var newUrl:string = $platform.pathAsAppProtocol(source(scope));
 
                   /**
                    * Data binding
                    */
                   var updateView = (value) => {
-                     newUrl = source(scope);
+                     newUrl = $platform.pathAsAppProtocol(source(scope));
                      if(!newUrl){
                         return;
                      }
@@ -84,15 +84,13 @@ module pow2.editor {
                      if(documentViewController){
                         documentViewController.showLoading('Loading...');
                      }
-                     $platform.readFile(newUrl,(data) => {
-                        var promise:ng.IPromise<ITileMap> = tileEditor.loader.load(newUrl,data);
-                        promise.then((tileMap:ITileMap)=>{
-                           tileEditor.setMap(tileMap);
-                           t = tileMap;
-                           buildMapRender();
-                        }).catch((e:any)=>{
-                           console.error(e);
-                        });
+                     var promise:ng.IPromise<ITileMap> = tileEditor.loader.load(newUrl);
+                     promise.then((tileMap:ITileMap)=>{
+                        tileEditor.setMap(tileMap);
+                        t = tileMap;
+                        buildMapRender();
+                     }).catch((e:any)=>{
+                        console.error(e);
                      });
                   };
                   scope.$watch(attributes.url, updateView);
@@ -177,7 +175,7 @@ module pow2.editor {
                                  }
                               }
                            }
-                           _.each(l.objects,(obj:pow2.editor.formats.tiled.ITiledObject) => {
+                           _.each(l.objects,(obj:pow2.tiled.ITiledObject) => {
                               var box = new PIXI.Graphics();
                               box.beginFill(0xFFFFFF);
                               box.alpha = 0.6;

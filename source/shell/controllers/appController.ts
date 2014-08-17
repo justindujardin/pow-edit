@@ -36,7 +36,7 @@ module pow2.editor {
                   public rootPath:string){
 
          // ENUMERATE Files for Tree
-         $platform.enumPath(rootPath,(error:any,fileList?:IFileInfo[]) => {
+         $platform.enumPath(rootPath + 'maps/',(error:any,fileList?:IFileInfo[]) => {
             var mountFiles:any[] = [];
             angular.forEach(fileList,(file:IFileInfo) => {
                // Skip hidden files

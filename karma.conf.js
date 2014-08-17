@@ -8,20 +8,19 @@ module.exports = function(config) {
       basePath: '',
       frameworks: ['jasmine'],
       files: [
-         "bower_components/underscore/underscore-min.js",
-         "bower_components/pow-core/lib/pow-core.min.js",
-         "bower_components/jquery/dist/jquery.min.js",
+         "assets/bower_components/underscore/underscore-min.js",
+         "assets/bower_components/pow-core/lib/pow-core.min.js",
+         "assets/bower_components/jquery/dist/jquery.min.js",
          "assets/vendor/ace/src-min-noconflict/ace.js",
-         "bower_components/showdown/compressed/showdown.js",
-         "bower_components/pixi/bin/pixi.js",
-         "bower_components/angular/angular.min.js",
-         "bower_components/angular-mocks/angular-mocks.js",
-         "bower_components/angular-ui-layout/ui-layout.min.js",
-         "build/pow-edit.browser.js", // WebBrowser platform
+         "assets/bower_components/showdown/compressed/showdown.js",
+         "assets/bower_components/pixi/bin/pixi.js",
+         "assets/bower_components/angular/angular.min.js",
+         "assets/bower_components/angular-mocks/angular-mocks.js",
+         "assets/build/pow-edit.browser.js", // WebBrowser platform
          //"build/pow-edit.nw.js", // Node Webkit platform
-         "build/pow-edit.ui.js", // Angular templates
-         "build/pow-edit.js", // Angular App
-         "build/test/*.js",
+         "assets/build/pow-edit.ui.js", // Angular templates
+         "assets/build/pow-edit.js", // Angular App
+         "assets/build/test/*.js",
          {pattern: 'test/fixtures/*.*', watched: true, included: false, served: true},
          {pattern: 'test/fixtures/**/*.*', watched: true, included: false, served: true}
       ],

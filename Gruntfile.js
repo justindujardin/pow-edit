@@ -157,9 +157,18 @@ module.exports = function(grunt) {
       nodewebkit: {
          options: {
             platforms: ['win','osx'],
-            buildDir: './builds/'
+            buildDir: './builds/',
+            version:'0.10.2'
          },
-         src: ['./assets/**/*']
+         src: [
+            './assets/*.*',
+            './assets/bower_components/**/*',
+            './assets/vendor/**/*',
+            './assets/build/*',
+            './assets/build/**/*',
+            './assets/maps/**/*',
+            './assets/fonts/**/*'
+         ]
       },
 
       /**
