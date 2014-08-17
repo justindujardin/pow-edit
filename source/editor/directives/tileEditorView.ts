@@ -31,6 +31,8 @@ module pow2.editor {
    declare var requestAnimFrame:any;
    declare var PIXI:any;
 
+   var clearColor:number = 0x111114;
+
    pow2.editor.app.directive("tileEditorView", [
       "$interval", "$parse","$document","$tasks","$platform",
       ($interval,$parse,$document,$tasks:TasksService,$platform:IAppPlatform) => {
@@ -56,7 +58,7 @@ module pow2.editor {
 
                   tileEditor.init(element);
                   // create an new instance of a pixi stage
-                  var stage = new PIXI.Stage(0x111111, true);
+                  var stage = new PIXI.Stage(clearColor, true);
                   var newUrl:string = $platform.pathAsAppProtocol(source(scope));
 
                   /**

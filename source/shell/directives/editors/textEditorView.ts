@@ -21,7 +21,7 @@ module pow2.editor {
             link: ($scope, $el, attrs:any, model) => {
                var UndoManager:any = ace.require("ace/undomanager").UndoManager;
                var history:AceAjax.UndoManager = new UndoManager();
-               var editor:AceAjax.Editor = new Editor(new Renderer($el[0], "ace/theme/tomorrow_night"));
+               var editor:AceAjax.Editor = new Editor(new Renderer($el[0], "ace/theme/github"));
                var session:AceAjax.IEditSession = editor.getSession();
 //
 //               var modelist = ace.require('ace/ext/modelist')
