@@ -83,15 +83,16 @@ body, html {
     .box-sizing(border-box);
   }
 
-  .content.split-panes.horizontal {
-    >.split-pane1 {
+  /* Main content (file tree/doc view) splitter  */
+  .content.ui-split.horizontal {
+    >.ui-split-first {
       width:@leftNavDefaultWidth;
       overflow: auto;
     }
-    > .split-pane2 {
+    > .ui-split-second {
       left:@leftNavDefaultWidth;
     }
-    > .split-handler {
+    > .ui-split-handle {
       left:@leftNavDefaultWidth;
       border-left: 1px solid #000;
     }

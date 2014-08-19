@@ -7,14 +7,14 @@
 </head>
 <body ng-controller="AppController as app">
 
-<bg-splitter orientation="horizontal" class="content">
-    <bg-pane min-size="150" class="">
+<div ui-split orientation="horizontal" class="content">
+    <div ui-split-panel first min-size="150" class="">
         <treecontrol tree-model="mount" node-children="children" on-selection="app.selectFile(node)">{{node.label}}</treecontrol>
-    </bg-pane>
-    <bg-pane min-size="200">
+    </div>
+    <div ui-split-panel second min-size="200">
         <document-view type="app.getDocumentType()" source="app.document"></document-view>
-    </bg-pane>
-</bg-splitter>
+    </div>
+</div>
 <script type="text/javascript">
     /* Based on: http://jeremyhixon.com/snippet/loading-javascript-files-asynchronously/ */
     function loadScripts(urls,success){

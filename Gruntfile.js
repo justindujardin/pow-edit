@@ -27,6 +27,7 @@ module.exports = function(grunt) {
                "source/shell/directives/*.ts",
                "source/shell/directives/**/*.ts",
                "source/editor/*.ts",
+               "source/editor/controllers/*.ts",
                "source/editor/directives/*.ts",
                "source/editor/services/*.ts",
                "source/editor/actions/*.ts",

@@ -108,7 +108,7 @@ module pow2.editor {
 
       init(element){
          // create a renderer instance
-         this.renderer = PIXI.autoDetectRenderer(element.height(),element.width());
+         this.renderer = PIXI.autoDetectRenderer(element.height(),element.width(),element[0]);
       }
       destroy() {
          angular.forEach(this.keyBinds,(bind:number)=>{

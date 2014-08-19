@@ -51,7 +51,8 @@ module pow2.editor {
 
                   var t:pow2.editor.ITileMap = null;
 
-                  tileEditor.init(angular.element(element[0].querySelector('.canvas')));
+                  var canvasElement:ng.IAugmentedJQuery = angular.element(element[0].querySelector('.canvas'));
+                  tileEditor.init(canvasElement);
                   // create an new instance of a pixi stage
                   var stage = new PIXI.Stage(clearColor, true);
                   var newUrl:string = $platform.pathAsAppProtocol(source(scope));
@@ -93,8 +94,6 @@ module pow2.editor {
                   scope.$watch(attributes.url, updateView);
 
 
-                  // add the renderer view element to the DOM
-                  element.append(tileEditor.renderer.view);
 
                   /**
                    * TODO: Map refactoring:

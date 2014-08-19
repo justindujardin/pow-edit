@@ -14,6 +14,8 @@
  limitations under the License.
  */
 
+@canvasWidth:86%;
+
 .tile-editor-view {
   overflow:hidden !important;
   position: relative;
@@ -23,6 +25,22 @@
   > * {
     z-index:1;
   }
+
+  &.ui-split.horizontal {
+    .ui-split-first {
+      width:@canvasWidth;
+      overflow: auto;
+    }
+    .ui-split-second {
+      left:@canvasWidth;
+    }
+    .ui-split-handle {
+      left:@canvasWidth;
+      border-left: 1px solid #000;
+    }
+
+  }
+
   .canvas {
     display: block;
     width:100%;

@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-.split-panes
+.ui-split
 {
   left: 0px;
   right: 0px;
@@ -23,7 +23,7 @@
   overflow:hidden;
 }
 
-.split-panes > .split-handler
+.ui-split > .ui-split-handle
 {
   background: transparent;
   position: absolute;
@@ -32,7 +32,7 @@
 
 /* Horizontal */
 
-.split-panes.horizontal > .split-handler
+.ui-split.horizontal > .ui-split-handle
 {
   width: 4px;
   top: 0px;
@@ -41,19 +41,19 @@
   cursor: ew-resize;
 }
 
-.split-panes.horizontal > .split-pane1,
-.split-panes.horizontal > .split-pane2
+.ui-split.horizontal > .ui-split-first,
+.ui-split.horizontal > .ui-split-second
 {
   position: absolute;
   height: 100%;
 }
 
-.split-panes.horizontal > .split-pane1
+.ui-split.horizontal > .ui-split-first
 {
   width: 50%;
 }
 
-.split-panes.horizontal > .split-pane2
+.ui-split.horizontal > .ui-split-second
 {
   left: 50%;
   right: 0px;
@@ -63,7 +63,7 @@
 
 /* Vertical */
 
-.split-panes.vertical > .split-handler
+.ui-split.vertical > .ui-split-handle
 {
   height: 4px;
   top: 50%;
@@ -72,19 +72,19 @@
   cursor: ns-resize;
 }
 
-.split-panes.vertical > .split-pane1,
-.split-panes.vertical > .split-pane2
+.ui-split.vertical > .ui-split-first,
+.ui-split.vertical > .ui-split-second
 {
   position: absolute;
   width: 100%;
 }
 
-.split-panes.vertical > .split-pane1
+.ui-split.vertical > .ui-split-first
 {
   height: 50%;
 }
 
-.split-panes.vertical > .split-pane2
+.ui-split.vertical > .ui-split-second
 {
   top: 50%;
   bottom: 0px;
