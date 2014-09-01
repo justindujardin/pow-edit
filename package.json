@@ -20,24 +20,18 @@
     "grunt-npm": "0.0.2",
     "underscore": "~1.6.0",
     "express": "~3.0.0",
-    "ejs": "~1.0.0"
+    "ejs": "~1.0.0",
+    "bower": "~1.3.9"
   },
   "scripts": {
-    "test": "npm install && ./node_modules/.bin/grunt"
-  },
-  "main": "source/app.html",
-  "window": {
-    "width": 1024,
-    "height": 768,
-    "show": true,
-    "title": "pow-edit / loading",
-    "toolbar": true
+    "postinstall": "./node_modules/.bin/bower install && ./node_modules/.bin/grunt",
+    "test": "./node_modules/.bin/grunt && ./node_modules/karma/bin/karma start karma.conf.js --single-run"
   },
   "devDependencies": {
     "grunt-contrib-watch": "~0.5.3",
     "grunt-cli": "~0.1.10",
     "grunt-contrib-clean": "~0.5.0",
-    "grunt-node-webkit-builder": "~0.1.18",
+    "grunt-node-webkit-builder": "~0.2.1",
     "grunt-npm": "0.0.2",
     "grunt-conventional-changelog": "~1.1.0",
     "grunt-bump": "0.0.13",

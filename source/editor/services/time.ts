@@ -13,10 +13,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../types/angular/angular.d.ts"/>
-///<reference path="./interfaces/IAppPlatform.ts"/>
-///<reference path="../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
+///<reference path="../../app.ts"/>
 
 module pow2.editor {
-   export var app:ng.IModule;
+   pow2.editor.app.factory("$time", () => {
+      var time:pow2.Time = new pow2.Time();
+      time.start();
+      return time;
+   });
 }

@@ -234,6 +234,9 @@ module pow2.editor {
                      e.stopPropagation();
                      e.preventDefault();
                   }
+                  if(e.stopImmediatePropagation){
+                     e.stopImmediatePropagation();
+                  }
                   return false;
                }
             }

@@ -4,7 +4,7 @@ module.exports = function(grunt) {
       pkg: grunt.file.readJSON('package.json'),
       clean: {
          editor: {
-            src: ["build/"]
+            src: ["assets/build/"]
          }
       },
       /**
@@ -27,23 +27,24 @@ module.exports = function(grunt) {
                "source/shell/directives/*.ts",
                "source/shell/directives/**/*.ts",
                "source/editor/*.ts",
+               "source/editor/controllers/*.ts",
                "source/editor/directives/*.ts",
                "source/editor/services/*.ts",
                "source/editor/actions/*.ts",
                "source/interfaces/*.ts",
                "source/formats/*.ts"
             ],
-            dest: 'build/<%= pkg.name %>.js'
+            dest: 'assets/build/<%= pkg.name %>.js'
          },
          platforms:{
             files:{
-               'build/<%= pkg.name %>.nw.js':'source/platforms/platformNodeWebkit.ts',
-               'build/<%= pkg.name %>.browser.js':'source/platforms/platformBrowser.ts'
+               'assets/build/<%= pkg.name %>.nw.js':'source/platforms/platformNodeWebkit.ts',
+               'assets/build/<%= pkg.name %>.browser.js':'source/platforms/platformBrowser.ts'
             }
          },
          server:{
             files:{
-               'build/<%= pkg.name %>.server.js':'source/server/server.ts'
+               'assets/build/<%= pkg.name %>.server.js':'source/server/server.ts'
             }
          },
          tests: {
@@ -53,7 +54,7 @@ module.exports = function(grunt) {
                "test/*.ts",
                "test/**/*.ts"
             ],
-            dest: 'build/test/<%= pkg.name %>.tests.js'
+            dest: 'assets/build/test/<%= pkg.name %>.tests.js'
          }
       },
 
@@ -65,11 +66,11 @@ module.exports = function(grunt) {
             options: {
                paths: [
                   "source/",
-                  "bower_components/"
+                  "assets/bower_components/"
                ]
             },
             files: {
-               'build/<%= pkg.name %>.css':'source/app.less'
+               'assets/build/<%= pkg.name %>.css':'source/app.less'
             }
          }
       },
@@ -106,7 +107,7 @@ module.exports = function(grunt) {
          },
 
          outputs: {
-           files: ['build/*.*'],
+           files: ['assets/build/*.*'],
             tasks: ['express']
          },
 
@@ -130,8 +131,8 @@ module.exports = function(grunt) {
        */
       express: {
          options: {
-            script: 'build/<%= pkg.name %>.server.js',
-            port: 5216
+            script: 'assets/build/<%= pkg.name %>.server.js',
+            port: 5217
          },
          production: {
             options: {
@@ -150,19 +151,25 @@ module.exports = function(grunt) {
          },
          ui: {
             src: ['source/**/*.html'],
-            dest: 'build/<%= pkg.name %>.ui.js'
+            dest: 'assets/build/<%= pkg.name %>.ui.js'
          }
       },
 
       nodewebkit: {
          options: {
-            build_dir: './NodeWebkitBuilds',
-            mac: true,
-            win: false,
-            linux32: false,
-            linux64: false
+            platforms: ['win','osx'],
+            buildDir: './builds/',
+            version:'0.10.2'
          },
-         src: ['./**/*']
+         src: [
+            './assets/*.*',
+            './assets/bower_components/**/*',
+            './assets/vendor/**/*',
+            './assets/build/*',
+            './assets/build/**/*',
+            './assets/maps/**/*',
+            './assets/fonts/**/*'
+         ]
       },
 
       /**

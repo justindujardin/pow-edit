@@ -21,15 +21,11 @@ module pow2.editor {
       setTitle(text:string);
       enumPath(location:string,done:(err:any,files?:IFileInfo[]) => any);
       getDirName(location:string):string;
-      /**
-       * Return a URL for an application asset that is relative to the root directory
-       * of this project.
-       *
-       * @param fromBase The path relative to the root directory.
-       */
-      getMountPath(fromBase:string):string;
 
       normalizePath(url:string):string;
+
+      pathAsAppProtocol(url:string):string;
+      pathAsFile(url:string):string;
    }
 
    export interface IFileInfo {

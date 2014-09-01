@@ -11,4 +11,9 @@ module pow2.editor {
          templateUrl: 'source/shell/directives/editors/imageEditorView.html'
       };
    }]);
+
+   pow2.editor.app.config(['$compileProvider', ($compileProvider) => {
+      var oldWhiteList = $compileProvider.imgSrcSanitizationWhitelist();
+      $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|app):|data:image\//);
+   }]);
 }

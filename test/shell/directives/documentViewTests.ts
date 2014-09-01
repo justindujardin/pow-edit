@@ -1,6 +1,6 @@
 ///<reference path="../../../types/jasmine/jasmine.d.ts"/>
 ///<reference path="../../../types/angular/angular-mocks.d.ts"/>
-///<reference path="../../../build/pow-edit.d.ts"/>
+///<reference path="../../../assets/build/pow-edit.d.ts"/>
 
 describe("pow2.editor.documentView",()=>{
    var element:ng.IAugmentedJQuery;

@@ -27,94 +27,266 @@ module pow2.editor {
 
    var splitter:ng.IModule = angular.module( 'uiSplitter', [] );
 
-   splitter.directive('bgSplitter', function() {
+   export interface ILayoutStyles {
+      handle:{ [style:string]:any };
+      first:{ [style:string]:any };
+      second:{ [style:string]:any };
+   }
+
+   export interface IChildResize {
+      child: UISplitController;
+      styles: ILayoutStyles;
+   };
+
+   export class UISplitController extends pow2.Events implements IProcessObject {
+
+      static LAYOUT:string = 'layout.apply';
+      static DIRTY:string = 'layout.dirty';
+      static CHILD_RESIZED:string = 'layout.child.resize';
+      static PARENT_RESIZED:string = 'layout.parent.resize';
+
+      _uid:string;
+      static $inject:string[] = ['$scope','$time'];
+      constructor(
+         public $scope:any,
+         public $time:pow2.Time){
+         super();
+
+         // Tie to time updates for great layout justice.
+         this._uid = _.uniqueId('ui-split');
+         $time.addObject(this);
+         $time.start();
+         $scope.$on('destroy',()=>{
+            this.destroy();
+         });
+      }
+      destroy(){
+         this.$time.removeObject(this);
+      }
+
+      processFrame(elapsed:number) {
+         if(this._dirty){
+            this._dirty = false;
+            this.sizeChildren();
+            this.trigger(UISplitController.DIRTY,this);
+         }
+      }
+      tick(elapsed:number) {}
+
+      public element:ng.IAugmentedJQuery = null;
+
+      private _orientation:string = 'horizontal';
+
+      /**
+       * The first item to be split.  This is either the left or top item
+       * visually, depending on the orientation of the split.
+       */
+      private _first:UISplitPanelController = null;
+      /**
+       * The second item to be split.  This is either the right or bottom item
+       * visually, depending on the orientation of the split.
+       */
+      private _second:UISplitPanelController = null;
+
+      private _dirty:boolean = false;
+      private _targetX:number = -1;
+      private _targetY:number = -1;
+
+      private _checkReady() {
+         if(this._second && this._first){
+            this._dirty = true;
+         }
+      }
+
+      /**
+       * Set the orientation of the split
+       */
+      setOrientation(orientation:string){
+         if(orientation === 'horizontal' || orientation === 'vertical'){
+            this._orientation = orientation;
+         }
+         else {
+            throw new Error("Invalid orientation");
+         }
+         this._checkReady();
+      }
+      getOrientation():string {
+         return this._orientation;
+      }
+
+      /**
+       * Set the first item to be split.
+       *
+       * @param controller the split panel controller
+       */
+      setFirst(controller:UISplitPanelController){
+         if(this._first !== null){
+            console.log("overwriting left panel with another")
+         }
+         this._first = controller;
+         this._checkReady();
+      }
+      getFirst():UISplitPanelController { return this._first; }
+      /**
+       * Set the second item to be split.
+       *
+       * @param controller the split panel controller
+       */
+      setSecond(controller:UISplitPanelController){
+         if(this._second !== null){
+            console.log("overwriting second panel with another")
+         }
+         this._second = controller;
+         this._checkReady();
+      }
+      getSecond():UISplitPanelController { return this._second; }
+
+      /**
+       * Flag the layout as dirty
+       */
+      setDirty(clientX:number=-1,clientY:number=-1){
+         this._dirty = true;
+         this._targetX = clientX;
+         this._targetY = clientY;
+      }
+
+      sizeChildren(){
+         if(!this._first || !this._second){
+            throw new Error("Cannot split without two assigned children");
+         }
+         // TODO: cache this and invalidate from split directive on resize events.
+         var bounds = this.element[0].getBoundingClientRect();
+
+         var pos = 0;
+         if (this._orientation === 'vertical' && this._targetY !== -1) {
+            var height = bounds.bottom - bounds.top;
+            pos = this._targetY - bounds.top;
+            if (pos < this._first.minSize) return;
+            if (height - pos < this._second.minSize) return;
+            this.trigger(UISplitController.LAYOUT,<ILayoutStyles>{
+               handle: { top: pos + 'px' },
+               first: { height: pos + 'px' },
+               second: { top: pos + 'px' }
+            });
+         } else if(this._targetX !== -1) {
+            var width = bounds.right - bounds.left;
+            pos = this._targetX - bounds.left;
+            if (pos < this._first.minSize) return;
+            if (width - pos < this._second.minSize) return;
+            this.trigger(UISplitController.LAYOUT,<ILayoutStyles>{
+               handle: { left: pos + 'px' },
+               first: { width: pos + 'px' },
+               second: { left: pos + 'px' }
+            });
+         }
+
+      }
+   }
+   export class UISplitPanelController extends pow2.Events {
+      static $inject:string[] = ['$scope'];
+      constructor(public $scope:any){
+         super();
+      }
+      public small:boolean = false;
+      public large:boolean = false;
+      public minSize:number = -1;
+      public maxSize:number = -1;
+      public element:ng.IAugmentedJQuery = null;
+      public parent:UISplitController = null;
+   }
+
+   splitter.directive('uiSplit', function() {
       return {
-         restrict: 'E',
-         replace: true,
-         transclude: true,
+         restrict: 'A',
          scope: {
             orientation: '@'
          },
-         template: '<div class="split-panes {{orientation}}" ng-transclude></div>',
-         controller: function ($scope) {
-            $scope.panes = [];
+         controller: UISplitController,
+         link: function(scope, element, attrs, controller:UISplitController) {
+            var parentCtrl:UISplitController = element.parent().controller('uiSplit');
 
-            this.addPane = function(pane){
-               if ($scope.panes.length > 1)
-                  throw 'splitters can only have two panes';
-               $scope.panes.push(pane);
-               return $scope.panes.length;
-            };
-         },
-         link: function(scope, element, attrs) {
-            var handler = angular.element('<div class="split-handler"></div>');
-            var pane1 = scope.panes[0];
-            var pane2 = scope.panes[1];
-            var vertical = scope.orientation == 'vertical';
-            var pane1Min = pane1.minSize || 0;
-            var pane2Min = pane2.minSize || 0;
+            var handler = angular.element('<div class="ui-split-handle"></div>');
             var drag = false;
+            var doc = angular.element(document);
+            var win = angular.element(window);
+            controller.element = element;
+            element.addClass('ui-split');
+            controller.setOrientation(typeof attrs.orientation !== 'undefined' ? attrs.orientation : 'horizontal');
+            element.addClass(controller.getOrientation());
 
-            pane1.elem.after(handler);
-
-            element.bind('mousemove', function (ev) {
-               if (!drag) return;
-
-               var bounds = element[0].getBoundingClientRect();
-               var pos = 0;
-
-               if (vertical) {
-
-                  var height = bounds.bottom - bounds.top;
-                  pos = ev.clientY - bounds.top;
-
-                  if (pos < pane1Min) return;
-                  if (height - pos < pane2Min) return;
-
-                  handler.css('top', pos + 'px');
-                  pane1.elem.css('height', pos + 'px');
-                  pane2.elem.css('top', pos + 'px');
-
-               } else {
-
-                  var width = bounds.right - bounds.left;
-                  pos = ev.clientX - bounds.left;
-
-                  if (pos < pane1Min) return;
-                  if (width - pos < pane2Min) return;
-
-                  handler.css('left', pos + 'px');
-                  pane1.elem.css('width', pos + 'px');
-                  pane2.elem.css('left', pos + 'px');
+            controller.on(UISplitController.LAYOUT,(styles:ILayoutStyles)=>{
+               var first = controller.getFirst().element;
+               var second = controller.getSecond().element;
+               handler.css(styles.handle);
+               first.css(styles.first);
+               second.css(styles.second);
+               if(parentCtrl){
+                  parentCtrl.trigger(UISplitController.CHILD_RESIZED,<IChildResize>{
+                     child:controller,
+                     styles:styles
+                  })
                }
-               pane1.elem.children().triggerHandler('resize');
-               pane2.elem.children().triggerHandler('resize');
+               var children:ng.IAugmentedJQuery = angular.element(element[0].querySelector('.ui-split'));
+               angular.forEach(children,(child:HTMLElement)=>{
+                  var c:UISplitController = angular.element(child).controller('uiSplit');
+                  if(c){
+                     c.trigger(UISplitController.PARENT_RESIZED);
+                  }
+               });
             });
 
+            var resizeHandler = () => {
+               controller.setDirty();
+            };
+            controller.on(UISplitController.PARENT_RESIZED,resizeHandler);
+            controller.on(UISplitController.CHILD_RESIZED,resizeHandler);
+            win.on('resize',resizeHandler);
+            element.append(handler);
+            element.bind('mousemove', function (ev) {
+               if (!drag) return;
+               controller.setDirty(ev.clientX,ev.clientY);
+            });
             handler.bind('mousedown', function (ev) {
                ev.preventDefault();
                drag = true;
+               return false;
             });
-
-            angular.element(document).bind('mouseup', function (ev) {
+            doc.bind('mouseup', function (ev) {
                drag = false;
             });
          }
       };
    });
-   splitter.directive('bgPane', function () {
+   splitter.directive('uiSplitPanel', function () {
       return {
-         restrict: 'E',
-         require: '^bgSplitter',
-         replace: true,
-         transclude: true,
+         restrict: 'A',
+         require: ['^uiSplit','uiSplitPanel'],
          scope: {
-            minSize: '='
+            minSize: '@'
          },
-         template: '<div class="split-pane{{index}}" ng-transclude></div>',
-         link: function(scope, element, attrs, bgSplitterCtrl) {
-            scope.elem = element;
-            scope.index = bgSplitterCtrl.addPane(scope);
+         controller:UISplitPanelController,
+         link: function(scope, element, attributes, controllers:any[]) {
+            var parent:UISplitController = controllers[0];
+            var self:UISplitPanelController = controllers[1];
+            self.parent = parent;
+            self.element = element;
+
+            self.minSize = typeof attributes.minSize !== 'undefined' ? attributes.minSize : 0;
+            self.maxSize = typeof attributes.maxSize !== 'undefined' ? attributes.maxSize : 0;
+            if(typeof attributes.small !== 'undefined'){
+               scope.small = true;
+            }
+            else if(typeof attributes.large !== 'undefined'){
+               scope.large = true;
+            }
+            if(typeof attributes.first !== 'undefined'){
+               element.addClass('ui-split-first');
+               parent.setFirst(self);
+            }
+            else if(typeof attributes.second !== 'undefined'){
+               element.addClass('ui-split-second');
+               parent.setSecond(self);
+            }
          }
       };
    });

@@ -14,18 +14,39 @@
  limitations under the License.
  */
 
+@canvasWidth:86%;
+
 .tile-editor-view {
   overflow:hidden !important;
+  position: relative;
+  width:100%;
+  height:100%;
+  display: block;
   > * {
     z-index:1;
   }
-  canvas {
+
+  &.ui-split.horizontal {
+    .ui-split-first {
+      width:@canvasWidth;
+      overflow: auto;
+    }
+    .ui-split-second {
+      left:@canvasWidth;
+    }
+    .ui-split-handle {
+      left:@canvasWidth;
+      border-left: 1px solid #000;
+    }
+
+  }
+
+  .canvas {
+    display: block;
+    width:100%;
+    min-width: 100%;
+    height:100%;
     z-index:0;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
   }
 
   section.tile-sets {
@@ -34,7 +55,7 @@
     bottom:0;
     min-height:64px;
     min-width:64px;
-    background-color:rgba(0,0,0,0.85);
+    background-color:@powBgDarker;
     .tile-picker {
       display:block;
     }
@@ -51,7 +72,6 @@
       margin:0;
       li{
         cursor:pointer;
-        padding:0;
         margin:0;
         height:auto;
         list-style-type:none;
@@ -71,19 +91,14 @@
   }
 
   nav.layer-list {
-    position: absolute;
-    right:0;
-    top:0;
-    bottom:0;
     width:auto;
-    min-width:250px;
     margin:0;
     padding:0;
     overflow-y:auto;
     overflow-x:hidden;
     height:100%;
     color: #fff;
-    background-color: rgba(34, 34, 34, 0.71);
+    background-color: @powBgDark;
     text-decoration: none;
     font-family: @font-family-scp;
     .no-selection;

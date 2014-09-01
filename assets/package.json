@@ -1,0 +1,20 @@
+{
+  "name": "pow-edit",
+  "version": "0.0.3",
+  "description": "Pow2 Editor",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/justindujardin/pow-edit.git"
+  },
+  "author": "Justin DuJardin <justin@dujardinconsulting.com>",
+  "license": "Apache2",
+  "main": "app://pow-edit/app.html",
+  "window": {
+    "width": 1024,
+    "height": 768,
+    "show": true,
+    "title": "pow-edit / loading",
+    "toolbar": true
+  },
+  "contributors": []
+}

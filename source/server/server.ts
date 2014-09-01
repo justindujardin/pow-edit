@@ -14,8 +14,8 @@
  limitations under the License.
  */
 ///<reference path="../../types/node/node.d.ts"/>
-/// <reference path="../../build/pow-edit.d.ts"/>
-/// <reference path="../../bower_components/pow-core/lib/pow-core.d.ts"/>
+/// <reference path="../../assets/build/pow-edit.d.ts"/>
+/// <reference path="../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
 module pow2.editor {
 
    "use strict";
@@ -25,7 +25,7 @@ module pow2.editor {
    var server = express();
    var serverPort = process.env.PORT || 5216;
 
-   var enumPath = (location:string,done:(err:any,files?:IFileInfo[]) => any) => {
+   var enumPath = (location:string,done:(err:any,files?:IFileInfo[]) => any,replace:(name:string)=>string) => {
       var results:IFileInfo[] = [];
       fs.readdir(location, (err, list) => {
          if (err) {
@@ -39,8 +39,8 @@ module pow2.editor {
             var name = path.join(location,file);
             var result:IFileInfo = {
                name:file,
-               path:location,
-               full:name
+               path:replace(location),
+               full:replace(name)
             };
             results.push(result);
             fs.stat(name, (err, stat) => {
@@ -60,7 +60,7 @@ module pow2.editor {
                      if (!--pending) {
                         done(null, results);
                      }
-                  });
+                  },replace);
                }
                else {
                   if (!--pending) {
@@ -77,7 +77,7 @@ module pow2.editor {
    server.use(express.cookieParser());
    server.use(express.compress());
    server.get('/', function (req, res) {
-      res.render(path.resolve(__dirname, '../source/app.html'));
+      res.render(path.resolve(__dirname, '../app.html'));
    });
 
    var cachedFiles:any[] = null;
@@ -101,10 +101,14 @@ module pow2.editor {
             res.write('' + err, 400);
          }
          res.end();
+      },(name:string)=>{
+         return name.replace('assets/maps','maps');
       });
    });
 
+   server.use(express.static(path.resolve(__dirname, "assets/")));
    server.use(express.static(path.resolve(__dirname, "../")));
+   server.use('/source',express.static(path.resolve(__dirname, "../../source")));
 
 // Use EJS templating with Express, and assign .html as the default extension.
    server.engine('.html', require('ejs').__express);
