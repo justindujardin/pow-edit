@@ -8,13 +8,13 @@ module.exports = function(config) {
       basePath: '',
       frameworks: ['jasmine'],
       files: [
-         "assets/bower_components/underscore/underscore-min.js",
-         "assets/bower_components/pow-core/lib/pow-core.min.js",
-         "assets/bower_components/jquery/dist/jquery.min.js",
+         "assets/bower_components/underscore/underscore.js",
+         "assets/bower_components/pow-core/lib/pow-core.js",
+         "assets/bower_components/jquery/dist/jquery.js",
          "assets/vendor/ace/src-min-noconflict/ace.js",
          "assets/bower_components/showdown/compressed/showdown.js",
          "assets/bower_components/pixi/bin/pixi.js",
-         "assets/bower_components/angular/angular.min.js",
+         "assets/bower_components/angular/angular.js",
          "assets/bower_components/angular-mocks/angular-mocks.js",
          "assets/build/pow-edit.browser.js", // WebBrowser platform
          //"build/pow-edit.nw.js", // Node Webkit platform
@@ -39,7 +39,7 @@ module.exports = function(config) {
          'karma-coverage'
       ],
 
-      preprocessors: (process.env.TRAVIS || coverageDebug) ? { "build/*.js": "coverage" } : {},
+      preprocessors: (process.env.TRAVIS || coverageDebug) ? { "assets/build/*.js": "coverage" } : {},
       coverageReporter: {
          type: "lcov",
          dir: ".coverage/"
