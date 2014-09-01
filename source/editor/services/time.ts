@@ -16,5 +16,9 @@
 ///<reference path="../../app.ts"/>
 
 module pow2.editor {
-   pow2.editor.app.factory("$time", () => { return new pow2.Time(); });
+   pow2.editor.app.factory("$time", () => {
+      var time:pow2.Time = new pow2.Time();
+      time.start();
+      return time;
+   });
 }

@@ -25,7 +25,20 @@ module pow2.editor {
       done?:(config:IWorkTask) => void;
    }
 
-   export class TasksService {
+   export class TasksService implements IProcessObject {
+      _uid:string;
+      static $inject:string[] = ['$time'];
+      constructor(public $time:pow2.Time){
+         this._uid = _.uniqueId('tasks');
+         $time.addObject(this);
+      }
+      destroy(){
+         this.$time.removeObject(this);
+      }
+      tick(elapsed:number) {
+         this.processTasks();
+      }
+
       static DEFAULT:string = "global";
       private _tasks:{
          [group:string]:IWorkTask[]
@@ -74,5 +87,7 @@ module pow2.editor {
       }
    }
 
-   pow2.editor.app.factory("$tasks", () => { return new TasksService(); });
+   pow2.editor.app.factory("$tasks", ['$injector',($injector) => {
+      return $injector.instantiate(TasksService);
+   }]);
 }

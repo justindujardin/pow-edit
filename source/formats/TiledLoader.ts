@@ -21,9 +21,10 @@
 module pow2.editor {
 
    export class TiledMapLoader implements IMapLoader {
-      static $inject:string[] = ['$q','$platform'];
+      static $inject:string[] = ['$q','$rootScope'];
       constructor(
-         public $q:ng.IQService){
+         public $q:ng.IQService,
+         public $rootScope:any){
       }
 
       load(location:string):ng.IPromise<ITileMap> {
@@ -31,6 +32,7 @@ module pow2.editor {
          pow2.ResourceLoader.get().load(location,(tiledResource?: pow2.TiledTMXResource)=>{
             if(!tiledResource.isReady()){
                deferred.reject("Failed to load file");
+               this.$rootScope.$$phase || this.$rootScope.$digest();
                return;
             }
             var result:ITileMap = {
@@ -88,6 +90,7 @@ module pow2.editor {
             });
 
             deferred.resolve(result);
+            this.$rootScope.$$phase || this.$rootScope.$digest();
 
          });
 

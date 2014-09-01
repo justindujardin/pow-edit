@@ -221,6 +221,7 @@ module pow2.editor {
                         }
                         $interval.cancel(tileEditor.unwatchProgress);
                         tileEditor.resize(canvasElement.width(),canvasElement.height());
+                        scope.$emit('map-loaded');
                         return true;
                      },t.name);
                      // Debug map stats
