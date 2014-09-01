@@ -27,7 +27,7 @@ module pow2.editor {
          if(index > layer.tiles.length || index < 0){
             throw new Error("PaintAction: layer tile index out of range");
          }
-         var tile:EditableTile = this.layer.tiles[this.index];
+         var tile:EditableTile = layer.tiles[this.index];
          if(!tile){
             throw new Error("Cannot paint to undefined tile at index " + this.index);
          }

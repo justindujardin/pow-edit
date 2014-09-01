@@ -67,6 +67,9 @@ module pow2.editor {
       public loader:TiledMapLoader;
       public tileMap:ITileMap = null;
 
+      // DOM
+      public container:HTMLElement;
+
       // Data
       public keyBinds:number[] = [];
       public layers:IEditableTileLayer[] = [];
@@ -107,13 +110,48 @@ module pow2.editor {
       public unwatchProgress:any = null;
 
       init(element){
+         this.container = element;
+         var w:number = element.width();
+         var h:number = element.height();
          // create a renderer instance
-         this.renderer = PIXI.autoDetectRenderer(element.height(),element.width(),element[0]);
+         this.renderer = PIXI.autoDetectRenderer(w,h,element[0]);
+         this.resize(w,h);
       }
       destroy() {
          angular.forEach(this.keyBinds,(bind:number)=>{
             this.$keys.unbind(bind);
          });
+      }
+      /**
+       * Resize the editor view
+       */
+      resize(extent:Point):TileEditorController;
+      resize(w:number,h:number):TileEditorController;
+      resize(w:string,h:string):TileEditorController;
+      resize(pointOrW:any,wNum?:any):TileEditorController{
+         var w:number;
+         var h:number;
+         if(pointOrW instanceof Point){
+            w = pointOrW.x;
+            h = pointOrW.y;
+         }
+         else if(typeof pointOrW === 'string' && typeof wNum === 'string'){
+            w = parseFloat(pointOrW);
+            h = parseFloat(wNum);
+         }
+         else if(typeof pointOrW === 'number' && typeof wNum === 'number'){
+            w = pointOrW;
+            h = wNum;
+         }
+         else {
+            throw new Error(pow2.errors.INVALID_ARGUMENTS);
+         }
+         this.renderer.resize(w,h);
+         this.cameraWidth = w;
+         this.cameraHeight = h;
+         this.updateCamera();
+
+         return this;
       }
 
       setMap(tileMap:ITileMap){

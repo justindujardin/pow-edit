@@ -36,7 +36,7 @@ module pow2.editor {
             restrict: "E",
             replace: false,
             templateUrl: "source/editor/directives/tileEditorView.html",
-            require:["tileEditorView","?^documentView"],
+            require:["tileEditorView","?^documentView","?^uiSplit"],
             controller:TileEditorController,
             controllerAs:'editor',
             compile:(element,attributes) => {
@@ -45,13 +45,29 @@ module pow2.editor {
                return (scope, element, attributes:any,controllers:any[]) => {
                   var tileEditor:TileEditorController = controllers[0];
                   var documentViewController:DocumentViewController = controllers[1];
+                  var splitView:UISplitController = controllers[2];
+
+                  var canvasElement:ng.IAugmentedJQuery = angular.element(element[0].querySelector('.canvas'));
+
+                  // Catch split view resize to adjust canvas size.
+                  if(splitView){
+                     var events:string[] = [
+                        UISplitController.DIRTY,
+                        UISplitController.CHILD_RESIZED,
+                        UISplitController.PARENT_RESIZED,
+                        UISplitController.LAYOUT
+                     ];
+                     splitView.on(events.join(' '),()=>{
+                        tileEditor.resize(canvasElement.width(),canvasElement.height());
+                     });
+                  }
+
                   if(!documentViewController){
                      console.log("No DocumentViewController found for editor.  Some loading information will be unavailable.");
                   }
 
                   var t:pow2.editor.ITileMap = null;
 
-                  var canvasElement:ng.IAugmentedJQuery = angular.element(element[0].querySelector('.canvas'));
                   tileEditor.init(canvasElement);
                   // create an new instance of a pixi stage
                   var stage = new PIXI.Stage(clearColor, true);
@@ -204,6 +220,7 @@ module pow2.editor {
                            documentViewController.hideLoading();
                         }
                         $interval.cancel(tileEditor.unwatchProgress);
+                        tileEditor.resize(canvasElement.width(),canvasElement.height());
                         return true;
                      },t.name);
                      // Debug map stats
@@ -241,27 +258,6 @@ module pow2.editor {
                      }
                   }
                   requestAnimFrame(animate);
-
-                  /**
-                   * Resize hacks.
-                   */
-                  var updateSize = () => {
-                     var w:number = element.width();
-                     var h:number = element.height();
-                     tileEditor.renderer.resize(w,h);
-                     tileEditor.cameraWidth = w;
-                     tileEditor.cameraHeight = h;
-                     tileEditor.updateCamera();
-                  };
-
-                  setTimeout(updateSize,50);
-                  var debounce;
-                  var resizeHack = () => {
-                     clearTimeout(debounce);
-                     debounce = setTimeout(updateSize, 100);
-                  };
-                  angular.element(window).on('resize',resizeHack);
-                  element.on('resize',resizeHack);
                   return scope.$on("$destroy", function() {
                      tileEditor.destroy();
                      tileEditor.off('debug',setDebugText);
@@ -272,7 +268,7 @@ module pow2.editor {
                         $tasks.killTaskGroup(t.name);
                      }
                      t = null;
-                     angular.element(window).off('resize');
+                     //angular.element(window).off('resize');
                   });
                };
             }

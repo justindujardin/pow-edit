@@ -33,9 +33,17 @@ module pow2.editor {
       second:{ [style:string]:any };
    }
 
+   export interface IChildResize {
+      child: UISplitController;
+      styles: ILayoutStyles;
+   };
+
    export class UISplitController extends pow2.Events implements IProcessObject {
 
-      static LAYOUT:string = 'layout';
+      static LAYOUT:string = 'layout.apply';
+      static DIRTY:string = 'layout.dirty';
+      static CHILD_RESIZED:string = 'layout.child.resize';
+      static PARENT_RESIZED:string = 'layout.parent.resize';
 
       _uid:string;
       static $inject:string[] = ['$scope','$time'];
@@ -60,8 +68,10 @@ module pow2.editor {
          if(this._dirty){
             this._dirty = false;
             this.sizeChildren();
+            this.trigger(UISplitController.DIRTY,this);
          }
       }
+      tick(elapsed:number) {}
 
       public element:ng.IAugmentedJQuery = null;
 
@@ -191,9 +201,10 @@ module pow2.editor {
          scope: {
             orientation: '@'
          },
-         require: 'uiSplit',
          controller: UISplitController,
          link: function(scope, element, attrs, controller:UISplitController) {
+            var parentCtrl:UISplitController = element.parent().controller('uiSplit');
+
             var handler = angular.element('<div class="ui-split-handle"></div>');
             var drag = false;
             var doc = angular.element(document);
@@ -209,13 +220,27 @@ module pow2.editor {
                handler.css(styles.handle);
                first.css(styles.first);
                second.css(styles.second);
+               if(parentCtrl){
+                  parentCtrl.trigger(UISplitController.CHILD_RESIZED,<IChildResize>{
+                     child:controller,
+                     styles:styles
+                  })
+               }
+               var children:ng.IAugmentedJQuery = angular.element(element[0].querySelector('.ui-split'));
+               angular.forEach(children,(child:HTMLElement)=>{
+                  var c:UISplitController = angular.element(child).controller('uiSplit');
+                  if(c){
+                     c.trigger(UISplitController.PARENT_RESIZED);
+                  }
+               });
             });
-            win.on('resize',()=>{
+
+            var resizeHandler = () => {
                controller.setDirty();
-            });
-            element.on('resize',()=>{
-               controller.setDirty();
-            });
+            };
+            controller.on(UISplitController.PARENT_RESIZED,resizeHandler);
+            controller.on(UISplitController.CHILD_RESIZED,resizeHandler);
+            win.on('resize',resizeHandler);
             element.append(handler);
             element.bind('mousemove', function (ev) {
                if (!drag) return;
