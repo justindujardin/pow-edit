@@ -1,0 +1,1 @@
+web: node assets/build/pow-edit.server.js
