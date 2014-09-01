@@ -268,6 +268,9 @@ module pow2.editor {
                         $tasks.killTaskGroup(t.name);
                      }
                      t = null;
+                     if(documentViewController){
+                        documentViewController.hideLoading();
+                     }
                      //angular.element(window).off('resize');
                   });
                };
