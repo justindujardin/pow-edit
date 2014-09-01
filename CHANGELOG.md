@@ -1,3 +1,33 @@
+<a name="0.0.4"></a>
+### 0.0.4 (2014-09-01)
+
+
+#### Bug Fixes
+
+* **Coverage:** issue where report showed up containing no files ([319195a7](http://github.com/justindujardin/pow-edit/commit/319195a726dbd139980c544524faeaad6a3f8dfa))
+* **Heroku:** add grunt-cli as dependency ([112d3d45](http://github.com/justindujardin/pow-edit/commit/112d3d45d7eace08437603b3ae870cf6d3dddb9a))
+* **MarkdownEditorView:** render error rather than crash in showdown if read fails ([72a2ef9d](http://github.com/justindujardin/pow-edit/commit/72a2ef9d3b12dc4fd43eac89690682cb6efa9827))
+* **tileEditorView:** issue where loading would not hide on destroy ([da1ea450](http://github.com/justindujardin/pow-edit/commit/da1ea4503263c313c1cef32368d7ef098f66f485))
+
+
+#### Features
+
+* **$actions:** implement actions manager for great undo justice ([0cc948fa](http://github.com/justindujardin/pow-edit/commit/0cc948fac50fcf18d40eac605261b5362d18df9d))
+* **$keys:** add keybinding service for editor shortcuts ([7d9502e3](http://github.com/justindujardin/pow-edit/commit/7d9502e36a6582dafe1b203deb5ba31b6d664c04))
+* **Platform:** add normalizePath for cleaning up relative path strings ([56d31205](http://github.com/justindujardin/pow-edit/commit/56d3120562c5f566efc2f44cabe9495feef509cb))
+* **TileEditorView:**
+  * add layer select and visibilty toggle actions ([f29ef2dd](http://github.com/justindujardin/pow-edit/commit/f29ef2dd96f4489747fe773f468c84684ca52cfe))
+  * add tile picker for paint tool ([e67ae886](http://github.com/justindujardin/pow-edit/commit/e67ae886cb3d6f278d9a98c2045dcc1695587d6c))
+  * add active state to toolbox tools ([b398a369](http://github.com/justindujardin/pow-edit/commit/b398a369ce3ce4dcebdebc524af7852b1f8b2530))
+  * support toolbox with move paint and erase tools ([6347adc7](http://github.com/justindujardin/pow-edit/commit/6347adc7e5c423fa0e85e8fdb806f0c89dec8084))
+  * support undo/redo of paint and erase actions ([626875f3](http://github.com/justindujardin/pow-edit/commit/626875f3bc74c679d42eba6e2412b8d678568bea))
+* **splitter:** update splitter to support notifying parent and children of resize ([e3109099](http://github.com/justindujardin/pow-edit/commit/e310909914e96668d93479a42a33060faef279d0))
+* **test:** add karma testing and coveralls reporting ([15eafca4](http://github.com/justindujardin/pow-edit/commit/15eafca471fc1965724aefc569383d060100b2cb))
+* **tileEditorView:**
+  * support cmd-z and cmd-shift-z as well as ctrl for undo and redo ([4c11b5eb](http://github.com/justindujardin/pow-edit/commit/4c11b5ebd81ea8dd5f81911ab6cb773a6393c3ee))
+  * support touch pan ([f326f00e](http://github.com/justindujardin/pow-edit/commit/f326f00e4fc93a05bc02f15777f82475147f4f27))
+
+
 <a name="0.0.3"></a>
 ### 0.0.3 (2014-05-17)
 
