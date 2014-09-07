@@ -50,6 +50,29 @@ describe("pow2.editor.AppController",()=>{
       });
    });
 
+   describe('getDocumentType',()=>{
+      it('should return unknown for unrecognized extensions',()=>{
+         angular.forEach(['pun'],(ext:string)=>{
+            expect(controller.getDocumentType(ext)).toBe('unknown');
+         });
+      });
+      it('should identify tiled map files',()=>{
+         angular.forEach(['tmx'],(ext:string)=>{
+            expect(controller.getDocumentType(ext)).toBe('tiled');
+         });
+      });
+      it('should identify markdown files',()=>{
+         angular.forEach(['md','markdown'],(ext:string)=>{
+            expect(controller.getDocumentType(ext)).toBe('markdown');
+         });
+      });
+      it('should identify image files',()=>{
+         angular.forEach(['png','gif','jpg','jpeg','bmp'],(ext:string)=>{
+            expect(controller.getDocumentType(ext)).toBe('image');
+         });
+      });
+   });
+
    describe('selectFile',()=>{
       it("should update scope document when file system node is selected",(done)=>{
          var file:pow2.editor.IFileInfo = {
