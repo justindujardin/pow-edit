@@ -1,4 +1,4 @@
-pow-edit
+pow-edit [![Build Status](https://travis-ci.org/justindujardin/pow-edit.svg?branch=master)](https://travis-ci.org/justindujardin/pow-edit) [![Coverage Status](https://img.shields.io/coveralls/justindujardin/pow-edit.svg)](https://coveralls.io/r/justindujardin/pow-edit?branch=master)
 ---
 
 A tile map editor for the future... Someday.  Written in TypeScript using Angular and LESS.
