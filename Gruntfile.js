@@ -16,7 +16,7 @@ module.exports = function(grunt) {
             target: 'es5', //or es3
             basePath: 'source',
             sourceMap: true,
-            comments: true,
+            comments: false,
             declaration: true
          },
          editor: {

@@ -2,7 +2,7 @@
 module.exports = function(config) {
    "use strict";
 
-   var coverageDebug = true;
+   var coverageDebug = false;
 
    config.set({
       basePath: '',
