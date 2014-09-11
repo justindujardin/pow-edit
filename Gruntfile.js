@@ -22,6 +22,7 @@ module.exports = function(grunt) {
          editor: {
             src: [
                "source/app.ts",
+               "source/errors.ts",
                "source/interfaces/*.ts",
                "source/services/*.ts",
                "source/shell/controllers/*.ts",
