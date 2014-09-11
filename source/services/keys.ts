@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../../../types/angular/angular.d.ts"/>
+///<reference path="../../types/angular/angular.d.ts"/>
 
 module pow2.editor {
 

@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-/// <reference path="../../interfaces/IAction.ts"/>
+/// <reference path="../interfaces/IAction.ts"/>
 
 module pow2.editor {
 
@@ -23,9 +23,8 @@ module pow2.editor {
    }]);
 
    export class BaseAction implements IAction {
-      name:string = "Unnamed Action";
       executed:boolean = false;
-
+      constructor(public name:string = "Unnamed Action"){}
       execute():boolean {
          if(!this.executed){
             this.executed = true;

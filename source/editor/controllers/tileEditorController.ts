@@ -18,9 +18,9 @@
 ///<reference path="../../../types/pixi/PIXI.d.ts"/>
 ///<reference path="../../../types/angular/angular.d.ts"/>
 ///<reference path="../../app.ts"/>
-///<reference path="../services/actions.ts"/>
-///<reference path="../services/tasks.ts"/>
-///<reference path="../services/keys.ts"/>
+///<reference path="../../services/actions.ts"/>
+///<reference path="../../services/tasks.ts"/>
+///<reference path="../../services/keys.ts"/>
 ///<reference path="../../formats/TiledLoader.ts"/>
 ///<reference path="../actions/layerSelectAction.ts"/>
 ///<reference path="../actions/layerVisibilityAction.ts"/>

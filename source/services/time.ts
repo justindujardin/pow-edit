@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../../app.ts"/>
+///<reference path="../app.ts"/>
 
 module pow2.editor {
    pow2.editor.app.factory("$time", () => {
