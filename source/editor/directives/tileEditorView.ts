@@ -32,6 +32,14 @@ module pow2.editor {
       "$interval", "$parse","$document","$tasks","$platform",
       ($interval,$parse,$document,$tasks:TasksService,$platform:IAppPlatform) => {
 
+         function destroyStage(stage) {
+            if(stage){
+               for (var i = stage.children.length - 1; i >= 0; i--) {
+                  stage.removeChild(stage.children[i]);
+               }
+            }
+         }
+
          return {
             restrict: "E",
             replace: false,
@@ -86,13 +94,13 @@ module pow2.editor {
                      }
 
                      if(!value){
-                        tileEditor.destroyStage(stage);
+                        destroyStage(stage);
                         tileEditor.sceneContainer = null;
                         return;
                      }
 
                      if(tileEditor.sceneContainer){
-                        tileEditor.destroyStage(stage);
+                        destroyStage(stage);
                      }
                      tileEditor.sceneContainer = new PIXI.DisplayObjectContainer();
                      if(documentViewController){
@@ -263,7 +271,7 @@ module pow2.editor {
                      tileEditor.destroy();
                      tileEditor.off('debug',setDebugText);
                      scopeDestroyed = true;
-                     tileEditor.destroyStage(stage);
+                     destroyStage(stage);
                      $interval.cancel(tileEditor.unwatchProgress);
                      if(t){
                         $tasks.killTaskGroup(t.name);

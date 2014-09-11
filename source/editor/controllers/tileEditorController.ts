@@ -32,12 +32,11 @@ module pow2.editor {
 
    export class TileEditorController extends pow2.Events {
 
-      static $inject:string[] = ['$document','$tasks','$injector','$platform','$keys','$actions'];
+      static $inject:string[] = ['$document','$tasks','$injector','$keys','$actions'];
       constructor(
          public $document:any,
          public $tasks:pow2.editor.TasksService,
          public $injector:any,
-         public $platform:pow2.editor.IAppPlatform,
          public $keys:pow2.editor.IKeysService,
          public $actions:pow2.editor.IActionsService) {
          super();
@@ -170,7 +169,7 @@ module pow2.editor {
       setLayerVisibility(index:number){
          var layer:IEditableTileLayer = this.layers[index];
          if(!layer){
-            throw new Error("Invalid layer to toggle visibility of");
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
          this.$actions.executeAction(new LayerVisibilityAction(this,index,!layer.objects.visible));
       }
@@ -219,7 +218,7 @@ module pow2.editor {
       paintAt(index:number){
          var layer:IEditableTileLayer = this.layers[this.activeLayerIndex];
          if(!layer || index > layer.tiles.length || index < 0){
-            console.error("paintAt: index out of range");
+            console.error(pow2.errors.INDEX_OUT_OF_RANGE);
             return;
          }
          var newGid:number = this.dragPaint;//this.getRandomInt(1,this.tileMap.tileInfo.length - 1); // ?
@@ -228,14 +227,12 @@ module pow2.editor {
          if(newGid !== 0){
             var meta:ITileData = this.tileMap.tileInfo[newGid];
             if(!meta){
-               console.error("No meta for GID: " + newGid);
-               return;
+               throw new Error(pow2.errors.INVALID_ITEM);
             }
             var tile:EditableTile = layer.tiles[index];
             if(tile._gid === newGid){
                return;
             }
-
             action = new TilePaintAction(this,layer,index,newGid);
          }
          else {
@@ -257,14 +254,6 @@ module pow2.editor {
             current:null,
             delta:null
          });
-         //this.setDebugText(JSON.stringify(this.drag,null,3));
-      }
-      destroyStage(stage) {
-         if(stage){
-            for (var i = stage.children.length - 1; i >= 0; i--) {
-               stage.removeChild(stage.children[i]);
-            }
-         }
       }
 
       updateCamera() {
@@ -283,7 +272,7 @@ module pow2.editor {
       }
 
 
-      // INPUT
+      // TODO: INPUT needs to be in the directive, not the controller.
       /**
        *  Pan Input listener
        *
