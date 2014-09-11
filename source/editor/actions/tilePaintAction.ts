@@ -25,11 +25,11 @@ module pow2.editor {
          public gid:number){
          super();
          if(index > layer.tiles.length || index < 0){
-            throw new Error("PaintAction: layer tile index out of range");
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
          var tile:EditableTile = layer.tiles[this.index];
          if(!tile){
-            throw new Error("Cannot paint to undefined tile at index " + this.index);
+            throw new Error(pow.errors.INVALID_ITEM);
          }
          this._lastGid = tile._gid;
       }

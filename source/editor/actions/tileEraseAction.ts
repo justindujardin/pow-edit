@@ -23,11 +23,11 @@ module pow2.editor {
          public index:number){
          super();
          if(index > layer.tiles.length || index < 0){
-            throw new Error("TileEraseAction: layer tile index out of range");
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
-         var tile:EditableTile = this.layer.tiles[this.index];
+         var tile:EditableTile = this.layer.tiles[index];
          if(!tile){
-            throw new Error("Cannot erase undefined tile at index " + this.index);
+            throw new Error(pow2.errors.INVALID_ITEM);
          }
          this._lastGid = tile._gid;
       }

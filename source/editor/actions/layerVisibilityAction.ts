@@ -24,7 +24,7 @@ module pow2.editor {
          public visibility:boolean){
          super();
          if(index > tileEditor.layers.length || index < 0){
-            throw new Error("LayerSelectAction: layer index out of range");
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
          this._lastVisibility = tileEditor.layers[index].objects.visible;
       }

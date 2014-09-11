@@ -23,7 +23,7 @@ module pow2.editor {
          public index:number){
          super();
          if(index > tileEditor.layers.length || index < 0){
-            throw new Error("LayerSelectAction: layer index out of range");
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
          this._lastLayer = tileEditor.activeLayerIndex;
       }
