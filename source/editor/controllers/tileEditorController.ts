@@ -240,7 +240,7 @@ module pow2.editor {
             if(tile._gid === newGid){
                return;
             }
-            action = new TileEraseAction(this,layer,index);
+            action = new TilePaintAction(this,layer,index,0);
          }
          if(this.$actions.executeAction(action)){
             this.setDebugText(action.name);

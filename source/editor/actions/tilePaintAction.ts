@@ -24,14 +24,13 @@ module pow2.editor {
          public index:number,
          public gid:number){
          super();
+         if(!tileEditor || !layer || typeof gid !== 'number'){
+            throw new Error(pow2.errors.INVALID_ARGUMENTS);
+         }
          if(index > layer.tiles.length || index < 0){
             throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
-         var tile:EditableTile = layer.tiles[this.index];
-         if(!tile){
-            throw new Error(pow.errors.INVALID_ITEM);
-         }
-         this._lastGid = tile._gid;
+         this._lastGid = layer.tiles[this.index]._gid;
       }
 
       private _lastGid:number = 0;
