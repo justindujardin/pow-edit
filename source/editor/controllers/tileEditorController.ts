@@ -24,7 +24,6 @@
 ///<reference path="../../formats/TiledLoader.ts"/>
 ///<reference path="../actions/layerSelectAction.ts"/>
 ///<reference path="../actions/layerVisibilityAction.ts"/>
-///<reference path="../actions/tileEraseAction.ts"/>
 ///<reference path="../actions/tilePaintAction.ts"/>
 
 
