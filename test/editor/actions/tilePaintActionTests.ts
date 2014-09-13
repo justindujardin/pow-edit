@@ -11,7 +11,7 @@ describe("pow2.editor.TilePaintAction",()=>{
             new pow2.editor.TilePaintAction(null,null,null,null);
          }).toThrow(new Error(pow2.errors.INVALID_ARGUMENTS));
          expect(() => {
-            new pow2.editor.TilePaintAction(fix.editor,1337,false);
+            new pow2.editor.TilePaintAction(fix.editor,null,1337,1);
          }).toThrow(new Error(pow2.errors.INVALID_ARGUMENTS));
          expect(() => {
             new pow2.editor.TilePaintAction(fix.editor,fix.editor.layers[0],1337,1);
