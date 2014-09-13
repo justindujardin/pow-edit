@@ -27,8 +27,7 @@ module pow2.editor {
 
    export var app = angular.module("pow-edit", [
       'templates-ui',
-      'uiTree',
-      'uiSplitter'
+      'uiTree'
    ]);
 
    app.value('rootPath',pow2.editor.APP_PROTOCOL_PATH);

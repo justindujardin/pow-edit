@@ -44,7 +44,7 @@ module pow2.editor {
             restrict: "E",
             replace: false,
             templateUrl: "source/editor/directives/tileEditorView.html",
-            require:["tileEditorView","?^documentView","?^uiSplit"],
+            require:["tileEditorView","?^documentView"],
             controller:TileEditorController,
             controllerAs:'editor',
             compile:(element,attributes) => {
@@ -53,26 +53,16 @@ module pow2.editor {
                return (scope, element, attributes:any,controllers:any[]) => {
                   var tileEditor:TileEditorController = controllers[0];
                   var documentViewController:DocumentViewController = controllers[1];
-                  var splitView:UISplitController = controllers[2];
-
                   var canvasElement:ng.IAugmentedJQuery = angular.element(element[0].querySelector('.canvas'));
-
-                  // Catch split view resize to adjust canvas size.
-                  if(splitView){
-                     var events:string[] = [
-                        UISplitController.DIRTY,
-                        UISplitController.CHILD_RESIZED,
-                        UISplitController.PARENT_RESIZED,
-                        UISplitController.LAYOUT
-                     ];
-                     splitView.on(events.join(' '),()=>{
-                        tileEditor.resize(canvasElement.width(),canvasElement.height());
-                     });
-                  }
 
                   if(!documentViewController){
                      console.log("No DocumentViewController found for editor.  Some loading information will be unavailable.");
                   }
+
+
+                  angular.element(window).on('resize',()=>{
+                     tileEditor.resize(canvasElement.width(),canvasElement.height());
+                  });
 
                   var t:pow2.editor.ITileMap = null;
 
@@ -280,7 +270,7 @@ module pow2.editor {
                      if(documentViewController){
                         documentViewController.hideLoading();
                      }
-                     //angular.element(window).off('resize');
+                     angular.element(window).off('resize');
                   });
                };
             }

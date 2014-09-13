@@ -25,22 +25,6 @@
   > * {
     z-index:1;
   }
-
-  &.ui-split.horizontal {
-    .ui-split-first {
-      width:@canvasWidth;
-      overflow: auto;
-    }
-    .ui-split-second {
-      left:@canvasWidth;
-    }
-    .ui-split-handle {
-      left:@canvasWidth;
-      border-left: 1px solid #000;
-    }
-
-  }
-
   .canvas {
     display: block;
     width:100%;
@@ -51,7 +35,7 @@
 
   section.tile-sets {
     position:absolute;
-    left:0;
+    right:0;
     bottom:0;
     min-height:64px;
     min-width:64px;
@@ -64,7 +48,7 @@
   nav.toolbox {
     background-color:rgba(0,0,0,0.85);
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
     .no-selection;
     ul {
@@ -75,7 +59,7 @@
         margin:0;
         height:auto;
         list-style-type:none;
-        display:block;
+        display: inline-block;
         padding:0.5em;
         font-size:2em;
         color:rgba(255,255,255,0.9);

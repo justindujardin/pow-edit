@@ -1,33 +1,28 @@
 
-<div ui-split orientation="horizontal" class="tile-editor-view">
-    <div ui-split-panel first min-size="250" class="">
-        <nav class="toolbox" role="toolbox">
-            <ul>
-                <li ng-class="{active:editor.activeTool=='move'}" ng-click="editor.setTool('move'); $event.stopPropagation();"><i class="fa fa-arrows"></i></li>
-                <li ng-class="{active:editor.activeTool=='paint'}" ng-click="editor.setTool('paint'); $event.stopPropagation();"><i class="fa fa-pencil"></i></li>
-                <li ng-class="{active:editor.activeTool=='erase'}" ng-click="editor.setTool('erase'); $event.stopPropagation();"><i class="fa fa-eraser"></i></li>
-                <li ng-class="{active:editor.activeTool=='magic'}" class="disabled"><i class="fa fa-magic"></i></li>
-            </ul>
-        </nav>
-        <canvas class="canvas"></canvas>
-    </div>
-    <div ui-split-panel second min-size="150">
-        <section class="tile-sets" ng-if="editor.activeTool=='paint'">
-            <tile-set-tile-picker
-                    ng-repeat="set in editor.tileMap.tileSets"
-                    url="{{set.url}}"
-                    on-pick="editor.setPaintTile(set,tilePoint)"
-                    tile-height="{{set.tileSize.y}}"
-                    tile-width="{{set.tileSize.x}}"></tile-set-tile-picker>
-        </section>
-        <nav class="layer-list">
-            <ul>
-                <li ng-repeat="layer in editor.layers track by $index"
-                    ng-click="editor.setActiveLayer($index)"
-                    ng-class="{visible:layer.objects.visible,empty:layer.objects.children.length==0,active:editor.activeLayerIndex==$index}">
-                    <a><i ng-click="editor.setLayerVisibility($index);$event.stopPropagation();"></i><span>{{layer.name}}</span></a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+<div class="tile-editor-view">
+    <nav class="toolbox" role="toolbox">
+        <ul>
+            <li ng-class="{active:editor.activeTool=='move'}" ng-click="editor.setTool('move'); $event.stopPropagation();"><i class="fa fa-arrows"></i></li>
+            <li ng-class="{active:editor.activeTool=='paint'}" ng-click="editor.setTool('paint'); $event.stopPropagation();"><i class="fa fa-pencil"></i></li>
+            <li ng-class="{active:editor.activeTool=='erase'}" ng-click="editor.setTool('erase'); $event.stopPropagation();"><i class="fa fa-eraser"></i></li>
+        </ul>
+    </nav>
+    <canvas class="canvas"></canvas>
+    <section class="tile-sets" ng-if="editor.activeTool=='paint'">
+        <tile-set-tile-picker
+                ng-repeat="set in editor.tileMap.tileSets"
+                url="{{set.url}}"
+                on-pick="editor.setPaintTile(set,tilePoint)"
+                tile-height="{{set.tileSize.y}}"
+                tile-width="{{set.tileSize.x}}"></tile-set-tile-picker>
+    </section>
+    <nav class="layer-list">
+        <ul>
+            <li ng-repeat="layer in editor.layers track by $index"
+                ng-click="editor.setActiveLayer($index)"
+                ng-class="{visible:layer.objects.visible,empty:layer.objects.children.length==0,active:editor.activeLayerIndex==$index}">
+                <a><i ng-click="editor.setLayerVisibility($index);$event.stopPropagation();"></i><span>{{layer.name}}</span></a>
+            </li>
+        </ul>
+    </nav>
 </div>
