@@ -1,0 +1,9 @@
+<nav class="layer-list">
+    <ul>
+        <li ng-repeat="layer in app.editor.layers track by $index"
+            ng-click="app.editor.setActiveLayer($index)"
+            ng-class="{visible:layer.objects.visible,empty:layer.objects.children.length==0,active:app.editor.activeLayerIndex==$index}">
+            <a><i ng-click="app.editor.setLayerVisibility($index);$event.stopPropagation();"></i><span>{{layer.name}}</span></a>
+        </li>
+    </ul>
+</nav>

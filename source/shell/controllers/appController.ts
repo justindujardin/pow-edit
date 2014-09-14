@@ -29,6 +29,8 @@ module pow2.editor {
          'rootPath'
       ];
       public document:IDocument;
+      public editorMenu:string = null;
+      public editor:TileEditorController = null;
       private _id:number = 1337;
       constructor(public $scope:any,
                   public $tasks:TasksService,

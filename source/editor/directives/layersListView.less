@@ -1,0 +1,87 @@
+/**
+ Copyright (C) 2014 by Justin DuJardin and Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
+@canvasWidth:86%;
+
+nav.layer-list {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  color: #fff;
+  background-color: @powBgDark;
+  text-decoration: none;
+  font-family: @font-family-scp;
+  .no-selection;
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  li {
+    cursor: pointer;
+    width: 100%;
+    height: 30px;
+    padding: 5px;
+    color: #bbb;
+    font-size: 16px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+    text-wrap: none;
+    white-space: nowrap;
+    line-height: 1.1em;
+    font-size: 1em;
+    &.active {
+      background-color: @powBlue;
+    }
+    > a {
+      > i {
+        margin: 0 5px;
+      }
+    }
+
+    &.visible {
+      color: #fff;
+      > a {
+        > i {
+          .icon(@fa-var-eye);
+        }
+      }
+    }
+    &.empty {
+      color: rgba(255, 255, 255, 0.5);
+      text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.5);
+      > a {
+        > i {
+          .icon(@fa-var-eye-slash);
+        }
+      }
+      &.force {
+        display: none !important;
+      }
+    }
+
+    > a {
+      > i {
+        .icon(@fa-var-eye-slash);
+      }
+      > span {
+        padding-left: 5px;
+      }
+    }
+  }
+}

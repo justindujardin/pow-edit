@@ -53,8 +53,13 @@ module pow2.editor {
                return (scope, element, attributes:any,controllers:any[]) => {
                   var tileEditor:TileEditorController = controllers[0];
                   var documentViewController:DocumentViewController = controllers[1];
+                  var appController:AppController = angular.element('body').controller();
                   var canvasElement:ng.IAugmentedJQuery = angular.element(element[0].querySelector('.canvas'));
 
+                  if(appController){
+                     appController.editorMenu = "source/editor/directives/layersListView.html";
+                     appController.editor = tileEditor;
+                  }
                   if(!documentViewController){
                      console.log("No DocumentViewController found for editor.  Some loading information will be unavailable.");
                   }
@@ -269,6 +274,9 @@ module pow2.editor {
                      t = null;
                      if(documentViewController){
                         documentViewController.hideLoading();
+                     }
+                     if(appController){
+                        appController.editor = null;
                      }
                      angular.element(window).off('resize');
                   });

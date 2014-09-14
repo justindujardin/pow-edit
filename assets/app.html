@@ -15,8 +15,8 @@
     <aside class="pow-edit-pusher" ng-click="showMenu=false;showRightMenu=false;">
         <document-view class="pow-edit-content" type="app.getDocumentType()" source="app.document"></document-view>
     </aside>
-    <div class="right-menu-trigger" ng-click="showRightMenu=!showRightMenu" ng-show="!showRightMenu"><i class="fa fa-list-alt"></i></div>
-    <div class="right-menu" ng-bind-html="app.editorMenu"></div>
+    <div class="right-menu-trigger ng-hide" ng-click="showRightMenu=!showRightMenu" ng-show="app.editor"><i class="fa fa-list-alt"></i></div>
+    <div class="right-menu" ng-include="app.editorMenu"></div>
 </main>
 
 <script type="text/javascript">
