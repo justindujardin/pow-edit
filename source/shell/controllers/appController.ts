@@ -28,9 +28,30 @@ module pow2.editor {
          '$platform',
          'rootPath'
       ];
+
+      //
+      // Notable Binding Variables
+      //
+      /**
+       * The active document.
+       *
+       * TODO: Multiple documents, maintain some kind of rolling
+       * window of in memory caches for quick navigation.
+       */
       public document:IDocument;
-      public editorMenu:string = null;
+
+
+      /**
+       * The template url to a context-sensitive menu for editing.
+       */
+      public editMenuTemplateUrl:string = null;
+
+      /**
+       * Reference to the TileEditorController of the active document.
+       * @type {pow2.editor.TileEditorController}
+       */
       public editor:TileEditorController = null;
+
       private _id:number = 1337;
       constructor(public $scope:any,
                   public $tasks:TasksService,

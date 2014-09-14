@@ -15,9 +15,9 @@ describe("pow2.editor.LayerVisibilityAction",()=>{
    });
    describe('execute',()=>{
       it('should set visibility of layer',()=>{
-         expect(fix.editor.layers[0].objects.visible).toBe(true);
+         expect(fix.editor.layers[0].container.visible).toBe(true);
          fix.editor.$actions.executeAction(new pow2.editor.LayerVisibilityAction(fix.editor,0,false));
-         expect(fix.editor.layers[0].objects.visible).toBe(false);
+         expect(fix.editor.layers[0].container.visible).toBe(false);
       });
       it('should fail if parent does',()=>{
          var act = new pow2.editor.LayerVisibilityAction(fix.editor,0,false);
@@ -28,10 +28,10 @@ describe("pow2.editor.LayerVisibilityAction",()=>{
    describe('undo',()=>{
       it('should revert visibility of layer',()=>{
          var act = new pow2.editor.LayerVisibilityAction(fix.editor,0,false);
-         expect(fix.editor.layers[0].objects.visible).toBe(true);
+         expect(fix.editor.layers[0].container.visible).toBe(true);
          fix.editor.$actions.executeAction(act);
          act.undo();
-         expect(fix.editor.layers[0].objects.visible).toBe(true);
+         expect(fix.editor.layers[0].container.visible).toBe(true);
       });
       it('should fail if parent does',()=>{
          var act = new pow2.editor.LayerVisibilityAction(fix.editor,0,false);

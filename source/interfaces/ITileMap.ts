@@ -17,8 +17,8 @@ module pow2.editor {
 
    // Common to everything ---
    export interface ITileBounds {
-      point?:pow2.Point;
-      size?:pow2.Point;
+      point:pow2.Point;
+      size:pow2.Point;
    }
    export interface ITileProperties {
       properties?:{
@@ -48,16 +48,19 @@ module pow2.editor {
 
    // Layers ---
    export interface ITileLayer extends ITileNamed, ITileBounds {
-      // Array of tile global ids for the layer.
-      tiles?:number[];
-      // Any objects on the layer
-      objects?:any[];
+      tiles:EditableTile[]; // y * w + x = tile index from col/row
+      container: PIXI.DisplayObjectContainer;
+      properties:{
+         [name:string]:any
+      };
+      opacity:number;
+      objects:any[];
    }
 
     // Tile Map ---
    export interface ITileMap extends ITileNamed, ITileBounds {
       // Array of tile meta information sorted by global tileset ID
-      tileInfo?:ITileData[];
+      tileInfo:ITileData[];
       tileSets:ITileSet[];
       tileSize:pow2.Point;
       layers:ITileLayer[];

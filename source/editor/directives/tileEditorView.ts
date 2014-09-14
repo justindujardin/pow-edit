@@ -21,7 +21,7 @@
 ///<reference path="../../services/actions.ts"/>
 ///<reference path="../../services/tasks.ts"/>
 ///<reference path="../../services/keys.ts"/>
-///<reference path="../../formats/TiledLoader.ts"/>
+///<reference path="../../formats/tiledMapLoader.ts"/>
 ///<reference path="../controllers/tileEditorController.ts"/>
 
 module pow2.editor {
@@ -53,11 +53,11 @@ module pow2.editor {
                return (scope, element, attributes:any,controllers:any[]) => {
                   var tileEditor:TileEditorController = controllers[0];
                   var documentViewController:DocumentViewController = controllers[1];
-                  var appController:AppController = angular.element('body').controller();
+                  var appController:AppController = angular.element($document[0].body).controller(null);
                   var canvasElement:ng.IAugmentedJQuery = angular.element(element[0].querySelector('.canvas'));
 
                   if(appController){
-                     appController.editorMenu = "source/editor/directives/layersListView.html";
+                     appController.editMenuTemplateUrl = "source/editor/directives/layersListView.html";
                      appController.editor = tileEditor;
                   }
                   if(!documentViewController){
@@ -69,7 +69,7 @@ module pow2.editor {
                      tileEditor.resize(canvasElement.width(),canvasElement.height());
                   });
 
-                  var t:pow2.editor.ITileMap = null;
+                  var t:pow2.editor.PowTileMap = null;
 
                   tileEditor.init(canvasElement);
                   // create an new instance of a pixi stage
@@ -104,7 +104,7 @@ module pow2.editor {
                      var promise:ng.IPromise<ITileMap> = tileEditor.loader.load(newUrl);
                      promise.then((tileMap:ITileMap)=>{
                         tileEditor.setMap(tileMap);
-                        t = tileMap;
+                        t = <any>tileMap;//TODO: this cast should go away.
                         buildMapRender();
                      }).catch((e:any)=>{
                         console.error(e);
@@ -145,11 +145,14 @@ module pow2.editor {
                      // Pre allocate display object containers.
                      angular.forEach(t.layers,(layer:any) => {
                         var container = new PIXI.DisplayObjectContainer();
-                        tileEditor.layers.push(<IEditableTileLayer>{
+                        tileEditor.layers.push(<ITileLayer>{
                            tiles: new Array(layer.tiles ? layer.tiles.length : 0),
-                           objects:container,
+                           container:container,
+                           objects:layer.objects,
                            data:layer,
                            name:layer.name,
+                           point:new pow2.Point(0,0),
+                           size:new pow2.Point(0,0),
                            properties:layer.properties,
                            opacity:layer.opacity
                         });
@@ -163,19 +166,23 @@ module pow2.editor {
                            if(documentViewController){
                               documentViewController.setLoadingDetails(l.name);
                            }
-                           var editable:IEditableTileLayer = tileEditor.layers[index];
-                           var container = editable.objects;
+                           var editable:ITileLayer = tileEditor.layers[index];
+                           var container = editable.container;
                            if(l.tiles){
                               for(var col:number = 0; col < t.size.x; col++) {
                                  for (var row:number = 0; row < t.size.y; row++) {
                                     // y * w + x = tile id from col/row
                                     var tileIndex:number = row * t.size.x + col;
-                                    var gid:number = l.tiles[tileIndex];
+                                    var tileMeta:EditableTile = l.tiles[tileIndex];
+                                    if(!tileMeta){
+                                       continue;
+                                    }
+                                    var gid:number = tileMeta._gid;
                                     var meta:ITileData = t.tileInfo[gid];
                                     if (meta) {
                                        var frame = new PIXI.Rectangle(meta.imagePoint.x,meta.imagePoint.y,t.tileSize.x,t.tileSize.y);
                                        var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
-                                       var tile:EditableTile = new EditableTile(tileEditor,texture);
+                                       var tile:EditableTile = new EditableTile(texture,tileEditor);
                                        tile.sprite.x = col * t.tileSize.y;
                                        tile.sprite.y = row * t.tileSize.x;
                                        tile.sprite.width = t.tileSize.x;

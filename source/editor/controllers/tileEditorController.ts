@@ -21,7 +21,7 @@
 ///<reference path="../../services/actions.ts"/>
 ///<reference path="../../services/tasks.ts"/>
 ///<reference path="../../services/keys.ts"/>
-///<reference path="../../formats/TiledLoader.ts"/>
+///<reference path="../../formats/tiledMapLoader.ts"/>
 ///<reference path="../actions/layerSelectAction.ts"/>
 ///<reference path="../actions/layerVisibilityAction.ts"/>
 ///<reference path="../actions/tilePaintAction.ts"/>
@@ -70,7 +70,7 @@ module pow2.editor {
 
       // Data
       public keyBinds:number[] = [];
-      public layers:IEditableTileLayer[] = [];
+      public layers:ITileLayer[] = [];
       public spriteTextures:{
          [url:string]:any // PIXI.BaseTexture
       } = {};
@@ -166,11 +166,11 @@ module pow2.editor {
       }
 
       setLayerVisibility(index:number){
-         var layer:IEditableTileLayer = this.layers[index];
+         var layer:ITileLayer = this.layers[index];
          if(!layer){
             throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
-         this.$actions.executeAction(new LayerVisibilityAction(this,index,!layer.objects.visible));
+         this.$actions.executeAction(new LayerVisibilityAction(this,index,!layer.container.visible));
       }
 
       setActiveLayer(index:number) {
@@ -215,7 +215,7 @@ module pow2.editor {
       }
 
       paintAt(index:number){
-         var layer:IEditableTileLayer = this.layers[this.activeLayerIndex];
+         var layer:ITileLayer = this.layers[this.activeLayerIndex];
          if(!layer || index > layer.tiles.length || index < 0){
             console.error(pow2.errors.INDEX_OUT_OF_RANGE);
             return;

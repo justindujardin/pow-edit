@@ -20,7 +20,7 @@ module pow2.editor {
       public name:string = "Paint Tile";
       constructor(
          public tileEditor:TileEditorController,
-         public layer:IEditableTileLayer,
+         public layer:ITileLayer,
          public index:number,
          public gid:number){
          super();

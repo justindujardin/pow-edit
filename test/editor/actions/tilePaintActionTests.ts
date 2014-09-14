@@ -20,7 +20,7 @@ describe("pow2.editor.TilePaintAction",()=>{
    });
    describe('execute',()=>{
       it('should set visibility of layer',()=>{
-         var layer:pow2.editor.IEditableTileLayer = fix.editor.layers[0];
+         var layer:pow2.editor.ITileLayer = fix.editor.layers[0];
          expect(layer.tiles[0]._gid).toBe(1);
          var act = new pow2.editor.TilePaintAction(fix.editor,fix.editor.layers[0],0,0);
          act.execute();
@@ -34,7 +34,7 @@ describe("pow2.editor.TilePaintAction",()=>{
    });
    describe('undo',()=>{
       it('should revert visibility of layer',()=>{
-         var layer:pow2.editor.IEditableTileLayer = fix.editor.layers[0];
+         var layer:pow2.editor.ITileLayer = fix.editor.layers[0];
          expect(layer.tiles[0]._gid).toBe(1);
          var act = new pow2.editor.TilePaintAction(fix.editor,fix.editor.layers[0],0,0);
          act.execute();

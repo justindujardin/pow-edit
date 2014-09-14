@@ -15,7 +15,7 @@
  */
 
 /// <reference path="../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
-/// <reference path="../interfaces/ITileMap.ts"/>
+/// <reference path="./powTileMap.ts"/>
 /// <reference path="../interfaces/IMapLoader.ts"/>
 
 module pow2.editor {
@@ -35,34 +35,28 @@ module pow2.editor {
                this.$rootScope.$$phase || this.$rootScope.$digest();
                return;
             }
-            var result:ITileMap = {
-               size:new pow2.Point(tiledResource.width,tiledResource.height),
-               point:new pow2.Point(0,0),
-               tileSize:new pow2.Point(tiledResource.tilewidth,tiledResource.tileheight),
-               layers:_.map(tiledResource.layers,(l:pow2.tiled.ITiledLayer)=>{
-                  return <ITileLayer>{
-                     tiles:l.data,
-                     objects:l.objects,
-                     size:new pow2.Point(l.width,l.height),
-                     name:l.name,
-                     point:new pow2.Point(l.x,l.y),
-                     visible:l.visible,
-                     opacity:l.opacity
-                  }
-               }),
-               tileSets:[],
-               tileInfo:[],
-               name:tiledResource.url
-            };
+            var result:PowTileMap = new PowTileMap();
+            result.setName(location);
+            result.setSize(new pow2.Point(tiledResource.width,tiledResource.height));
+            result.setPoint(new pow2.Point(0,0));
+            result.setTileSize(new pow2.Point(tiledResource.tilewidth,tiledResource.tileheight));
 
+            // Add listing of referenced tile sets
             var idSortedSets:any = _.sortBy(tiledResource.tilesets, (o:pow2.TiledTSXResource) => {
                return o.firstgid;
             });
-            _.each(idSortedSets,(tsxRes:TiledTSXResource) => {
+            angular.forEach(idSortedSets,(tsxRes:TiledTSXResource) => {
                while(result.tileInfo.length < tsxRes.firstgid){
                   result.tileInfo.push(null);
+//                  (<ITileData>{
+//                     url:null,
+//                     image:null,
+//                     imageSize:new pow2.Point(-1,-1),
+//                     imagePoint:new pow2.Point(-1,-1),
+//                     properties: {}
+//                  });
                }
-               _.each(tsxRes.tiles,(t:any,index:number) => {
+               angular.forEach(tsxRes.tiles,(t:any,index:number) => {
                   var tilesX = tsxRes.imageWidth / tsxRes.tilewidth;
                   var x = index % tilesX;
                   var y = Math.floor((index- x) / tilesX);
@@ -75,9 +69,7 @@ module pow2.editor {
                   });
                });
             });
-
-            _.each(tiledResource.tilesets,(tsr:pow2.TiledTSXResource) => {
-
+            angular.forEach(tiledResource.tilesets,(tsr:pow2.TiledTSXResource) => {
                result.tileSets.push({
                   tileSize:new pow2.Point(tsr.tilewidth,tsr.tileheight),
                   tiles:tsr.tiles,
@@ -86,6 +78,21 @@ module pow2.editor {
                   firstIndex:tsr.firstgid,
                   imageSize:new pow2.Point(tsr.imageWidth,tsr.imageHeight),
                   name:tsr.name
+               });
+            });
+
+            // Add layers last
+            angular.forEach(tiledResource.layers,(l:pow2.tiled.ITiledLayer)=>{
+               result.addLayer({
+                  tiles:l.data,
+                  container:new PIXI.DisplayObjectContainer(),
+                  objects:l.objects,
+                  properties:{},
+                  size:new pow2.Point(l.width,l.height),
+                  name:l.name,
+                  point:new pow2.Point(l.x,l.y),
+                  visible:l.visible,
+                  opacity:l.opacity
                });
             });
 

@@ -26,15 +26,15 @@ module pow2.editor {
          if(index > tileEditor.layers.length || index < 0){
             throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
-         this._lastVisibility = tileEditor.layers[index].objects.visible;
+         this._lastVisibility = tileEditor.layers[index].container.visible;
       }
 
       execute():boolean {
          if(!super.execute()){
             return false;
          }
-         var layer:IEditableTileLayer = this.tileEditor.layers[this.index];
-         layer.objects.visible = this.visibility;
+         var layer:ITileLayer = this.tileEditor.layers[this.index];
+         layer.container.visible = this.visibility;
          return true;
       }
 
@@ -42,8 +42,8 @@ module pow2.editor {
          if(!super.undo()){
             return false;
          }
-         var layer:IEditableTileLayer = this.tileEditor.layers[this.index];
-         layer.objects.visible = this._lastVisibility;
+         var layer:ITileLayer = this.tileEditor.layers[this.index];
+         layer.container.visible = this._lastVisibility;
          return true;
       }
    }
