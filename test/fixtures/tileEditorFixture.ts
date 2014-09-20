@@ -27,6 +27,7 @@ module pow2.editor.tests {
          afterEach(() => {
             this.element.remove();
             this.scope.$destroy();
+            this.editor.destroy();
          });
       }
    }

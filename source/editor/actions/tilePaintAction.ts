@@ -29,7 +29,7 @@ module pow2.editor {
          if(!layer || typeof gid !== 'number'){
             throw new Error(pow2.errors.INVALID_ARGUMENTS);
          }
-         if(index > layer.tiles.length || index < 0 || !layer.tiles[this.index]){
+         if(index > layer.tiles.length || index < 0){
             throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
          this._lastGid = layer.tiles[this.index];

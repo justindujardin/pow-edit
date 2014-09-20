@@ -67,7 +67,6 @@ module pow2.editor {
       size:pow2.Point = new pow2.Point(1,1);
       tileSize:pow2.Point = new pow2.Point(16,16);
       name:string = "Untitled";
-      private _blank:PIXI.Texture = new PIXI.RenderTexture(16, 16);
       setName(location:string) {
          this.name = location;
       }

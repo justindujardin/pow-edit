@@ -220,7 +220,7 @@ module pow2.editor {
       // TODO: Cache these textures by GID.
       getGidTexture(gid:number):PIXI.Texture{
          if(!this.blankTile && this.tileMap){
-            this.blankTile = new PIXI.RenderTexture(this.tileMap.tileSize.x, this.tileMap.tileSize.y);
+            this.blankTile = new PIXI.RenderTexture(this.tileMap.tileSize.x, this.tileMap.tileSize.y,this.renderer);
          }
          var meta:ITileData = this.tileMap.tileInfo[gid];
          if(gid <= 0 || !meta){
