@@ -16,13 +16,53 @@
 
 /// <reference path="../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
 /// <reference path="../interfaces/ITileMap.ts"/>
+/// <reference path="../app.ts"/>
 
 module pow2.editor {
+
+   export class PowTileLayer extends pow2.Events implements ITileLayer {
+      // ITileLayer
+      point:pow2.Point;
+      size:pow2.Point;
+      tiles:number[];
+      properties:{
+         [name:string]:any
+      };
+      visible:boolean;
+      opacity:number;
+      objects:any[];
+      name:string;
+      // end ITileLayer
+      constructor(layer:ITileLayer){
+         super();
+         _.extend(this,layer);
+         var arraySize:number = layer.size.x * layer.size.y;
+         if(!angular.isArray(layer.tiles)) {
+            layer.tiles = new Array(arraySize).map(()=>{
+               return 0;
+            });
+         }
+      }
+
+      setTileGid(index:number,gid:number){
+         if(index < 0 || index > this.tiles.length || gid < 0){
+            throw new Error(pow2.errors.INVALID_ARGUMENTS);
+         }
+         this.tiles[index] = gid;
+         this.trigger('changeTile',index);
+         // TODO: trigger change for editor views to update.
+      }
+
+      toggleVisible() {
+         this.visible = !this.visible;
+         this.trigger('changeVisible');
+      }
+   }
 
    export class PowTileMap implements ITileMap {
       tileInfo:pow2.editor.ITileData[] = [];
       tileSets:pow2.editor.ITileSet[] = [];
-      layers:pow2.editor.ITileLayer[] = [];
+      layers:pow2.editor.PowTileLayer[] = [];
       point:pow2.Point = new pow2.Point(0,0);
       size:pow2.Point = new pow2.Point(1,1);
       tileSize:pow2.Point = new pow2.Point(16,16);
@@ -40,39 +80,17 @@ module pow2.editor {
       setTileSize(size:pow2.Point){
          this.tileSize = size.clone();
       }
+      getLayer(index:number):PowTileLayer{
+         if(index < 0 || index > this.layers.length){
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
+         }
+         return <PowTileLayer>this.layers[index];
+      }
       addLayer(layer:ITileLayer){
          if(!layer || !layer.size){
             throw new Error(pow2.errors.INVALID_ARGUMENTS);
          }
-         var arraySize:number = layer.size.x * layer.size.y;
-         if(!layer.container){
-            layer.container = new PIXI.DisplayObjectContainer();
-         }
-         var gids:any[] = layer.tiles;
-         if(!angular.isArray(layer.tiles)) {
-            gids = new Array(arraySize).map(()=>{
-               return 0;
-            });
-         }
-         for(var col:number = 0; col < layer.size.x; col++) {
-            for (var row:number = 0; row < layer.size.y; row++) {
-               var tileIndex:number = row * layer.size.x + col;
-               // y * w + x = tile id from col/row
-               var gid:number = gids[tileIndex];
-               var tile:EditableTile = new EditableTile(this._blank);
-               tile.sprite.x = col * this.tileSize.y;
-               tile.sprite.y = row * this.tileSize.x;
-               tile.sprite.width = this.tileSize.x;
-               tile.sprite.height = this.tileSize.y;
-               tile._gid = gid;
-               tile._tileIndex = tileIndex;
-
-               //sprite.anchor = centerOrigin;
-               gids[tileIndex] = tile;
-            }
-         }
-         layer.tiles = <any>gids;
-         this.layers.push(layer);
+         this.layers.push(new PowTileLayer(layer));
       }
    }
 }

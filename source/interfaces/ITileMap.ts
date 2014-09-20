@@ -13,6 +13,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+
+/// <reference path="../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
+
 module pow2.editor {
 
    // Common to everything ---
@@ -48,11 +51,11 @@ module pow2.editor {
 
    // Layers ---
    export interface ITileLayer extends ITileNamed, ITileBounds {
-      tiles:EditableTile[]; // y * w + x = tile index from col/row
-      container: PIXI.DisplayObjectContainer;
+      tiles:number[]; // y * w + x = tile index from col/row
       properties:{
          [name:string]:any
       };
+      visible:boolean;
       opacity:number;
       objects:any[];
    }

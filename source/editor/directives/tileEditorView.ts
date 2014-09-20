@@ -18,6 +18,8 @@
 ///<reference path="../../../types/pixi/PIXI.d.ts"/>
 ///<reference path="../../../types/angular/angular.d.ts"/>
 ///<reference path="../../app.ts"/>
+///<reference path="../../shell/directives/documentView.ts"/>
+///<reference path="../../shell/controllers/appController.ts"/>
 ///<reference path="../../services/actions.ts"/>
 ///<reference path="../../services/tasks.ts"/>
 ///<reference path="../../services/keys.ts"/>
@@ -28,6 +30,14 @@ module pow2.editor {
    declare var requestAnimFrame:any;
    declare var PIXI:any;
    var clearColor:number = 0x111114;
+
+
+   interface ViewLayer {
+      tiles:EditableTile[]; // y * w + x = tile index from col/row
+      container: PIXI.DisplayObjectContainer;
+      dataSource:PowTileLayer;
+   }
+
    pow2.editor.app.directive("tileEditorView", [
       "$interval", "$parse","$document","$tasks","$platform",
       ($interval,$parse,$document,$tasks:TasksService,$platform:IAppPlatform) => {
@@ -71,10 +81,14 @@ module pow2.editor {
 
                   var t:pow2.editor.PowTileMap = null;
 
-                  tileEditor.init(canvasElement);
                   // create an new instance of a pixi stage
                   var stage = new PIXI.Stage(clearColor, true);
+                  tileEditor.init(canvasElement,stage);
+
                   var newUrl:string = $platform.pathAsAppProtocol(source(scope));
+
+                  // Unwatch progress interval
+                  var unwatchProgress:any = null;
 
                   /**
                    * Data binding
@@ -102,7 +116,7 @@ module pow2.editor {
                         documentViewController.showLoading('Loading...');
                      }
                      var promise:ng.IPromise<ITileMap> = tileEditor.loader.load(newUrl);
-                     promise.then((tileMap:ITileMap)=>{
+                     promise.then((tileMap:PowTileMap)=>{
                         tileEditor.setMap(tileMap);
                         t = <any>tileMap;//TODO: this cast should go away.
                         buildMapRender();
@@ -129,7 +143,6 @@ module pow2.editor {
                      debugText.setText(text);
                   }
                   var buildMapRender = () => {
-                     tileEditor.layers.length = 0;
                      tileEditor.cameraCenter.set(t.size.x * t.tileSize.x / 2, t.size.y * t.tileSize.y / 2);
                      tileEditor.cameraHeight = element.height();
                      tileEditor.cameraWidth = element.width();
@@ -142,42 +155,36 @@ module pow2.editor {
                      } = tileEditor.loadTextures(t.tileSets);
 
 
-                     // Pre allocate display object containers.
-                     angular.forEach(t.layers,(layer:any) => {
-                        var container = new PIXI.DisplayObjectContainer();
-                        tileEditor.layers.push(<ITileLayer>{
-                           tiles: new Array(layer.tiles ? layer.tiles.length : 0),
-                           container:container,
-                           objects:layer.objects,
-                           data:layer,
-                           name:layer.name,
-                           point:new pow2.Point(0,0),
-                           size:new pow2.Point(0,0),
-                           properties:layer.properties,
-                           opacity:layer.opacity
-                        });
-                        container.visible = layer.visible;
-                        tileEditor.sceneContainer.addChild(container);
-                     });
-
                      // Each layer
-                     angular.forEach(t.layers,(l:pow2.editor.ITileLayer,index:number) => {
+                     var tileViewLayers:ViewLayer[] = [];
+                     angular.forEach(t.layers,(mapLayer:pow2.editor.PowTileLayer) => {
                         $tasks.add(() => {
                            if(documentViewController){
-                              documentViewController.setLoadingDetails(l.name);
+                              documentViewController.setLoadingDetails(mapLayer.name);
                            }
-                           var editable:ITileLayer = tileEditor.layers[index];
-                           var container = editable.container;
-                           if(l.tiles){
+                           var newViewLayer:ViewLayer = {
+                              tiles:[],
+                              container: new PIXI.DisplayObjectContainer(),
+                              dataSource:mapLayer
+                           };
+                           newViewLayer.container.visible = mapLayer.visible;
+                           mapLayer.on('changeTile',(index:number)=>{
+                              var newGid:number = mapLayer.tiles[index];
+                              var tile:EditableTile = newViewLayer.tiles[index];
+                              if(tile){
+                                 tile.sprite.setTexture(tileEditor.getGidTexture(newGid));
+                                 tile._gid = newGid;
+                              }
+                           });
+                           mapLayer.on('changeVisible',()=>{
+                              newViewLayer.container.visible = mapLayer.visible;
+                           });
+                           if(mapLayer.tiles){
                               for(var col:number = 0; col < t.size.x; col++) {
                                  for (var row:number = 0; row < t.size.y; row++) {
                                     // y * w + x = tile id from col/row
                                     var tileIndex:number = row * t.size.x + col;
-                                    var tileMeta:EditableTile = l.tiles[tileIndex];
-                                    if(!tileMeta){
-                                       continue;
-                                    }
-                                    var gid:number = tileMeta._gid;
+                                    var gid:number = mapLayer.tiles[tileIndex];
                                     var meta:ITileData = t.tileInfo[gid];
                                     if (meta) {
                                        var frame = new PIXI.Rectangle(meta.imagePoint.x,meta.imagePoint.y,t.tileSize.x,t.tileSize.y);
@@ -190,14 +197,13 @@ module pow2.editor {
                                        tile._gid = gid;
                                        tile._tileIndex = tileIndex;
 
-                                       //sprite.anchor = centerOrigin;
-                                       container.addChild(tile.sprite);
-                                       editable.tiles[tileIndex] = tile;
+                                       newViewLayer.container.addChild(tile.sprite);
+                                       newViewLayer.tiles[tileIndex] = tile;
                                     }
                                  }
                               }
                            }
-                           _.each(l.objects,(obj:pow2.tiled.ITiledObject) => {
+                           _.each(mapLayer.objects,(obj:pow2.tiled.ITiledObject) => {
                               var box = new PIXI.Graphics();
                               box.beginFill(0xFFFFFF);
                               box.alpha = 0.6;
@@ -206,8 +212,9 @@ module pow2.editor {
                               box.endFill();
                               box.position.x = obj.x;
                               box.position.y = obj.y;
-                              container.addChild(box);
+                              newViewLayer.container.addChild(box);
                            });
+                           tileEditor.sceneContainer.addChild(newViewLayer.container);
                            return true;
                         },t.name);
                      });
@@ -219,7 +226,7 @@ module pow2.editor {
                         documentViewController.setLoadingTitle("Building Map...");
                         documentViewController.setTotal(total);
                      }
-                     tileEditor.unwatchProgress = $interval(()=>{
+                     unwatchProgress = $interval(()=>{
                         if(documentViewController){
                            documentViewController.setCurrent(total - $tasks.getRemainingTasks(t.name));
                         }
@@ -229,7 +236,7 @@ module pow2.editor {
                         if(documentViewController){
                            documentViewController.hideLoading();
                         }
-                        $interval.cancel(tileEditor.unwatchProgress);
+                        $interval.cancel(unwatchProgress);
                         tileEditor.resize(canvasElement.width(),canvasElement.height());
                         scope.$emit('map-loaded');
                         return true;
@@ -258,23 +265,11 @@ module pow2.editor {
                      tileEditor.handleMouseWheel(e);
                   });
 
-                  var scopeDestroyed:boolean = false;
-                  /**
-                   * Process loop
-                   */
-                  function animate() {
-                     tileEditor.renderer.render(stage);
-                     if(!scopeDestroyed){
-                        requestAnimFrame(animate);
-                     }
-                  }
-                  requestAnimFrame(animate);
                   return scope.$on("$destroy", function() {
                      tileEditor.destroy();
                      tileEditor.off('debug',setDebugText);
-                     scopeDestroyed = true;
                      destroyStage(stage);
-                     $interval.cancel(tileEditor.unwatchProgress);
+                     $interval.cancel(unwatchProgress);
                      if(t){
                         $tasks.killTaskGroup(t.name);
                      }

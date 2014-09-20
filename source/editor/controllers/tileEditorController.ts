@@ -14,31 +14,29 @@
  limitations under the License.
  */
 ///<reference path="../../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
-///<reference path="../../../types/ace/ace.d.ts"/>
-///<reference path="../../../types/pixi/PIXI.d.ts"/>
-///<reference path="../../../types/angular/angular.d.ts"/>
+///<reference path="../tileEditor.ts"/>
 ///<reference path="../../app.ts"/>
 ///<reference path="../../services/actions.ts"/>
 ///<reference path="../../services/tasks.ts"/>
 ///<reference path="../../services/keys.ts"/>
+///<reference path="../../services/time.ts"/>
 ///<reference path="../../formats/tiledMapLoader.ts"/>
-///<reference path="../actions/layerSelectAction.ts"/>
-///<reference path="../actions/layerVisibilityAction.ts"/>
 ///<reference path="../actions/tilePaintAction.ts"/>
 
 
 module pow2.editor {
 
-   export class TileEditorController extends pow2.Events {
-
-      static $inject:string[] = ['$document','$tasks','$injector','$keys','$actions'];
+   export class TileEditorController extends pow2.Events implements IProcessObject {
+      static $inject:string[] = ['$document','$tasks','$time','$injector','$keys','$actions'];
       constructor(
          public $document:any,
          public $tasks:pow2.editor.TasksService,
+         public $time:pow2.Time,
          public $injector:any,
          public $keys:pow2.editor.IKeysService,
          public $actions:pow2.editor.IActionsService) {
          super();
+         $time.addObject(this);
          this.loader = this.$injector.instantiate(TiledMapLoader);
 
          angular.forEach(['ctrl+z','cmd+z'],(c:string)=>{
@@ -60,17 +58,16 @@ module pow2.editor {
       }
 
       public blankTile:PIXI.Texture = null;
-      public ctx:IContext;
+//      public ctx:IContext;
 
       public loader:TiledMapLoader;
-      public tileMap:ITileMap = null;
+      public tileMap:PowTileMap = null;
 
       // DOM
       public container:HTMLElement;
 
       // Data
       public keyBinds:number[] = [];
-      public layers:ITileLayer[] = [];
       public spriteTextures:{
          [url:string]:any // PIXI.BaseTexture
       } = {};
@@ -86,6 +83,7 @@ module pow2.editor {
 
       // Rendering
       public renderer:any;
+      public stage:PIXI.Stage;
 
       // Scenegraph
       public sceneContainer:any = null;
@@ -105,21 +103,37 @@ module pow2.editor {
          cameraStart:null,
          delta:null
       };
-      public unwatchProgress:any = null;
-
-      init(element){
+      init(element:any,stage:PIXI.Stage){
+         this.$time.addObject(this);
          this.container = element;
          var w:number = element.width();
          var h:number = element.height();
          // create a renderer instance
          this.renderer = PIXI.autoDetectRenderer(w,h,element[0]);
          this.resize(w,h);
+         this.stage = stage;
       }
       destroy() {
          angular.forEach(this.keyBinds,(bind:number)=>{
             this.$keys.unbind(bind);
          });
+         this.$time.removeObject(this);
+         if(this.renderer){
+            this.renderer.destroy();
+            this.renderer = null;
+         }
+         this.container = null;
       }
+
+      // IProcessObject implementation
+      _uid:string;
+      tick(elapsed:number) {}
+      processFrame(elapsed:number) {
+         if(this.renderer && this.stage){
+            this.renderer.render(this.stage);
+         }
+      }
+
       /**
        * Resize the editor view
        */
@@ -152,7 +166,7 @@ module pow2.editor {
          return this;
       }
 
-      setMap(tileMap:ITileMap){
+      setMap(tileMap:PowTileMap){
          this.tileMap = tileMap;
       }
 
@@ -166,15 +180,21 @@ module pow2.editor {
       }
 
       setLayerVisibility(index:number){
-         var layer:ITileLayer = this.layers[index];
+         var layer:PowTileLayer = this.tileMap.layers[index];
          if(!layer){
             throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
-         this.$actions.executeAction(new LayerVisibilityAction(this,index,!layer.container.visible));
+         layer.toggleVisible();
+         //this.$actions.executeAction(new LayerVisibilityAction(this,index,!layer.visible));
       }
 
       setActiveLayer(index:number) {
-         this.$actions.executeAction(new LayerSelectAction(this,index));
+         var layer:PowTileLayer = this.tileMap.layers[index];
+         if(!layer){
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
+         }
+         this.activeLayerIndex = index;
+         //this.$actions.executeAction(new LayerSelectAction(this,index));
       }
 
       loadTextures(tileSets:ITileSet[]){
@@ -215,7 +235,7 @@ module pow2.editor {
       }
 
       paintAt(index:number){
-         var layer:ITileLayer = this.layers[this.activeLayerIndex];
+         var layer:PowTileLayer = this.tileMap.layers[this.activeLayerIndex];
          if(!layer || index > layer.tiles.length || index < 0){
             console.error(pow2.errors.INDEX_OUT_OF_RANGE);
             return;
@@ -228,18 +248,18 @@ module pow2.editor {
             if(!meta){
                throw new Error(pow2.errors.INVALID_ITEM);
             }
-            var tile:EditableTile = layer.tiles[index];
-            if(tile._gid === newGid){
+            var tile:number = layer.tiles[index];
+            if(tile === newGid){
                return;
             }
-            action = new TilePaintAction(this,layer,index,newGid);
+            action = new TilePaintAction(layer,index,newGid);
          }
          else {
-            var tile:EditableTile = layer.tiles[index];
-            if(tile._gid === newGid){
+            var tile:number = layer.tiles[index];
+            if(tile === newGid){
                return;
             }
-            action = new TilePaintAction(this,layer,index,0);
+            action = new TilePaintAction(layer,index,0);
          }
          if(this.$actions.executeAction(action)){
             this.setDebugText(action.name);

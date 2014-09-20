@@ -14,6 +14,7 @@
  limitations under the License.
  */
 
+/// <reference path="../app.ts"/>
 /// <reference path="../interfaces/IAction.ts"/>
 
 module pow2.editor {

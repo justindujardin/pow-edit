@@ -13,35 +13,33 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+///<reference path="../../services/actions.ts"/>
+///<reference path="../../formats/powTileMap.ts"/>
+
 module pow2.editor {
 
    // Tile Editor actions
    export class TilePaintAction extends BaseAction {
       public name:string = "Paint Tile";
       constructor(
-         public tileEditor:TileEditorController,
-         public layer:ITileLayer,
+         public layer:PowTileLayer,
          public index:number,
          public gid:number){
          super();
-         if(!tileEditor || !layer || typeof gid !== 'number'){
+         if(!layer || typeof gid !== 'number'){
             throw new Error(pow2.errors.INVALID_ARGUMENTS);
          }
-         if(index > layer.tiles.length || index < 0){
+         if(index > layer.tiles.length || index < 0 || !layer.tiles[this.index]){
             throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
-         this._lastGid = layer.tiles[this.index]._gid;
+         this._lastGid = layer.tiles[this.index];
       }
-
       private _lastGid:number = 0;
-
       execute():boolean {
          if(!super.execute()){
             return false;
          }
-         var tile:EditableTile = this.layer.tiles[this.index];
-         tile.sprite.setTexture(this.tileEditor.getGidTexture(this.gid));
-         tile._gid = this.gid;
+         this.layer.setTileGid(this.index,this.gid);
          return true;
       }
 
@@ -49,9 +47,7 @@ module pow2.editor {
          if(!super.undo()){
             return false;
          }
-         var tile:EditableTile = this.layer.tiles[this.index];
-         tile._gid = this._lastGid;
-         tile.sprite.setTexture(this.tileEditor.getGidTexture(this._lastGid));
+         this.layer.setTileGid(this.index,this._lastGid);
          return true;
       }
    }
