@@ -119,7 +119,7 @@ module pow2.editor {
          });
          this.$time.removeObject(this);
          if(this.renderer){
-            this.renderer.destroy();
+            this.renderer.destroy && this.renderer.destroy();
             this.renderer = null;
          }
          this.container = null;
