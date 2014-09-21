@@ -55,6 +55,11 @@ module pow2.editor {
                }
             }));
          });
+         this.keyBinds.push($keys.bind('ctrl+s',(e)=>{
+            this.loader.save(this.tileMap.name,this.tileMap).then((data:any)=>{
+               console.log(data);
+            });
+         }));
       }
 
       public blankTile:PIXI.Texture = null;

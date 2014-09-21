@@ -13,7 +13,7 @@ module.exports = function(config) {
          "assets/bower_components/jquery/dist/jquery.js",
          "assets/vendor/ace/src-min-noconflict/ace.js",
          "assets/bower_components/showdown/compressed/showdown.js",
-         "assets/bower_components/pixi/bin/pixi.js",
+         "assets/bower_components/pixi/bin/pixi.dev.js",
          "assets/bower_components/angular/angular.js",
          "assets/bower_components/angular-mocks/angular-mocks.js",
          "assets/build/pow-edit.browser.js", // WebBrowser platform

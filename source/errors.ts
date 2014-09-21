@@ -20,14 +20,5 @@
  */
 module pow2.errors {
 
-   /**
-    * A specified index is out of the valid range for an array it applies to.
-    */
-   export var INDEX_OUT_OF_RANGE:string = 'index out of range';
-
-   /**
-    * An item is not of the expected type or value.
-    */
-   export var INVALID_ITEM:string = 'invalid item type or value';
 
 }
