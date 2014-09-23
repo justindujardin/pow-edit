@@ -158,15 +158,15 @@ module pow2.editor {
                      // Each layer
                      var tileViewLayers:ViewLayer[] = [];
                      angular.forEach(t.layers,(mapLayer:pow2.editor.PowTileLayer) => {
+                        var newViewLayer:ViewLayer = {
+                           tiles:[],
+                           container: new PIXI.DisplayObjectContainer(),
+                           dataSource:mapLayer
+                        };
                         $tasks.add(() => {
                            if(documentViewController){
                               documentViewController.setLoadingDetails(mapLayer.name);
                            }
-                           var newViewLayer:ViewLayer = {
-                              tiles:[],
-                              container: new PIXI.DisplayObjectContainer(),
-                              dataSource:mapLayer
-                           };
                            newViewLayer.container.visible = mapLayer.visible;
                            mapLayer.on('changeTile',(index:number)=>{
                               var newGid:number = mapLayer.tiles[index];
@@ -174,6 +174,21 @@ module pow2.editor {
                               if(tile){
                                  tile.sprite.setTexture(tileEditor.getGidTexture(newGid));
                                  tile._gid = newGid;
+                              }
+                              else {
+                                 // Create sprite if it doesn't already exist.
+                                 var col = index % t.size.x;
+                                 var row = (index - col) / t.size.x;
+                                 var texture = tileEditor.getGidTexture(newGid);
+                                 var tile:EditableTile = new EditableTile(texture,tileEditor);
+                                 tile.sprite.x = col * t.tileSize.y;
+                                 tile.sprite.y = row * t.tileSize.x;
+                                 tile.sprite.width = t.tileSize.x;
+                                 tile.sprite.height = t.tileSize.y;
+                                 tile._gid = gid;
+                                 tile._tileIndex = tileIndex;
+                                 newViewLayer.container.addChild(tile.sprite);
+                                 newViewLayer.tiles[index] = tile;
                               }
                            });
                            mapLayer.on('changeVisible',()=>{

@@ -27,13 +27,14 @@
 module pow2.editor {
 
    export class TileEditorController extends pow2.Events implements IProcessObject {
-      static $inject:string[] = ['$document','$tasks','$time','$injector','$keys','$actions'];
+      static $inject:string[] = ['$document','$tasks','$time','$injector','$keys','$platform','$actions'];
       constructor(
          public $document:any,
          public $tasks:pow2.editor.TasksService,
          public $time:pow2.Time,
          public $injector:any,
          public $keys:pow2.editor.IKeysService,
+         public $platform:pow2.editor.IAppPlatform,
          public $actions:pow2.editor.IActionsService) {
          super();
          $time.addObject(this);
@@ -57,7 +58,12 @@ module pow2.editor {
          });
          this.keyBinds.push($keys.bind('ctrl+s',(e)=>{
             this.loader.save(this.tileMap.name,this.tileMap).then((data:any)=>{
-               console.log(data);
+               this.$platform.writeFile(this.tileMap.name,data,(err:any)=>{
+                  if(err){
+                     throw new Error(err);
+                  }
+                  console.log('File: ' + this.tileMap.name + ' --- SAVED');
+               });
             });
          }));
       }
