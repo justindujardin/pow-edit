@@ -2,7 +2,7 @@
     <ul>
         <li ng-repeat="layer in app.editor.tileMap.layers track by $index"
             ng-click="app.editor.setActiveLayer($index)"
-            ng-class="{visible:layer.visible,active:app.editor.activeLayerIndex==$index}">
+            ng-class="{objects:!layer.tiles,visible:layer.visible,active:app.editor.activeLayerIndex==$index}">
             <a><i ng-click="app.editor.setLayerVisibility($index);$event.stopPropagation();"></i><span>{{layer.name}}</span></a>
         </li>
     </ul>
