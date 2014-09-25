@@ -241,6 +241,8 @@ module pow2.editor {
                         documentViewController.setLoadingTitle("Building Map...");
                         documentViewController.setTotal(total);
                      }
+                     // Kill any existing interval and register a new one.
+                     $interval.cancel(unwatchProgress);
                      unwatchProgress = $interval(()=>{
                         if(documentViewController){
                            documentViewController.setCurrent(total - $tasks.getRemainingTasks(t.name));
