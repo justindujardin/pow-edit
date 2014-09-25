@@ -62,11 +62,27 @@
   bottom:0;
 }
 
+@darkBorderColor:rgba(0,0,0,0.4);
 /* Used for selected items in list.  Dark inset effect. */
 .dark-selection {
   background-color: #222;
-  box-shadow:0 1px 0 rgba(255,255,255,0.4),0 -1px 0 rgba(0,0,0,0.1);
-  -moz-box-shadow:0 1px 0 rgba(255,255,255,0.4),0 -1px 0 rgba(0,0,0,0.1);
+  @shadow: 0 1px 0 rgba(255,255,255,0.4),0 -1px 0 rgba(0,0,0,0.1);
+  box-shadow:@shadow;
+  -webkit-box-shadow:@shadow;
+  -moz-box-shadow:@shadow;
+}
+
+.dark-selection-left{
+  @shadow: ~"1px 0 0 @{darkBorderColor}";
+  box-shadow:@shadow;
+  -webkit-box-shadow:@shadow;
+  -moz-box-shadow:@shadow;
+}
+.dark-selection-right{
+  @shadow: ~"-1px 0 0 @{darkBorderColor}";
+  box-shadow:@shadow;
+  -webkit-box-shadow:@shadow;
+  -moz-box-shadow:@shadow;
 }
 
 .box-sizing(@boxmodel) {
@@ -139,13 +155,15 @@ body, html {
   }
   .left-menu{
     left: 0;
-	-webkit-transform: translate3d(-100%, 0, 0);
+	-webkit-transform: translate3d(-101%, 0, 0);
 	transform: translate3d(-100%, 0, 0);
+    .dark-selection-left;
   }
   .right-menu{
     right: 0;
-	-webkit-transform: translate3d(100%, 0, 0);
+	-webkit-transform: translate3d(101%, 0, 0);
 	transform: translate3d(100%, 0, 0);
+    .dark-selection-right;
   }
   .pow-edit-pusher {
     -webkit-transition: -webkit-transform 0.5s;
