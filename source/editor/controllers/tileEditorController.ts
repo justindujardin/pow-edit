@@ -287,6 +287,16 @@ module pow2.editor {
          }
       }
 
+      floodPaintAt(index:number,newGid:number=this.dragPaint){
+         var layer:PowTileLayer = this.tileMap.layers[this.activeLayerIndex];
+         if(!layer || index > layer.tiles.length || index < 0){
+            return;
+         }
+         var action = new TileFloodPaintAction(layer,index,newGid);
+         if(this.$actions.executeAction(action)){
+            this.setDebugText(action.name);
+         }
+      }
       resetDrag(){
          this.drag = _.extend({},{
             active:false,

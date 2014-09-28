@@ -30,15 +30,22 @@ module pow2.editor {
          if(event.originalEvent.touches) {
             e = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
          }
+         var mouseAtIndex:number = tileEditor.picker.indexFromPoint(tileEditor.mouseEventToWorld(event));
          switch(tileEditor.activeTool){
             case 'paint':
                tileEditor.dragPaint = tileEditor.tileIndex;
-               tileEditor.paintAt(tileEditor.picker.indexFromPoint(tileEditor.mouseEventToWorld(event)));
+               tileEditor.paintAt(mouseAtIndex);
                var _stopPaint = () => {
                   tileEditor.dragPaint = -1;
                   tileEditor.$document.off('mouseup touchend',_stopPaint);
                };
                tileEditor.$document.on('mouseup touchend', _stopPaint);
+               return;
+               break;
+            case 'flood':
+               if(mouseAtIndex != -1){
+                  tileEditor.floodPaintAt(mouseAtIndex,tileEditor.tileIndex);
+               }
                return;
                break;
             case 'erase':
