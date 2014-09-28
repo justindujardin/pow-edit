@@ -30,7 +30,52 @@ module pow2.editor {
          if(event.originalEvent.touches) {
             e = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
          }
-         var mouseAtIndex:number = tileEditor.picker.indexFromPoint(tileEditor.mouseEventToWorld(event));
+         var doMove:any = () => {
+            tileEditor.dragPaint = -1;
+            tileEditor.drag.active = true;
+            tileEditor.drag.start = new pow2.Point(e.clientX,e.clientY);
+            tileEditor.drag.current = tileEditor.drag.start.clone();
+            tileEditor.drag.delta = new pow2.Point(0,0);
+            tileEditor.drag.cameraStart = new Point(tileEditor.cameraCenter.x,tileEditor.cameraCenter.y);
+            var _mouseUp = () => {
+               tileEditor.$document.off('mousemove touchmove',_mouseMove);
+               tileEditor.$document.off('mouseup touchend',_mouseUp);
+               tileEditor.resetDrag();
+            };
+            var _mouseMove = (evt:any) => {
+               if(!tileEditor.drag.active){
+                  return;
+               }
+               if(evt.originalEvent.touches) {
+                  evt = evt.originalEvent.touches[0] || evt.originalEvent.changedTouches[0];
+               }
+               tileEditor.drag.current.set(evt.clientX,evt.clientY);
+               tileEditor.drag.delta.set(tileEditor.drag.start.x - tileEditor.drag.current.x, tileEditor.drag.start.y - tileEditor.drag.current.y);
+
+               tileEditor.cameraCenter.x = tileEditor.drag.cameraStart.x + tileEditor.drag.delta.x * (1 / tileEditor.cameraZoom);
+               tileEditor.cameraCenter.y = tileEditor.drag.cameraStart.y + tileEditor.drag.delta.y * (1 / tileEditor.cameraZoom);
+
+               tileEditor.updateCamera();
+               event.stopPropagation();
+               return false;
+            };
+            tileEditor.$document.on('mousemove touchmove', _mouseMove);
+            tileEditor.$document.on('mouseup touchend', _mouseUp);
+            event.stopPropagation();
+            return false;
+         };
+         var right:boolean = false;
+         if (e.originalEvent.which) {
+            right = (e.originalEvent.which == 3);
+         }
+         else if (e.button){
+            right = (e.originalEvent.button == 2);
+         }
+         if(right){
+            return doMove();
+         }
+         var mousePoint:pow2.Point = tileEditor.mouseEventToWorld(event);
+         var mouseAtIndex:number = tileEditor.picker.indexFromPoint(mousePoint);
          switch(tileEditor.activeTool){
             case 'paint':
                tileEditor.dragPaint = tileEditor.tileIndex;
@@ -43,7 +88,8 @@ module pow2.editor {
                return;
                break;
             case 'flood':
-               if(mouseAtIndex != -1){
+               var area: pow2.Rect = new pow2.Rect(tileEditor.tileMap.point,tileEditor.tileMap.size);
+               if(area.pointInRect(mousePoint)){
                   tileEditor.floodPaintAt(mouseAtIndex,tileEditor.tileIndex);
                }
                return;
@@ -58,38 +104,7 @@ module pow2.editor {
                return;
                break;
             case 'move':
-               tileEditor.dragPaint = -1;
-               tileEditor.drag.active = true;
-               tileEditor.drag.start = new pow2.Point(e.clientX,e.clientY);
-               tileEditor.drag.current = tileEditor.drag.start.clone();
-               tileEditor.drag.delta = new pow2.Point(0,0);
-               tileEditor.drag.cameraStart = new Point(tileEditor.cameraCenter.x,tileEditor.cameraCenter.y);
-               var _mouseUp = () => {
-                  tileEditor.$document.off('mousemove touchmove',_mouseMove);
-                  tileEditor.$document.off('mouseup touchend',_mouseUp);
-                  tileEditor.resetDrag();
-               };
-               var _mouseMove = (evt:any) => {
-                  if(!tileEditor.drag.active){
-                     return;
-                  }
-                  if(evt.originalEvent.touches) {
-                     evt = evt.originalEvent.touches[0] || evt.originalEvent.changedTouches[0];
-                  }
-                  tileEditor.drag.current.set(evt.clientX,evt.clientY);
-                  tileEditor.drag.delta.set(tileEditor.drag.start.x - tileEditor.drag.current.x, tileEditor.drag.start.y - tileEditor.drag.current.y);
-
-                  tileEditor.cameraCenter.x = tileEditor.drag.cameraStart.x + tileEditor.drag.delta.x * (1 / tileEditor.cameraZoom);
-                  tileEditor.cameraCenter.y = tileEditor.drag.cameraStart.y + tileEditor.drag.delta.y * (1 / tileEditor.cameraZoom);
-
-                  tileEditor.updateCamera();
-                  event.stopPropagation();
-                  return false;
-               };
-               tileEditor.$document.on('mousemove touchmove', _mouseMove);
-               tileEditor.$document.on('mouseup touchend', _mouseUp);
-               event.stopPropagation();
-               return false;
+               doMove();
                break;
          }
       }
@@ -117,6 +132,9 @@ module pow2.editor {
             var lastHit:EditableTile = null;
             var viewLayers = tileEditor.getViewLayers();
             element.on('mousemove',(ev:any) => {
+               if(!angular.element(ev.originalEvent.srcElement).is('canvas')){
+                  return;
+               }
                tileEditor.mouseAt = tileEditor.mouseEventToWorld(ev);
                if(tileEditor.activeTool === 'paint' && tileEditor.dragPaint != -1){
                   tileEditor.paintAt(tileEditor.picker.indexFromPoint(tileEditor.mouseAt));
@@ -149,8 +167,11 @@ module pow2.editor {
                },null,2));
             });
 
-            element.on('mousedown touchstart',(e)=>{
-               handleMouseDown(tileEditor,e);
+            element.on('mousedown touchstart',(ev)=>{
+               if (!angular.element(ev.originalEvent.srcElement).is('canvas')) {
+                  return;
+               }
+               handleMouseDown(tileEditor,ev);
             });
             element.on("mousewheel DOMMouseScroll MozMousePixelScroll",(e)=>{
                handleMouseWheel(tileEditor,e);
