@@ -15,28 +15,13 @@
  */
 module pow2.editor {
 
-   export interface IDragEvent {
-      active:boolean;
-      delta:pow2.Point;
-      start:pow2.Point;
-      current:pow2.Point;
-      cameraStart:pow2.Point;
-   }
+   export interface IPicker<T> {
+      // Single
+      pickFirst(point:pow2.Point):T;
+      pickNext(point:pow2.Point,current:T):T;
 
-
-   export interface IEditableSprite extends PIXI.Sprite{
-      powtile:EditableTile;
-   }
-
-   export class EditableTile {
-      private _uid:number = _.uniqueId();
-      _gid:number;
-      _tileIndex:number;
-      sprite:IEditableSprite;
-      constructor(
-         public texture: PIXI.Texture) {
-         this.sprite = <IEditableSprite>new PIXI.Sprite(texture);
-         this.sprite.powtile = this;
-      }
+      // All
+      queryPoint(point:pow2.Point,results:T[]):boolean;
+      queryRect(rect:pow2.Rect,results:T[]):boolean;
    }
 }
