@@ -14,7 +14,6 @@
  limitations under the License.
  */
 ///<reference path="../../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
-///<reference path="../../../types/ace/ace.d.ts"/>
 ///<reference path="../../../types/pixi/PIXI.d.ts"/>
 ///<reference path="../../../types/angular/angular.d.ts"/>
 ///<reference path="../../app.ts"/>
@@ -32,12 +31,6 @@ module pow2.editor {
    var clearColor:number = 0x111114;
 
 
-   interface ViewLayer {
-      tiles:EditableTile[]; // y * w + x = tile index from col/row
-      container: PIXI.DisplayObjectContainer;
-      dataSource:PowTileLayer;
-   }
-
    pow2.editor.app.directive("tileEditorView", [
       "$interval", "$parse","$document","$tasks","$platform",
       ($interval,$parse,$document,$tasks:TasksService,$platform:IAppPlatform) => {
@@ -49,7 +42,6 @@ module pow2.editor {
                }
             }
          }
-
          return {
             restrict: "E",
             replace: false,
@@ -65,7 +57,10 @@ module pow2.editor {
                   var documentViewController:DocumentViewController = controllers[1];
                   var appController:AppController = angular.element($document[0].body).controller(null);
                   var canvasElement:ng.IAugmentedJQuery = angular.element(element[0].querySelector('.canvas'));
-
+                  var debugText:any = null;
+                  function setDebugText(text:string){
+                     debugText.setText(text);
+                  }
                   if(appController){
                      appController.editMenuTemplateUrl = "source/editor/directives/layersListView.html";
                      appController.editor = tileEditor;
@@ -137,11 +132,7 @@ module pow2.editor {
                    *
                    */
 
-                  // Layer lists
-                  var debugText:any = null;
-                  function setDebugText(text:string){
-                     debugText.setText(text);
-                  }
+
                   var buildMapRender = () => {
                      tileEditor.cameraCenter.set(t.size.x * t.tileSize.x / 2, t.size.y * t.tileSize.y / 2);
                      tileEditor.cameraHeight = element.height();
@@ -156,17 +147,17 @@ module pow2.editor {
 
 
                      // Each layer
-                     var tileViewLayers:ViewLayer[] = [];
+                     tileEditor.clearViewLayers();
                      angular.forEach(t.layers,(mapLayer:pow2.editor.PowTileLayer) => {
+                        var newViewLayer:TileEditorViewLayer = {
+                           tiles:[],
+                           container: new PIXI.DisplayObjectContainer(),
+                           dataSource:mapLayer
+                        };
                         $tasks.add(() => {
                            if(documentViewController){
                               documentViewController.setLoadingDetails(mapLayer.name);
                            }
-                           var newViewLayer:ViewLayer = {
-                              tiles:[],
-                              container: new PIXI.DisplayObjectContainer(),
-                              dataSource:mapLayer
-                           };
                            newViewLayer.container.visible = mapLayer.visible;
                            mapLayer.on('changeTile',(index:number)=>{
                               var newGid:number = mapLayer.tiles[index];
@@ -174,6 +165,21 @@ module pow2.editor {
                               if(tile){
                                  tile.sprite.setTexture(tileEditor.getGidTexture(newGid));
                                  tile._gid = newGid;
+                              }
+                              else {
+                                 // Create sprite if it doesn't already exist.
+                                 var col = index % t.size.x;
+                                 var row = (index - col) / t.size.x;
+                                 var texture = tileEditor.getGidTexture(newGid);
+                                 var tile:EditableTile = new EditableTile(texture);
+                                 tile.sprite.x = col * t.tileSize.y;
+                                 tile.sprite.y = row * t.tileSize.x;
+                                 tile.sprite.width = t.tileSize.x;
+                                 tile.sprite.height = t.tileSize.y;
+                                 tile._gid = gid;
+                                 tile._tileIndex = tileIndex;
+                                 newViewLayer.container.addChild(tile.sprite);
+                                 newViewLayer.tiles[index] = tile;
                               }
                            });
                            mapLayer.on('changeVisible',()=>{
@@ -189,7 +195,7 @@ module pow2.editor {
                                     if (meta) {
                                        var frame = new PIXI.Rectangle(meta.imagePoint.x,meta.imagePoint.y,t.tileSize.x,t.tileSize.y);
                                        var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
-                                       var tile:EditableTile = new EditableTile(texture,tileEditor);
+                                       var tile:EditableTile = new EditableTile(texture);
                                        tile.sprite.x = col * t.tileSize.y;
                                        tile.sprite.y = row * t.tileSize.x;
                                        tile.sprite.width = t.tileSize.x;
@@ -215,6 +221,7 @@ module pow2.editor {
                               newViewLayer.container.addChild(box);
                            });
                            tileEditor.sceneContainer.addChild(newViewLayer.container);
+                           tileEditor.pushViewLayer(newViewLayer);
                            return true;
                         },t.name);
                      });
@@ -226,6 +233,8 @@ module pow2.editor {
                         documentViewController.setLoadingTitle("Building Map...");
                         documentViewController.setTotal(total);
                      }
+                     // Kill any existing interval and register a new one.
+                     $interval.cancel(unwatchProgress);
                      unwatchProgress = $interval(()=>{
                         if(documentViewController){
                            documentViewController.setCurrent(total - $tasks.getRemainingTasks(t.name));
@@ -257,13 +266,6 @@ module pow2.editor {
                      stage.addChild(debugText);
                      tileEditor.on('debug',setDebugText);
                   };
-
-                  element.on('mousedown touchstart',(e)=>{
-                     tileEditor.handleMouseDown(e);
-                  });
-                  element.on("mousewheel DOMMouseScroll MozMousePixelScroll",(e)=>{
-                     tileEditor.handleMouseWheel(e);
-                  });
 
                   return scope.$on("$destroy", function() {
                      tileEditor.destroy();

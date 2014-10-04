@@ -20,6 +20,8 @@
 
 module pow2.editor {
 
+   declare var vkbeautify:any;
+
    export class TiledMapLoader implements IMapLoader {
       static $inject:string[] = ['$q','$rootScope'];
       constructor(
@@ -85,7 +87,6 @@ module pow2.editor {
             angular.forEach(tiledResource.layers,(l:pow2.tiled.ITiledLayer)=>{
                result.addLayer({
                   tiles:l.data,
-                  container:new PIXI.DisplayObjectContainer(),
                   objects:l.objects,
                   properties:{},
                   size:new pow2.Point(l.width,l.height),
@@ -104,9 +105,19 @@ module pow2.editor {
          return deferred.promise;
       }
 
-      save(location:string, data:ITileMap):ng.IPromise<ITileMap> {
+      save(location:string, data:ITileMap):ng.IPromise<any> {
          var deferred:ng.IDeferred<ITileMap> = this.$q.defer();
+         pow2.ResourceLoader.get().load(location,(tiledResource?: pow2.TiledTMXResource)=>{
+            if(!tiledResource.isReady()){
+               deferred.reject("Failed to load file");
+               this.$rootScope.$$phase || this.$rootScope.$digest();
+               return;
+            }
+            var out:any = tiledResource.write();
+            deferred.resolve(vkbeautify.xml(out,2));
+            this.$rootScope.$$phase || this.$rootScope.$digest();
 
+         });
          return deferred.promise;
       }
 

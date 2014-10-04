@@ -26,14 +26,23 @@
 
 module pow2.editor {
 
+
+
+   export interface TileEditorViewLayer {
+      tiles:EditableTile[]; // y * w + x = tile index from col/row
+      container: PIXI.DisplayObjectContainer;
+      dataSource:PowTileLayer;
+   }
+
    export class TileEditorController extends pow2.Events implements IProcessObject {
-      static $inject:string[] = ['$document','$tasks','$time','$injector','$keys','$actions'];
+      static $inject:string[] = ['$document','$tasks','$time','$injector','$keys','$platform','$actions'];
       constructor(
          public $document:any,
          public $tasks:pow2.editor.TasksService,
          public $time:pow2.Time,
          public $injector:any,
          public $keys:pow2.editor.IKeysService,
+         public $platform:pow2.editor.IAppPlatform,
          public $actions:pow2.editor.IActionsService) {
          super();
          $time.addObject(this);
@@ -55,6 +64,16 @@ module pow2.editor {
                }
             }));
          });
+         this.keyBinds.push($keys.bind('ctrl+s',(e)=>{
+            this.loader.save(this.tileMap.name,this.tileMap).then((data:any)=>{
+               this.$platform.writeFile(this.tileMap.name,data,(err:any)=>{
+                  if(err){
+                     throw new Error(err);
+                  }
+                  console.log('File: ' + this.tileMap.name + ' --- SAVED');
+               });
+            });
+         }));
       }
 
       public blankTile:PIXI.Texture = null;
@@ -62,6 +81,8 @@ module pow2.editor {
 
       public loader:TiledMapLoader;
       public tileMap:PowTileMap = null;
+      public picker:pow2.editor.PowTileMapPicker = null;
+      public mouseAt:pow2.Point = new Point(-1,-1);
 
       // DOM
       public container:HTMLElement;
@@ -92,9 +113,9 @@ module pow2.editor {
       public dragPaint:number = -1;
 
       // The selected tile to paint
-      private _tileIndex:number = 46;
+      public tileIndex:number = 46;
 
-      private activeTool:string = 'move';
+      public activeTool:string = 'move';
 
       public drag:IDragEvent = {
          active:false,
@@ -168,6 +189,7 @@ module pow2.editor {
 
       setMap(tileMap:PowTileMap){
          this.tileMap = tileMap;
+         this.picker = new pow2.editor.PowTileMapPicker(this.tileMap);
       }
 
       setPaintTile(tileSet:ITileSet,at:pow2.Point){
@@ -175,7 +197,7 @@ module pow2.editor {
          // y * w + x = tile id from col/row
          var index = (at.y * tilesX + at.x) + tileSet.firstIndex;
          if(index > 0 && index < tileSet.tiles.length){
-            this._tileIndex = index;
+            this.tileIndex = index;
          }
       }
 
@@ -237,10 +259,9 @@ module pow2.editor {
       paintAt(index:number){
          var layer:PowTileLayer = this.tileMap.layers[this.activeLayerIndex];
          if(!layer || index > layer.tiles.length || index < 0){
-            console.error(pow2.errors.INDEX_OUT_OF_RANGE);
             return;
          }
-         var newGid:number = this.dragPaint;//this.getRandomInt(1,this.tileMap.tileInfo.length - 1); // ?
+         var newGid:number = this.dragPaint;
 
          var action:IAction = null;
          if(newGid !== 0){
@@ -266,6 +287,16 @@ module pow2.editor {
          }
       }
 
+      floodPaintAt(index:number,newGid:number=this.dragPaint){
+         var layer:PowTileLayer = this.tileMap.layers[this.activeLayerIndex];
+         if(!layer || index > layer.tiles.length || index < 0){
+            return;
+         }
+         var action = new TileFloodPaintAction(layer,index,newGid);
+         if(this.$actions.executeAction(action)){
+            this.setDebugText(action.name);
+         }
+      }
       resetDrag(){
          this.drag = _.extend({},{
             active:false,
@@ -291,91 +322,45 @@ module pow2.editor {
       }
 
 
-      // TODO: INPUT needs to be in the directive, not the controller.
+      // Convert a Rect/Point/Number from screen coordinates (pixels) to
+      // game world coordinates (game unit sizes)
+      screenToWorld(value: Point, scale:number = 1): Point {
+         value.x *= 1 / (this.tileMap.tileSize.x * scale);
+         value.y *= 1 / (this.tileMap.tileSize.y * scale);
+         return value;
+      }
+
+      mouseEventToWorld(ev:any):pow2.Point {
+         ev = ev.originalEvent;
+         var relativeElement:any = ev.srcElement;
+         var touches:any = (<any>ev).touches;
+         if(touches && touches.length > 0){
+            ev = <any>touches[0];
+         }
+         var canoffset = $(relativeElement).offset();
+         var x = ev.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left);
+         var y = ev.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(canoffset.top);
+
+         var worldPos:pow2.Point = new pow2.Point(x - this.sceneContainer.x,y - this.sceneContainer.y);
+         return this.screenToWorld(worldPos,this.cameraZoom).floor();
+      }
+
+
       /**
-       *  Pan Input listener
+       * View Layer Management (to allow various editor directives to access view layers by injecting the controller)
        *
-       *  TODO: Refactor into generic zoom/pan directive that
-       *  takes generic x/y/scale props (rather than pixi specific
-       *  sceneContainer props) and manipulates them.
+       * TODO: Is it bad to expose this to other components?
        */
-      handleMouseDown(event:any) {
-         var e = event;
-         if(event.originalEvent.touches) {
-            e = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
-         }
-         switch(this.activeTool){
-            case 'paint':
-               this.dragPaint = this._tileIndex;
-               var _stopPaint = () => {
-                  this.dragPaint = -1;
-                  this.$document.off('mouseup touchend',_stopPaint);
-               };
-               this.$document.on('mouseup touchend', _stopPaint);
-               return;
-               break;
-            case 'erase':
-               this.dragPaint = 0;
-               var _stopPaint = () => {
-                  this.dragPaint = -1;
-                  this.$document.off('mouseup touchend',_stopPaint);
-               };
-               this.$document.on('mouseup touchend', _stopPaint);
-               return;
-               break;
-            case 'move':
-               this.dragPaint = -1;
-               this.drag.active = true;
-               this.drag.start = new pow2.Point(e.clientX,e.clientY);
-               this.drag.current = this.drag.start.clone();
-               this.drag.delta = new pow2.Point(0,0);
-               this.drag.cameraStart = new Point(this.cameraCenter.x,this.cameraCenter.y);
-               var _mouseUp = () => {
-                  this.$document.off('mousemove touchmove',_mouseMove);
-                  this.$document.off('mouseup touchend',_mouseUp);
-                  this.resetDrag();
-               };
-               var _mouseMove = (evt:any) => {
-                  if(!this.drag.active){
-                     return;
-                  }
-                  if(evt.originalEvent.touches) {
-                     evt = evt.originalEvent.touches[0] || evt.originalEvent.changedTouches[0];
-                  }
-                  this.drag.current.set(evt.clientX,evt.clientY);
-                  this.drag.delta.set(this.drag.start.x - this.drag.current.x, this.drag.start.y - this.drag.current.y);
-
-                  this.cameraCenter.x = this.drag.cameraStart.x + this.drag.delta.x * (1 / this.cameraZoom);
-                  this.cameraCenter.y = this.drag.cameraStart.y + this.drag.delta.y * (1 / this.cameraZoom);
-
-                  this.updateCamera();
-                  event.stopPropagation();
-                  return false;
-               };
-               this.$document.on('mousemove touchmove', _mouseMove);
-               this.$document.on('mouseup touchend', _mouseUp);
-               event.stopPropagation();
-               return false;
-               break;
-         }
+      private _viewLayers:TileEditorViewLayer[] = [];
+      clearViewLayers() {
+         this._viewLayers.length = 0;
       }
-      /**
-       *  Zoom Input listener
-       */
-      handleMouseWheel(event) {
-         if(!this.sceneContainer) {
-            return;
-         }
-         var delta:number = (event.originalEvent.detail ? event.originalEvent.detail * -1 : event.originalEvent.wheelDelta);
-         var move:number = this.cameraZoom / 10;
-         this.cameraZoom += (delta > 0 ? move : -move);
-         this.updateCamera();
-         event.stopImmediatePropagation();
-         event.preventDefault();
-         return false;
+      pushViewLayer(viewLayer:TileEditorViewLayer){
+         this._viewLayers.push(viewLayer);
       }
-
-
+      getViewLayers():TileEditorViewLayer[]{
+         return this._viewLayers;
+      }
    }
 
 }

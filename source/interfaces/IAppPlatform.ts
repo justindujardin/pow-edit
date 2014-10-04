@@ -18,6 +18,8 @@ module pow2.editor {
 
    export interface IAppPlatform {
       readFile(location:string,done:(data:any) => any);
+      writeFile(location:string,data:any,done:(error:any)=>any);
+
       setTitle(text:string);
       enumPath(location:string,done:(err:any,files?:IFileInfo[]) => any);
       getDirName(location:string):string;

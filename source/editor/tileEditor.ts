@@ -29,26 +29,14 @@ module pow2.editor {
    }
 
    export class EditableTile {
+      private _uid:number = _.uniqueId();
       _gid:number;
       _tileIndex:number;
       sprite:IEditableSprite;
       constructor(
-         public texture: PIXI.Texture,
-         public tileEditor:TileEditorController=null) {
+         public texture: PIXI.Texture) {
          this.sprite = <IEditableSprite>new PIXI.Sprite(texture);
          this.sprite.powtile = this;
-         this.sprite.setInteractive(true);
-         this.sprite.mouseover = (mouseData:PIXI.InteractionData) => {
-            //console.log(mouseData.target);
-            if(this.tileEditor && this.tileEditor.dragPaint !== -1){
-               this.tileEditor.paintAt(this._tileIndex);
-            }
-            mouseData.target.tint = 0x00FF00;
-         };
-         this.sprite.mouseout = (mouseData:PIXI.InteractionData) => {
-            //console.log(mouseData);
-            mouseData.target.tint = 0xFFFFFF;
-         };
       }
    }
 }

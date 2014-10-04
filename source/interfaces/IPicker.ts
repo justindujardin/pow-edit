@@ -1,5 +1,5 @@
 /**
- Copyright (C) 2014 by Justin DuJardin
+ Copyright (C) 2014 by Justin DuJardin and Contributors
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -13,12 +13,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+module pow2.editor {
 
-/**
- * Constant strings for use in throwing Error with messages.  Used to
- * make checking thrown errors doable without an explosion of Error subclasses.
- */
-module pow2.errors {
+   export interface IPicker<T> {
+      // Single
+      pickFirst(point:pow2.Point):T;
+      pickNext(point:pow2.Point,current:T):T;
 
-
+      // All
+      queryPoint(point:pow2.Point,results:T[]):boolean;
+      queryRect(rect:pow2.Rect,results:T[]):boolean;
+   }
 }

@@ -39,14 +39,12 @@ nav.layer-list {
     height: 30px;
     padding: 5px;
     color: #bbb;
-    font-size: 16px;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
     text-wrap: none;
     white-space: nowrap;
-    line-height: 1.1em;
-    font-size: 1em;
+    font-size: 0.9em;
     &.active {
-      background-color: @powBlue;
+      .dark-selection;
     }
     > a {
       > i {
@@ -81,6 +79,20 @@ nav.layer-list {
       }
       > span {
         padding-left: 5px;
+      }
+    }
+    &.objects {
+      > a {
+        > i {
+          .icon(@fa-var-cogs);
+        }
+      }
+      &.empty {
+        > a {
+          > i {
+            .icon(@fa-var-cogs);
+          }
+        }
       }
     }
   }

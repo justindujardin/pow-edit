@@ -54,6 +54,13 @@ module pow2.editor {
             done('' + data);
          });
       }
+
+      writeFile(location:string,data:any,done:(error:any)=>any){
+         location = this.pathAsFile(location);
+         fs.writeFile(location,data,(err) => {
+            done(err || null);
+         });
+      }
       getDirName(location:string):string {
          return path.dirname(location);
       }

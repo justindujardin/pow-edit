@@ -67,6 +67,9 @@ module pow2.editor {
                // or server returns response with an error status.
             });
       }
+      writeFile(location:string,data:any,done:(error:any)=>any) {
+         done("Unsupported Platform");
+      }
 
       setTitle(text:string){
       }

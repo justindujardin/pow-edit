@@ -36,12 +36,6 @@ module pow2.editor {
       constructor(layer:ITileLayer){
          super();
          _.extend(this,layer);
-         var arraySize:number = layer.size.x * layer.size.y;
-         if(!angular.isArray(layer.tiles)) {
-            layer.tiles = new Array(arraySize).map(()=>{
-               return 0;
-            });
-         }
       }
 
       setTileGid(index:number,gid:number){
