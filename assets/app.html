@@ -14,7 +14,7 @@
     <div class="left-menu">
         <treecontrol tree-model="mount" node-children="children" on-selection="app.selectFile(node)">{{node.label}}</treecontrol>
     </div>
-    <aside class="pow-edit-pusher" ng-click="showMenu=false;showRightMenu=false;">
+    <aside class="pow-edit-pusher" ng-click="showMenu=false">
         <document-view class="pow-edit-content" type="app.getDocumentType()" source="app.document"></document-view>
     </aside>
     <div class="right-menu-trigger" ng-click="showRightMenu=!showRightMenu" ng-show="!!app.editor"><i class="fa fa-list-alt"></i></div>

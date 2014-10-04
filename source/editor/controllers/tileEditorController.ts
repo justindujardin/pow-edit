@@ -35,10 +35,8 @@ module pow2.editor {
    }
 
    export class TileEditorController extends pow2.Events implements IProcessObject {
-      static $inject:string[] = ['$document','$tasks','$time','$injector','$keys','$platform','$actions'];
+      static $inject:string[] = ['$time','$injector','$keys','$platform','$actions'];
       constructor(
-         public $document:any,
-         public $tasks:pow2.editor.TasksService,
          public $time:pow2.Time,
          public $injector:any,
          public $keys:pow2.editor.IKeysService,
@@ -360,6 +358,21 @@ module pow2.editor {
       }
       getViewLayers():TileEditorViewLayer[]{
          return this._viewLayers;
+      }
+
+      /**
+       *
+       *  Layer Management Commands
+       *
+       */
+      newLayer() {
+         console.log("adding layer after: " + this.tileMap.layers[this.activeLayerIndex].name);
+      }
+      newObjectGroup() {
+         console.log("adding objectgroup after: " + this.tileMap.layers[this.activeLayerIndex].name);
+      }
+      removeActiveLayer() {
+         console.log("removing layer: " + this.tileMap.layers[this.activeLayerIndex].name);
       }
    }
 

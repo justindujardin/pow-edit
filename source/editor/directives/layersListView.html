@@ -1,5 +1,16 @@
 <nav class="layer-list">
-    <ul>
+    <ul class="toolbar">
+        <li ng-click="app.editor.newLayer()">
+            <a><i class="fa fa-plus"></i>Layer</a>
+        </li>
+        <li ng-click="app.editor.newObjectGroup()">
+            <a><i class="fa fa-plus"></i>Object</a>
+        </li>
+        <li ng-click="app.editor.removeActiveLayer()">
+            <a><i class="fa fa-minus"></i>Remove</a>
+        </li>
+    </ul>
+    <ul class="layers">
         <li ng-repeat="layer in app.editor.tileMap.layers track by $index"
             ng-click="app.editor.setActiveLayer($index)"
             ng-class="{objects:!layer.tiles,visible:layer.visible,active:app.editor.activeLayerIndex==$index}">

@@ -15,85 +15,127 @@
  */
 
 @canvasWidth:86%;
+@layersToolbarHeight:2.5em;
 
 nav.layer-list {
   width: auto;
   margin: 0;
   padding: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
   height: 100%;
   color: #fff;
   background-color: @powBgDark;
   text-decoration: none;
   font-family: @font-family-scp;
+  position: relative;
+  overflow:hidden;
   .no-selection;
-  ul {
+  ul.toolbar {
+    position: absolute;
+    bottom:0;
+    left:0;
+    right:0;
     margin: 0;
     padding: 0;
     list-style-type: none;
-  }
-  li {
-    cursor: pointer;
-    width: 100%;
-    height: 30px;
-    padding: 5px;
-    color: #bbb;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
-    text-wrap: none;
-    white-space: nowrap;
-    font-size: 0.9em;
-    &.active {
-      .dark-selection;
-    }
-    > a {
-      > i {
-        margin: 0 5px;
-      }
-    }
+    background-color: #e3e3e3;
+    height:@layersToolbarHeight;
+    line-height:@layersToolbarHeight;
+    text-align: center;
+    z-index:10;
+    li {
+      cursor: pointer;
+      color: #222222;
+      text-wrap: none;
+      white-space: nowrap;
+      display: inline-block;
+      font-size: 0.9em;
+      a {
 
-    &.visible {
-      color: #fff;
-      > a {
-        > i {
-          .icon(@fa-var-eye);
+
+        padding:0.3em;
+        font-weight: 300;
+        i {
+          margin-right:0.2em;
         }
       }
     }
-    &.empty {
-      color: rgba(255, 255, 255, 0.5);
-      text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.5);
+  }
+  ul.layers {
+    position: absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:@layersToolbarHeight;
+    margin: 0;
+    padding: 0;
+    height:100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    list-style-type: none;
+    li {
+      cursor: pointer;
+      width: 100%;
+      height: 30px;
+      padding: 5px;
+      color: #bbb;
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+      text-wrap: none;
+      white-space: nowrap;
+      font-size: 0.9em;
+      &.active {
+        .dark-selection;
+      }
+      > a {
+        > i {
+          margin: 0 5px;
+        }
+      }
+
+      &.visible {
+        color: #fff;
+        > a {
+          > i {
+            .icon(@fa-var-eye);
+          }
+        }
+      }
+      &.empty {
+        color: rgba(255, 255, 255, 0.5);
+        text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.5);
+        > a {
+          > i {
+            .icon(@fa-var-eye-slash);
+          }
+        }
+        &.force {
+          display: none !important;
+        }
+      }
+
       > a {
         > i {
           .icon(@fa-var-eye-slash);
         }
-      }
-      &.force {
-        display: none !important;
-      }
-    }
-
-    > a {
-      > i {
-        .icon(@fa-var-eye-slash);
-      }
-      > span {
-        padding-left: 5px;
-      }
-    }
-    &.objects {
-      > a {
-        > i {
-          .icon(@fa-var-cogs);
+        > span {
+          padding-left: 5px;
         }
       }
-      &.empty {
+      &.objects {
         > a {
           > i {
             .icon(@fa-var-cogs);
           }
         }
+        &.empty {
+          > a {
+            > i {
+              .icon(@fa-var-cogs);
+            }
+          }
+        }
       }
     }
   }
+
 }
