@@ -4,7 +4,7 @@
   <property name="combat" value="true"/>
   <property name="combatZone" value="zone-goblin-fortress"/>
  </properties>
- <tileset firstgid="1" source="tiles/environment.tsx"/>
+ <tileset firstgid="1" source="tiles/environment-old.tsx"/>
  <layer name="Terrain" width="28" height="31">
   <data encoding="csv">
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,57,57,57,57,57,

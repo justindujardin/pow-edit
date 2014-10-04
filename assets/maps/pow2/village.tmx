@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="14" height="21" tilewidth="16" tileheight="16">
- <tileset firstgid="1" source="tiles/environment.tsx"/>
+ <tileset firstgid="1" source="tiles/environment-old.tsx"/>
  <layer name="Terrain" width="14" height="21">
   <data encoding="csv">
 57,57,57,57,57,57,57,18,18,18,18,18,18,18,
@@ -33,7 +33,7 @@
     <property name="target" value="wilderness"/>
     <property name="targetX" value="31"/>
     <property name="targetY" value="27"/>
-    <property name="text" value="Climb down the steep path back to the Wildernesse?"/>
+    <property name="text" value="Climb down the steep path back to the Wilderness?"/>
     <property name="transitionType" value="outdoor"/>
     <property name="type" value="transition"/>
    </properties>
