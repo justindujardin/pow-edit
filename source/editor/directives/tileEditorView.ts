@@ -148,80 +148,12 @@ module pow2.editor {
 
                      // Each layer
                      tileEditor.clearViewLayers();
-                     angular.forEach(t.layers,(mapLayer:pow2.editor.PowTileLayer) => {
-                        var newViewLayer:TileEditorViewLayer = {
-                           tiles:[],
-                           container: new PIXI.DisplayObjectContainer(),
-                           dataSource:mapLayer
-                        };
+                     angular.forEach(t.layers,(mapLayer:pow2.editor.PowTileLayer,index:number) => {
                         $tasks.add(() => {
                            if(documentViewController){
                               documentViewController.setLoadingDetails(mapLayer.name);
                            }
-                           newViewLayer.container.visible = mapLayer.visible;
-                           mapLayer.on('changeTile',(index:number)=>{
-                              var newGid:number = mapLayer.tiles[index];
-                              var tile:EditableTile = newViewLayer.tiles[index];
-                              if(tile){
-                                 tile.sprite.setTexture(tileEditor.getGidTexture(newGid));
-                                 tile._gid = newGid;
-                              }
-                              else {
-                                 // Create sprite if it doesn't already exist.
-                                 var col = index % t.size.x;
-                                 var row = (index - col) / t.size.x;
-                                 var texture = tileEditor.getGidTexture(newGid);
-                                 var tile:EditableTile = new EditableTile(texture);
-                                 tile.sprite.x = col * t.tileSize.y;
-                                 tile.sprite.y = row * t.tileSize.x;
-                                 tile.sprite.width = t.tileSize.x;
-                                 tile.sprite.height = t.tileSize.y;
-                                 tile._gid = gid;
-                                 tile._tileIndex = tileIndex;
-                                 newViewLayer.container.addChild(tile.sprite);
-                                 newViewLayer.tiles[index] = tile;
-                              }
-                           });
-                           mapLayer.on('changeVisible',()=>{
-                              newViewLayer.container.visible = mapLayer.visible;
-                           });
-                           if(mapLayer.tiles){
-                              for(var col:number = 0; col < t.size.x; col++) {
-                                 for (var row:number = 0; row < t.size.y; row++) {
-                                    // y * w + x = tile id from col/row
-                                    var tileIndex:number = row * t.size.x + col;
-                                    var gid:number = mapLayer.tiles[tileIndex];
-                                    var meta:ITileData = t.tileInfo[gid];
-                                    if (meta) {
-                                       var frame = new PIXI.Rectangle(meta.imagePoint.x,meta.imagePoint.y,t.tileSize.x,t.tileSize.y);
-                                       var texture = new PIXI.Texture(spriteTextures[meta.url],frame);
-                                       var tile:EditableTile = new EditableTile(texture);
-                                       tile.sprite.x = col * t.tileSize.y;
-                                       tile.sprite.y = row * t.tileSize.x;
-                                       tile.sprite.width = t.tileSize.x;
-                                       tile.sprite.height = t.tileSize.y;
-                                       tile._gid = gid;
-                                       tile._tileIndex = tileIndex;
-
-                                       newViewLayer.container.addChild(tile.sprite);
-                                       newViewLayer.tiles[tileIndex] = tile;
-                                    }
-                                 }
-                              }
-                           }
-                           _.each(mapLayer.objects,(obj:pow2.tiled.ITiledObject) => {
-                              var box = new PIXI.Graphics();
-                              box.beginFill(0xFFFFFF);
-                              box.alpha = 0.6;
-                              box.lineStyle(1,0xAAAAAA,1);
-                              box.drawRect(0, 0, obj.width, obj.height);
-                              box.endFill();
-                              box.position.x = obj.x;
-                              box.position.y = obj.y;
-                              newViewLayer.container.addChild(box);
-                           });
-                           tileEditor.sceneContainer.addChild(newViewLayer.container);
-                           tileEditor.pushViewLayer(newViewLayer);
+                           tileEditor.newViewLayer(index,mapLayer);
                            return true;
                         },t.name);
                      });

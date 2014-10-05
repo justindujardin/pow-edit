@@ -22,6 +22,45 @@ module pow2.editor {
 
    declare var vkbeautify:any;
 
+
+   export function PowLayerToTiledLayer(layer:PowTileLayer):pow2.tiled.ITiledLayer {
+      var result:pow2.tiled.ITiledLayer = {
+         opacity:layer.opacity,
+         name: layer.name,
+         x: layer.point.x,
+         y: layer.point.y,
+         width: layer.size.x,
+         height: layer.size.y,
+         visible: layer.visible
+      };
+      switch(layer.type){
+         case PowTileLayer.TYPES.LAYER:
+            result.data = layer.tiles;
+            break;
+         case PowTileLayer.TYPES.OBJECTGROUP:
+            result.objects = layer.objects;
+            break;
+      }
+      return result;
+   }
+
+   export function TiledLayerToPowLayer(layer:pow2.tiled.ITiledLayer):pow2.editor.PowTileLayer {
+      // TODO: more robust type detection?  What about if tiles is undefined, and layers is also undefined?
+      var type:string = typeof layer.data !== 'undefined' ? PowTileLayer.TYPES.LAYER : PowTileLayer.TYPES.OBJECTGROUP;
+      var powLayer:PowTileLayer = new PowTileLayer(type);
+      _.extend(powLayer,{
+         tiles:layer.data,
+         objects:layer.objects,
+         properties:{},
+         size:new pow2.Point(layer.width,layer.height),
+         name:layer.name,
+         point:new pow2.Point(layer.x,layer.y),
+         visible:layer.visible,
+         opacity:layer.opacity
+      });
+      return powLayer;
+   }
+
    export class TiledMapLoader implements IMapLoader {
       static $inject:string[] = ['$q','$rootScope'];
       constructor(
@@ -50,13 +89,6 @@ module pow2.editor {
             angular.forEach(idSortedSets,(tsxRes:TiledTSXResource) => {
                while(result.tileInfo.length < tsxRes.firstgid){
                   result.tileInfo.push(null);
-//                  (<ITileData>{
-//                     url:null,
-//                     image:null,
-//                     imageSize:new pow2.Point(-1,-1),
-//                     imagePoint:new pow2.Point(-1,-1),
-//                     properties: {}
-//                  });
                }
                angular.forEach(tsxRes.tiles,(t:any,index:number) => {
                   var tilesX = tsxRes.imageWidth / tsxRes.tilewidth;
@@ -85,16 +117,7 @@ module pow2.editor {
 
             // Add layers last
             angular.forEach(tiledResource.layers,(l:pow2.tiled.ITiledLayer)=>{
-               result.addLayer({
-                  tiles:l.data,
-                  objects:l.objects,
-                  properties:{},
-                  size:new pow2.Point(l.width,l.height),
-                  name:l.name,
-                  point:new pow2.Point(l.x,l.y),
-                  visible:l.visible,
-                  opacity:l.opacity
-               });
+               result.addLayer(TiledLayerToPowLayer(l));
             });
 
             deferred.resolve(result);
@@ -113,6 +136,9 @@ module pow2.editor {
                this.$rootScope.$$phase || this.$rootScope.$digest();
                return;
             }
+            tiledResource.layers = data.layers.map((l:PowTileLayer)=>{
+               return PowLayerToTiledLayer(l);
+            });
             var out:any = tiledResource.write();
             deferred.resolve(vkbeautify.xml(out,2));
             this.$rootScope.$$phase || this.$rootScope.$digest();

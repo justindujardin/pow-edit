@@ -21,6 +21,10 @@
 module pow2.editor {
 
    export class PowTileLayer extends pow2.Events implements ITileLayer {
+      static TYPES:any = {
+         LAYER:"layer",
+         OBJECTGROUP:"objectgroup"
+      };
       // ITileLayer
       point:pow2.Point;
       size:pow2.Point;
@@ -33,9 +37,26 @@ module pow2.editor {
       objects:any[];
       name:string;
       // end ITileLayer
-      constructor(layer:ITileLayer){
+      constructor(public type:string){
          super();
-         _.extend(this,layer);
+         switch(type){
+            case PowTileLayer.TYPES.LAYER:
+               this.tiles = [];
+               break;
+            case PowTileLayer.TYPES.OBJECTGROUP:
+               this.objects = [];
+               break;
+            default:
+               throw new Error(pow2.errors.INVALID_ARGUMENTS);
+         }
+      }
+
+      setSize(size:pow2.Point){
+         if(!size || size.isZero()){
+            throw new Error(pow2.errors.INVALID_ARGUMENTS);
+         }
+         this.size = size;
+         this.tiles = <number[]>Array.apply(null, new Array(size.x * size.y)).map(Number.prototype.valueOf,0);
       }
 
       setTileGid(index:number,gid:number){
@@ -79,11 +100,14 @@ module pow2.editor {
          }
          return <PowTileLayer>this.layers[index];
       }
-      addLayer(layer:ITileLayer){
+      addLayer(layer:PowTileLayer){
+         this.insertLayer(this.layers.length,layer);
+      }
+      insertLayer(index:number,layer:PowTileLayer){
          if(!layer || !layer.size){
             throw new Error(pow2.errors.INVALID_ARGUMENTS);
          }
-         this.layers.push(new PowTileLayer(layer));
+         this.layers.splice(index,0,layer);
       }
    }
 }
