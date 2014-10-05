@@ -96,6 +96,7 @@ module pow2.editor {
                break;
             case 'erase':
                tileEditor.dragPaint = 0;
+               tileEditor.paintAt(mouseAtIndex);
                var _stopPaint = () => {
                   tileEditor.dragPaint = -1;
                   $document.off('mouseup touchend',_stopPaint);
@@ -136,7 +137,7 @@ module pow2.editor {
                   return;
                }
                tileEditor.mouseAt = tileEditor.mouseEventToWorld(ev);
-               if(tileEditor.activeTool === 'paint' && tileEditor.dragPaint != -1){
+               if(tileEditor.activeTool !== 'move' && tileEditor.dragPaint != -1){
                   tileEditor.paintAt(tileEditor.picker.indexFromPoint(tileEditor.mouseAt));
                   return;
                }
