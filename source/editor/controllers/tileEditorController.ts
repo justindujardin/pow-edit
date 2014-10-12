@@ -22,6 +22,8 @@
 ///<reference path="../../services/time.ts"/>
 ///<reference path="../../formats/tiledMapLoader.ts"/>
 ///<reference path="../actions/tilePaintAction.ts"/>
+///<reference path="../actions/tileFloodPaintAction.ts"/>
+///<reference path="../actions/layerRemoveAction.ts"/>
 
 
 module pow2.editor {
@@ -195,9 +197,21 @@ module pow2.editor {
       }
 
       setMap(tileMap:PowTileMap){
+         if(this.tileMap){
+            this.tileMap.off(null,null,this);
+         }
+         this.picker = null;
          this.tileMap = tileMap;
-         this.picker = new pow2.editor.PowTileMapPicker(this.tileMap);
-         this.setActiveLayer(0);
+         if(this.tileMap){
+            this.picker = new pow2.editor.PowTileMapPicker(this.tileMap);
+            this.setActiveLayer(0);
+            this.tileMap.on(PowTileMap.EVENTS.REMOVE_LAYER,(layer:PowTileLayer,index:number)=>{
+               this.removeViewLayer(index,layer);
+            });
+            this.tileMap.on(PowTileMap.EVENTS.ADD_LAYER,(layer:PowTileLayer,index:number)=>{
+               this.newViewLayer(index,layer);
+            });
+         }
       }
 
       setPaintTile(tileSet:ITileSet,at:pow2.Point){
@@ -356,17 +370,23 @@ module pow2.editor {
 
 
       /**
-       * View Layer Management (to allow various editor directives to access view layers by injecting the controller)
+       * View Layer Management (to allow various editor directives to access
+       * view layers by injecting the controller)
        *
-       * TODO: Is it bad to expose this to other components?
+       * View layers are objects that represent a fully rendered layer in the
+       * UI, and hold a reference to the original layer data object.  This
+       * keeps the data object from having knowledge of the rendering system
+       *
+       * TODO: This should likely go elsewhere, but where?  Directive? Controller? Service? PlainOldClass?
        */
       private _viewLayers:TileEditorViewLayer[] = [];
-      removeViewLayer(index:number){
+      removeViewLayer(index:number,layer:PowTileLayer){
          if(index < 0 || index > this._viewLayers.length){
             throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
          this.sceneContainer.removeChildAt(index);
-         this.tileMap.removeLayer(index);
+         this._viewLayers.splice(index,1);
+         layer.off(null,null,this);
       }
       newViewLayer(index:number,layer:PowTileLayer):TileEditorViewLayer {
          var newViewLayer:TileEditorViewLayer = {
@@ -398,10 +418,10 @@ module pow2.editor {
                newViewLayer.container.addChild(tile.sprite);
                newViewLayer.tiles[index] = tile;
             }
-         });
+         },this);
          layer.on('changeVisible',()=>{
             newViewLayer.container.visible = layer.visible;
-         });
+         },this);
          if(layer.tiles){
             for(var col:number = 0; col < this.tileMap.size.x; col++) {
                for (var row:number = 0; row < this.tileMap.size.y; row++) {
@@ -443,9 +463,6 @@ module pow2.editor {
       clearViewLayers() {
          this._viewLayers.length = 0;
       }
-      pushViewLayer(viewLayer:TileEditorViewLayer){
-         this._viewLayers.push(viewLayer);
-      }
       getViewLayers():TileEditorViewLayer[]{
          return this._viewLayers;
       }
@@ -461,7 +478,7 @@ module pow2.editor {
          var index:number = this.activeLayerIndex + 1;
          newLayer.setSize(this.tileMap.size.clone());
          newLayer.properties = {};
-         newLayer.name = "new layer";
+         newLayer.name = "Layer " + index;
          newLayer.point = new pow2.Point(0,0);
          newLayer.visible = true;
          newLayer.opacity = 1;
@@ -476,7 +493,7 @@ module pow2.editor {
       removeActiveLayer() {
          console.log("removing layer: " + this.tileMap.layers[this.activeLayerIndex].name);
          if(this.tileMap.layers.length > 1){
-            this.removeViewLayer(this.activeLayerIndex);
+            this.$actions.executeAction(new LayerRemoveAction(this.tileMap,this.activeLayerIndex));
             if(this.activeLayerIndex >= this.tileMap.layers.length){
                this.setActiveLayer(this.activeLayerIndex-1);
             }

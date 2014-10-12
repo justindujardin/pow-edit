@@ -25,6 +25,10 @@ module pow2.editor {
          LAYER:"layer",
          OBJECTGROUP:"objectgroup"
       };
+      static EVENTS:any = {
+         CHANGE_TILE: 'change:tile',
+         CHANGE_VISIBLE: 'change:visible'
+      };
       // ITileLayer
       point:pow2.Point;
       size:pow2.Point;
@@ -64,17 +68,16 @@ module pow2.editor {
             throw new Error(pow2.errors.INVALID_ARGUMENTS);
          }
          this.tiles[index] = gid;
-         this.trigger('changeTile',index);
-         // TODO: trigger change for editor views to update.
+         this.trigger(PowTileLayer.EVENTS.CHANGE_TILE,index);
       }
 
       toggleVisible() {
          this.visible = !this.visible;
-         this.trigger('changeVisible');
+         this.trigger(PowTileLayer.EVENTS.CHANGE_VISIBLE,this.visible);
       }
    }
 
-   export class PowTileMap implements ITileMap {
+   export class PowTileMap extends pow2.Events implements ITileMap {
       tileInfo:pow2.editor.ITileData[] = [];
       tileSets:pow2.editor.ITileSet[] = [];
       layers:pow2.editor.PowTileLayer[] = [];
@@ -82,6 +85,10 @@ module pow2.editor {
       size:pow2.Point = new pow2.Point(1,1);
       tileSize:pow2.Point = new pow2.Point(16,16);
       name:string = "Untitled";
+      static EVENTS:any = {
+         ADD_LAYER: 'layer:add',
+         REMOVE_LAYER: 'layer:remove'
+      };
       setName(location:string) {
          this.name = location;
       }
@@ -108,12 +115,15 @@ module pow2.editor {
             throw new Error(pow2.errors.INVALID_ARGUMENTS);
          }
          this.layers.splice(index,0,layer);
+         this.trigger(PowTileMap.EVENTS.ADD_LAYER,layer,index);
       }
       removeLayer(index:number){
          if(index < 0 || index > this.layers.length){
             throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
          }
+         var layer:PowTileLayer = this.layers[index];
          this.layers.splice(index,1);
+         this.trigger(PowTileMap.EVENTS.REMOVE_LAYER,layer,index);
 
       }
    }
