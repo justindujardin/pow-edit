@@ -66,10 +66,11 @@ nav.layer-list {
       width: 100%;
       padding:5px;
       &.active {
-        .dark-selection;
         .inline-edit i {
           display: inherit;
+          float:right;
         }
+        .dark-selection;
       }
       .inline-edit {
         padding: 0;
@@ -81,15 +82,14 @@ nav.layer-list {
           margin:0;
           padding:0;
         }
+        i {
+          display: none;
+        }
       }
       > a {
         width:100%;
         &:hover {
           text-decoration: none;
-        }
-        .inline-edit i {
-          float:right;
-          display: none;
         }
       }
       .icon {

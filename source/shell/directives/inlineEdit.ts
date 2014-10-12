@@ -16,35 +16,52 @@
 ///<reference path="../../app.ts"/>
 
 module pow2.editor {
-   // Inline edit very slightly modified version of: http://jsfiddle.net/NDFHg/427/
+   // Inline edit based on: http://jsfiddle.net/NDFHg/427/
    pow2.editor.app.directive('inlineEdit', () => {
       return {
          restrict: 'E',
          scope: {
-            value: '='
+            value: '=',
+            onEdit: '&'
          },
          template: '<span ng-dblclick="edit()" ng-bind="value"></span><i ng-click="edit()"></i><input ng-model="value">',
          link: (scope, element, attributes) => {
             var input = angular.element(element.children('input'));
+            var changed = (value:string) => {
+               if (typeof scope.onEdit === 'function') {
+                  if(editValue !== value){
+                     scope.onEdit({
+                        oldName:editValue,
+                        newName:value
+                     });
+                  }
+               }
+            };
             element.addClass('inline-edit');
             scope.editing = false;
             var editValue:string = null;
+            var escaped:boolean = false;
             scope.edit = () => {
                scope.editing = true;
                editValue = (<any>input[0]).value;
                element.addClass('active');
                input[0].focus();
+               escaped = false;
                (<any>input[0]).setSelectionRange(0, editValue.length);
             };
             input.on('blur', () => {
                scope.editing = false;
                element.removeClass('active');
+               if(!escaped){
+                  changed(scope.value);
+               }
             });
             input.on('keydown', (event) => {
                var esc:boolean = event.which == 27;
                var enter:boolean = event.which == 13;
                if (esc || enter) {
                   if (esc) {
+                     escaped = true;
                      scope.$apply(()=>{
                         scope.value = editValue;
                      });
@@ -54,7 +71,6 @@ module pow2.editor {
                   return false;
                }
             });
-
          }
       };
    });

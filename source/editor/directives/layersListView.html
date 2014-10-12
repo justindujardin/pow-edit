@@ -1,4 +1,4 @@
-<nav class="layer-list">
+<nav class="layer-list" ng-controller="LayersListController">
 
     <div class="toolbar btn-group btn-group-justified">
         <a class="btn btn-default" ng-click="app.editor.newLayer()"><i class="fa fa-plus"></i> Layer</a>
@@ -12,7 +12,7 @@
             ng-class="{objects:!layer.tiles,visible:layer.visible,active:app.editor.activeLayerIndex==$index}">
             <a>
                 <i class="icon" ng-click="app.editor.setLayerVisibility($index);$event.stopPropagation();"></i>
-                <inline-edit value="layer.name"></inline-edit>
+                <inline-edit value="layer.name" on-edit="renameLayer(layer,oldName,newName)"></inline-edit>
             </a>
         </li>
     </ul>

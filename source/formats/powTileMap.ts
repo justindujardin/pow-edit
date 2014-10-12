@@ -27,7 +27,8 @@ module pow2.editor {
       };
       static EVENTS:any = {
          CHANGE_TILE: 'change:tile',
-         CHANGE_VISIBLE: 'change:visible'
+         CHANGE_VISIBLE: 'change:visible',
+         CHANGE_NAME: 'change:name'
       };
       // ITileLayer
       point:pow2.Point;
@@ -53,6 +54,11 @@ module pow2.editor {
             default:
                throw new Error(pow2.errors.INVALID_ARGUMENTS);
          }
+      }
+
+      setName(name:string){
+         this.name = name;
+         this.trigger(PowTileLayer.EVENTS.CHANGE_NAME,name);
       }
 
       setSize(size:pow2.Point){
