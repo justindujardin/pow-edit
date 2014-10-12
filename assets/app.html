@@ -26,7 +26,7 @@
     </div><!-- /.container-fluid -->
 </nav>
 
-<main class="pow-edit-container" ng-class="{'open-left':showMenu==true,'open-right':showRightMenu==true,'open':showMenu||showRightMenu}">
+<main class="pow-edit-container" ng-class="{'open-left':showMenu==true,'open-right':showRightMenu==true&&!!app.editor,'open':showMenu||showRightMenu}">
     <div class="left-menu">
         <treecontrol tree-model="mount" node-children="children" on-selection="app.selectFile(node)">{{node.label}}</treecontrol>
     </div>
