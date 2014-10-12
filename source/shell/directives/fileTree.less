@@ -57,10 +57,16 @@ treecontrol {
 
       a.item {
         text-shadow:@itemTextShadow;
+        color:#fff;
         display: inline-block;
         width:100% !important;
         padding: 4px 0px;
-        font-size:14px;
+        font-size:1em;
+        cursor:pointer;
+
+        &:hover {
+          text-decoration: none;
+        }
         i {
           .icon(@fa-var-file-text-o);
           width:12px;

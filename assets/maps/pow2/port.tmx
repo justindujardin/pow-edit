@@ -3,7 +3,7 @@
  <properties>
   <property name="combatZone" value="world-forest"/>
  </properties>
- <tileset firstgid="1" source="tiles/environment.tsx"/>
+ <tileset firstgid="1" source="tiles/environment-old.tsx"/>
  <layer name="Terrain" width="29" height="22">
   <data encoding="csv">
 18,18,18,18,18,18,18,69,18,18,69,69,69,69,69,69,69,69,69,46,46,46,69,69,69,69,69,69,69,

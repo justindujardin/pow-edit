@@ -17,7 +17,7 @@
 ///<reference path="../controllers/tileEditorController.ts"/>
 
 module pow2.editor {
-   pow2.editor.app.directive("tileEditorInput", [() => {
+   pow2.editor.app.directive("tileEditorInput", ['$document',($document) => {
       /**
        *  Pan Input listener
        *
@@ -38,8 +38,8 @@ module pow2.editor {
             tileEditor.drag.delta = new pow2.Point(0,0);
             tileEditor.drag.cameraStart = new Point(tileEditor.cameraCenter.x,tileEditor.cameraCenter.y);
             var _mouseUp = () => {
-               tileEditor.$document.off('mousemove touchmove',_mouseMove);
-               tileEditor.$document.off('mouseup touchend',_mouseUp);
+               $document.off('mousemove touchmove',_mouseMove);
+               $document.off('mouseup touchend',_mouseUp);
                tileEditor.resetDrag();
             };
             var _mouseMove = (evt:any) => {
@@ -59,8 +59,8 @@ module pow2.editor {
                event.stopPropagation();
                return false;
             };
-            tileEditor.$document.on('mousemove touchmove', _mouseMove);
-            tileEditor.$document.on('mouseup touchend', _mouseUp);
+            $document.on('mousemove touchmove', _mouseMove);
+            $document.on('mouseup touchend', _mouseUp);
             event.stopPropagation();
             return false;
          };
@@ -82,9 +82,9 @@ module pow2.editor {
                tileEditor.paintAt(mouseAtIndex);
                var _stopPaint = () => {
                   tileEditor.dragPaint = -1;
-                  tileEditor.$document.off('mouseup touchend',_stopPaint);
+                  $document.off('mouseup touchend',_stopPaint);
                };
-               tileEditor.$document.on('mouseup touchend', _stopPaint);
+               $document.on('mouseup touchend', _stopPaint);
                return;
                break;
             case 'flood':
@@ -99,9 +99,9 @@ module pow2.editor {
                tileEditor.paintAt(mouseAtIndex);
                var _stopPaint = () => {
                   tileEditor.dragPaint = -1;
-                  tileEditor.$document.off('mouseup touchend',_stopPaint);
+                  $document.off('mouseup touchend',_stopPaint);
                };
-               tileEditor.$document.on('mouseup touchend', _stopPaint);
+               $document.on('mouseup touchend', _stopPaint);
                return;
                break;
             case 'move':
@@ -152,7 +152,9 @@ module pow2.editor {
                         lastHit.sprite.tint = 0xFFFFFF;
                      }
                      lastHit = uiLayer.tiles[pick.index];
-                     lastHit.sprite.tint = 0x00FF00;
+                     if(lastHit && lastHit.sprite){
+                        lastHit.sprite.tint = 0x00FF00;
+                     }
                   }
                }
                else if(lastHit) {

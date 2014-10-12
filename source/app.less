@@ -13,14 +13,17 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+@import "bootstrap/less/bootstrap.less";
 @font-family-serif:"Helvetica Neue",Helvetica,Arial,sans-serif;
 @font-family-scp:'SourceCodePro-Regular', 'Monaco', courier, monospace !important;
+@navbar-height:40px;
 
 @import "shell/directives/fileTree";
 @import "shell/directives/editors/markdownEditorView";
 @import "shell/directives/editors/textEditorView";
 @import "shell/directives/editors/imageEditorView";
 @import "shell/directives/documentView";
+@import "shell/directives/inlineEdit";
 
 @import "editor/directives/tileEditorView";
 @import "editor/directives/layersListView";
@@ -107,6 +110,9 @@ body, html {
     .box-sizing(border-box);
   }
 }
+body {
+  padding-top:@navbar-height;
+}
 
 .ng-hide {
   display: none;
@@ -118,30 +124,32 @@ body, html {
   height:100%;
 }
 
-.pow-edit-container {
+.pow-edit-navbar {
+  cursor:default;
+  .navbar-text {
+    .no-selection;
+    color:rgba(255,255,255,0.8);
+    text-shadow:-1px -1px 0 rgba(0,0,0,0.4);
+
+  }
+
   .left-menu-trigger, .right-menu-trigger {
-    background-color:rgba(0,0,0,0.85);
-    border-color:rgba(255,255,255,0.2);
-    position: absolute;
-    top: 0;
-    z-index:99;
     cursor:pointer;
-    margin:0;
     height:auto;
-    list-style-type:none;
-    display:block;
-    padding:0.5em;
     font-size:2em;
     color:rgba(255,255,255,0.9);
-  }
-  .left-menu-trigger {
-    left:0;
-    border-bottom-right-radius: 8px;
+    line-height: @navbar-height;
+    text-shadow:2px 2px 2px rgba(0,0,0,0.2);
   }
   .right-menu-trigger {
-    right:0;
-    border-bottom-left-radius: 8px;
+    padding-right:0.5em;
   }
+
+}
+
+
+.pow-edit-container {
+  position: relative;
   /* Menu slide-in from left */
   .left-menu, .right-menu {
     position: absolute;
@@ -155,14 +163,14 @@ body, html {
   }
   .left-menu{
     left: 0;
-	-webkit-transform: translate3d(-101%, 0, 0);
-	transform: translate3d(-100%, 0, 0);
+    -webkit-transform: translate3d(-101%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
     .dark-selection-left;
   }
   .right-menu{
     right: 0;
-	-webkit-transform: translate3d(101%, 0, 0);
-	transform: translate3d(100%, 0, 0);
+    -webkit-transform: translate3d(101%, 0, 0);
+    transform: translate3d(100%, 0, 0);
     .dark-selection-right;
   }
   .pow-edit-pusher {
@@ -178,6 +186,15 @@ body, html {
     }
   }
   &.open {
+    &:after {
+      width: 0;
+      height: 0;
+      opacity: 0;
+      -webkit-transition: opacity 0.5s, width 0.1s 0.5s, height 0.1s 0.5s;
+      transition: opacity 0.5s, width 0.1s 0.5s, height 0.1s 0.5s;
+    }
+  }
+  &.open-left {
     .pow-edit-pusher {
       &:after {
         position: absolute;
@@ -190,15 +207,6 @@ body, html {
         opacity: 1;
       }
     }
-    &:after {
-      width: 0;
-      height: 0;
-      opacity: 0;
-      -webkit-transition: opacity 0.5s, width 0.1s 0.5s, height 0.1s 0.5s;
-      transition: opacity 0.5s, width 0.1s 0.5s, height 0.1s 0.5s;
-    }
-  }
-  &.open-left {
     .left-menu {
       -webkit-transform: translate3d(0, 0, 0);
       transform: translate3d(0, 0, 0);
@@ -213,10 +221,15 @@ body, html {
       -webkit-transform: translate3d(0, 0, 0);
       transform: translate3d(0, 0, 0);
     }
-    .pow-edit-pusher {
+    .right-menu-trigger {
       -webkit-transform: translate3d(-300px, 0, 0);
       transform: translate3d(-300px, 0, 0);
     }
+
+    //    .pow-edit-pusher {
+    //      -webkit-transform: translate3d(-300px, 0, 0);
+    //      transform: translate3d(-300px, 0, 0);
+    //    }
   }
 }
 

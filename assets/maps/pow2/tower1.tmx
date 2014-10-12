@@ -4,7 +4,7 @@
   <property name="combat" value="true"/>
   <property name="combatZone" value="zone-ice-tower"/>
  </properties>
- <tileset firstgid="1" source="tiles/environment.tsx"/>
+ <tileset firstgid="1" source="tiles/environment-old.tsx"/>
  <layer name="Terrain" width="23" height="19">
   <data encoding="csv">
 25,25,25,49,25,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,34,

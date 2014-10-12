@@ -1,12 +1,10 @@
 
 <div class="tile-editor-view">
-    <nav class="toolbox" role="toolbox">
-        <ul>
-            <li ng-class="{active:editor.activeTool=='move'}" ng-click="editor.setTool('move'); $event.stopPropagation();"><i class="fa fa-arrows"></i></li>
-            <li ng-class="{active:editor.activeTool=='paint'}" ng-click="editor.setTool('paint'); $event.stopPropagation();"><i class="fa fa-pencil"></i></li>
-            <li ng-class="{active:editor.activeTool=='flood'}" ng-click="editor.setTool('flood'); $event.stopPropagation();"><i class="fa fa-paint-brush"></i></li>
-            <li ng-class="{active:editor.activeTool=='erase'}" ng-click="editor.setTool('erase'); $event.stopPropagation();"><i class="fa fa-eraser"></i></li>
-        </ul>
+    <nav class="toolbox btn-group-vertical" role="toolbox">
+        <a class="btn btn-default" ng-class="{active:editor.activeTool=='move'}" ng-click="editor.setTool('move'); $event.stopPropagation();"><i class="fa fa-arrows"></i></a>
+        <a class="btn btn-default" ng-class="{active:editor.activeTool=='paint'}" ng-click="editor.setTool('paint'); $event.stopPropagation();"><i class="fa fa-pencil"></i></a>
+        <a class="btn btn-default" ng-class="{active:editor.activeTool=='flood'}" ng-click="editor.setTool('flood'); $event.stopPropagation();"><i class="fa fa-paint-brush"></i></a>
+        <a class="btn btn-default" ng-class="{active:editor.activeTool=='erase'}" ng-click="editor.setTool('erase'); $event.stopPropagation();"><i class="fa fa-eraser"></i></a>
     </nav>
     <canvas class="canvas"></canvas>
     <section class="tile-sets" ng-if="editor.activeTool!='move'&&editor.activeTool!='erase'">

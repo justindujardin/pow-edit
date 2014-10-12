@@ -1,0 +1,19 @@
+.inline-edit span {
+  cursor: pointer;
+}
+.inline-edit input {
+  display: none;
+}
+.inline-edit.active span {
+  display: none;
+}
+.inline-edit.active input {
+  background-color: transparent;
+  outline: none;
+  border: none;
+  display: inline-block;
+  text-shadow:-1px -1px 0 rgba(0,0,0,0.4);
+  font-weight:300;
+  width:auto;
+  max-width:80%;
+}

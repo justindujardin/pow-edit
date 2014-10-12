@@ -4,7 +4,7 @@
   <property name="combat" value="true"/>
   <property name="combatZone" value="zone-sewer"/>
  </properties>
- <tileset firstgid="1" source="tiles/environment.tsx"/>
+ <tileset firstgid="1" source="tiles/environment-old.tsx"/>
  <layer name="Terrain" width="23" height="41">
   <data encoding="csv">
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,35,9,9,9,9,

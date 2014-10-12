@@ -3,7 +3,7 @@
  <properties>
   <property name="music" value="/data/music/CombatTheme2"/>
  </properties>
- <tileset firstgid="1" source="tiles/environment.tsx"/>
+ <tileset firstgid="1" source="tiles/environment-old.tsx"/>
  <layer name="Terrain" width="30" height="20" visible="0">
   <data encoding="csv">
 0,0,0,0,0,0,0,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,0,0,0,0,0,0,0,

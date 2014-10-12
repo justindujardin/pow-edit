@@ -35,46 +35,6 @@ module pow2.editor {
    }
 
    export class TileEditorController extends pow2.Events implements IProcessObject {
-      static $inject:string[] = ['$document','$tasks','$time','$injector','$keys','$platform','$actions'];
-      constructor(
-         public $document:any,
-         public $tasks:pow2.editor.TasksService,
-         public $time:pow2.Time,
-         public $injector:any,
-         public $keys:pow2.editor.IKeysService,
-         public $platform:pow2.editor.IAppPlatform,
-         public $actions:pow2.editor.IActionsService) {
-         super();
-         $time.addObject(this);
-         this.loader = this.$injector.instantiate(TiledMapLoader);
-
-         angular.forEach(['ctrl+z','cmd+z'],(c:string)=>{
-            this.keyBinds.push($keys.bind(c,()=>{
-               var action:IAction = this.$actions.undo();
-               if(action){
-                  this.setDebugText('Undo ' + action.name);
-               }
-            }));
-         });
-         angular.forEach(['ctrl+shift+z','cmd+shift+z'],(c:string)=>{
-            this.keyBinds.push($keys.bind(c,(e)=>{
-               var action:IAction = this.$actions.redo();
-               if(action){
-                  this.setDebugText('Redo ' + action.name);
-               }
-            }));
-         });
-         this.keyBinds.push($keys.bind('ctrl+s',(e)=>{
-            this.loader.save(this.tileMap.name,this.tileMap).then((data:any)=>{
-               this.$platform.writeFile(this.tileMap.name,data,(err:any)=>{
-                  if(err){
-                     throw new Error(err);
-                  }
-                  console.log('File: ' + this.tileMap.name + ' --- SAVED');
-               });
-            });
-         }));
-      }
 
       public blankTile:PIXI.Texture = null;
 //      public ctx:IContext;
@@ -95,6 +55,7 @@ module pow2.editor {
 
       // STATE
       public activeLayerIndex:number = 0; // Current layer index for tools to act on
+      public activeLayer:PowTileLayer = null; // Reference to the active layer (or null)
 
       // Camera
       public cameraWidth:number;
@@ -124,6 +85,52 @@ module pow2.editor {
          cameraStart:null,
          delta:null
       };
+
+      static $inject:string[] = ['$time','$injector','$keys','$platform','$actions'];
+      constructor(
+         public $time:pow2.Time,
+         public $injector:any,
+         public $keys:pow2.editor.IKeysService,
+         public $platform:pow2.editor.IAppPlatform,
+         public $actions:pow2.editor.IActionsService) {
+         super();
+         $time.addObject(this);
+         this.loader = this.$injector.instantiate(TiledMapLoader);
+
+         angular.forEach(['ctrl+z','cmd+z'],(c:string)=>{
+            this.keyBinds.push($keys.bind(c,()=>{
+               var action:IAction = this.$actions.undo();
+               if(action){
+                  this.setDebugText('Undo ' + action.name);
+               }
+            }));
+         });
+         angular.forEach(['ctrl+shift+z','cmd+shift+z'],(c:string)=>{
+            this.keyBinds.push($keys.bind(c,(e)=>{
+               var action:IAction = this.$actions.redo();
+               if(action){
+                  this.setDebugText('Redo ' + action.name);
+               }
+            }));
+         });
+
+         // SAVE
+         this.keyBinds.push($keys.bind('ctrl+s',(e)=>{
+            this.loader.save(this.tileMap.name,this.tileMap).then((data:any)=>{
+               this.$platform.writeFile(this.tileMap.name,data,(err:any)=>{
+                  if(err){
+                     throw new Error(err);
+                  }
+                  console.log('File: ' + this.tileMap.name + ' --- SAVED');
+               });
+            });
+         }));
+
+         // ESCAPE CONTEXT (active tool -> default tool if no context)
+         this.keyBinds.push($keys.bind('esc',(e)=>{
+            this.activeTool = 'move';
+         }));
+      }
       init(element:any,stage:PIXI.Stage){
          this.$time.addObject(this);
          this.container = element;
@@ -190,6 +197,7 @@ module pow2.editor {
       setMap(tileMap:PowTileMap){
          this.tileMap = tileMap;
          this.picker = new pow2.editor.PowTileMapPicker(this.tileMap);
+         this.setActiveLayer(0);
       }
 
       setPaintTile(tileSet:ITileSet,at:pow2.Point){
@@ -217,6 +225,7 @@ module pow2.editor {
          }
          this.activeLayerIndex = index;
          //this.$actions.executeAction(new LayerSelectAction(this,index));
+         this.activeLayer = layer;
       }
 
       loadTextures(tileSets:ITileSet[]){
@@ -352,6 +361,85 @@ module pow2.editor {
        * TODO: Is it bad to expose this to other components?
        */
       private _viewLayers:TileEditorViewLayer[] = [];
+      removeViewLayer(index:number){
+         if(index < 0 || index > this._viewLayers.length){
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
+         }
+         this.sceneContainer.removeChildAt(index);
+         this.tileMap.removeLayer(index);
+      }
+      newViewLayer(index:number,layer:PowTileLayer):TileEditorViewLayer {
+         var newViewLayer:TileEditorViewLayer = {
+            tiles:[],
+            container: new PIXI.DisplayObjectContainer(),
+            dataSource:layer
+         };
+         this._viewLayers.splice(index,0,newViewLayer);
+         newViewLayer.container.visible = layer.visible;
+         layer.on('changeTile',(index:number)=>{
+            var newGid:number = layer.tiles[index];
+            var tile:EditableTile = newViewLayer.tiles[index];
+            if(tile){
+               tile.sprite.setTexture(this.getGidTexture(newGid));
+               tile._gid = newGid;
+            }
+            else {
+               // Create sprite if it doesn't already exist.
+               var col = index % this.tileMap.size.x;
+               var row = (index - col) / this.tileMap.size.x;
+               var texture = this.getGidTexture(newGid);
+               var tile:EditableTile = new EditableTile(texture);
+               tile.sprite.x = col * this.tileMap.tileSize.y;
+               tile.sprite.y = row * this.tileMap.tileSize.x;
+               tile.sprite.width = this.tileMap.tileSize.x;
+               tile.sprite.height = this.tileMap.tileSize.y;
+               tile._gid = gid;
+               tile._tileIndex = tileIndex;
+               newViewLayer.container.addChild(tile.sprite);
+               newViewLayer.tiles[index] = tile;
+            }
+         });
+         layer.on('changeVisible',()=>{
+            newViewLayer.container.visible = layer.visible;
+         });
+         if(layer.tiles){
+            for(var col:number = 0; col < this.tileMap.size.x; col++) {
+               for (var row:number = 0; row < this.tileMap.size.y; row++) {
+                  // y * w + x = tile id from col/row
+                  var tileIndex:number = row * this.tileMap.size.x + col;
+                  var gid:number = layer.tiles[tileIndex];
+                  var meta:ITileData = this.tileMap.tileInfo[gid];
+                  if (meta) {
+                     var frame = new PIXI.Rectangle(meta.imagePoint.x,meta.imagePoint.y,this.tileMap.tileSize.x,this.tileMap.tileSize.y);
+                     var texture = new PIXI.Texture(this.spriteTextures[meta.url],frame);
+                     var tile:EditableTile = new EditableTile(texture);
+                     tile.sprite.x = col * this.tileMap.tileSize.y;
+                     tile.sprite.y = row * this.tileMap.tileSize.x;
+                     tile.sprite.width = this.tileMap.tileSize.x;
+                     tile.sprite.height = this.tileMap.tileSize.y;
+                     tile._gid = gid;
+                     tile._tileIndex = tileIndex;
+
+                     newViewLayer.container.addChild(tile.sprite);
+                     newViewLayer.tiles[tileIndex] = tile;
+                  }
+               }
+            }
+         }
+         _.each(layer.objects,(obj:pow2.tiled.ITiledObject) => {
+            var box = new PIXI.Graphics();
+            box.beginFill(0xFFFFFF);
+            box.alpha = 0.6;
+            box.lineStyle(1,0xAAAAAA,1);
+            box.drawRect(0, 0, obj.width, obj.height);
+            box.endFill();
+            box.position.x = obj.x;
+            box.position.y = obj.y;
+            newViewLayer.container.addChild(box);
+         });
+         this.sceneContainer.addChildAt(newViewLayer.container,index);
+         return newViewLayer;
+      }
       clearViewLayers() {
          this._viewLayers.length = 0;
       }
@@ -360,6 +448,39 @@ module pow2.editor {
       }
       getViewLayers():TileEditorViewLayer[]{
          return this._viewLayers;
+      }
+
+      /**
+       *
+       *  Layer Management Commands
+       *
+       */
+      newLayer() {
+         console.log("adding layer after: " + this.tileMap.layers[this.activeLayerIndex].name);
+         var newLayer:PowTileLayer = new PowTileLayer(PowTileLayer.TYPES.LAYER);
+         var index:number = this.activeLayerIndex + 1;
+         newLayer.setSize(this.tileMap.size.clone());
+         newLayer.properties = {};
+         newLayer.name = "new layer";
+         newLayer.point = new pow2.Point(0,0);
+         newLayer.visible = true;
+         newLayer.opacity = 1;
+
+         this.tileMap.insertLayer(index,newLayer);
+         this.newViewLayer(index,newLayer);
+         this.setActiveLayer(index);
+      }
+      newObjectGroup() {
+         console.log("adding objectgroup after: " + this.tileMap.layers[this.activeLayerIndex].name);
+      }
+      removeActiveLayer() {
+         console.log("removing layer: " + this.tileMap.layers[this.activeLayerIndex].name);
+         if(this.tileMap.layers.length > 1){
+            this.removeViewLayer(this.activeLayerIndex);
+            if(this.activeLayerIndex >= this.tileMap.layers.length){
+               this.activeLayerIndex--;
+            }
+         }
       }
    }
 
