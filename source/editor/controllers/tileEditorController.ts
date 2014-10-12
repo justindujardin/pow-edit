@@ -478,7 +478,7 @@ module pow2.editor {
          if(this.tileMap.layers.length > 1){
             this.removeViewLayer(this.activeLayerIndex);
             if(this.activeLayerIndex >= this.tileMap.layers.length){
-               this.activeLayerIndex--;
+               this.setActiveLayer(this.activeLayerIndex-1);
             }
          }
       }
