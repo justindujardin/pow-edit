@@ -23,7 +23,7 @@ module pow2.editor {
          scope: {
             value: '='
          },
-         template: '<span ng-dblclick="edit()" ng-bind="value"></span><input ng-model="value">',
+         template: '<span ng-dblclick="edit()" ng-bind="value"></span><i ng-click="edit()"></i><input ng-model="value">',
          link: (scope, element, attributes) => {
             var input = angular.element(element.children('input'));
             element.addClass('inline-edit');

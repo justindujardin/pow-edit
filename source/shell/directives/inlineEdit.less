@@ -1,19 +1,29 @@
-.inline-edit span {
-  cursor: pointer;
-}
-.inline-edit input {
-  display: none;
-}
-.inline-edit.active span {
-  display: none;
-}
-.inline-edit.active input {
-  background-color: transparent;
-  outline: none;
-  border: none;
-  display: inline-block;
-  text-shadow:-1px -1px 0 rgba(0,0,0,0.4);
-  font-weight:300;
-  width:auto;
-  max-width:80%;
+.inline-edit {
+  span {
+    cursor: pointer;
+  }
+  input {
+    display: none;
+  }
+  i {
+    .icon(@fa-var-pencil-square-o);
+  }
+  &.active {
+    i {
+      display: none;
+    }
+    span {
+      display: none;
+    }
+    input {
+      background-color: transparent;
+      outline: none;
+      border: none;
+      display: inline-block;
+      font-weight:300;
+      text-shadow:-1px -1px 0 rgba(0,0,0,0.4);
+      width:auto;
+      max-width:80%;
+    }
+  }
 }

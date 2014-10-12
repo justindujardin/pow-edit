@@ -38,6 +38,7 @@ nav.layer-list {
     text-align: center;
     z-index:10;
     .btn {
+      font-weight: bold;
       &:first-child {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
@@ -63,66 +64,56 @@ nav.layer-list {
     li {
       cursor: pointer;
       width: 100%;
-      height: 30px;
-      padding: 5px;
-      color: #bbb;
-      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
-      text-wrap: none;
-      white-space: nowrap;
-      font-size: 1em;
+      padding:5px;
       &.active {
         .dark-selection;
+        .inline-edit i {
+          display: inherit;
+        }
+      }
+      .inline-edit {
+        padding: 0;
+        color: #bbb;
+        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+        text-wrap: none;
+        white-space: nowrap;
+        input {
+          margin:0;
+          padding:0;
+        }
       }
       > a {
-        color:#fff;
+        width:100%;
         &:hover {
           text-decoration: none;
         }
-        > i {
-          margin: 0 5px;
+        .inline-edit i {
+          float:right;
+          display: none;
         }
+      }
+      .icon {
+        .icon(@fa-var-eye-slash);
+        padding:0 5px;
+        color:rgba(255,255,255,0.3);
+        text-shadow:-1px -1px rgba(0,0,0,0.6);
       }
 
       &.visible {
         color: #fff;
-        > a {
-          > i {
-            .icon(@fa-var-eye);
-          }
-        }
-      }
-      &.empty {
-        color: rgba(255, 255, 255, 0.5);
-        text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.5);
-        > a {
-          > i {
-            .icon(@fa-var-eye-slash);
-          }
-        }
-        &.force {
-          display: none !important;
-        }
-      }
-
-      > a {
-        > i {
-          .icon(@fa-var-eye-slash);
-        }
-        > span {
-          padding-left: 5px;
+        .icon {
+          text-shadow:1px 1px rgba(0,0,0,0.6);
+          color:rgba(255,255,255,0.8);
+          .icon(@fa-var-eye);
         }
       }
       &.objects {
-        > a {
-          > i {
-            .icon(@fa-var-cogs);
-          }
+        .icon {
+          .icon(@fa-var-cogs);
         }
         &.empty {
-          > a {
-            > i {
-              .icon(@fa-var-cogs);
-            }
+          .icon {
+            .icon(@fa-var-cogs);
           }
         }
       }
