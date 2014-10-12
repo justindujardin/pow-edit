@@ -109,5 +109,12 @@ module pow2.editor {
          }
          this.layers.splice(index,0,layer);
       }
+      removeLayer(index:number){
+         if(index < 0 || index > this.layers.length){
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
+         }
+         this.layers.splice(index,1);
+
+      }
    }
 }

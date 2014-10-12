@@ -152,7 +152,9 @@ module pow2.editor {
                         lastHit.sprite.tint = 0xFFFFFF;
                      }
                      lastHit = uiLayer.tiles[pick.index];
-                     lastHit.sprite.tint = 0x00FF00;
+                     if(lastHit && lastHit.sprite){
+                        lastHit.sprite.tint = 0x00FF00;
+                     }
                   }
                }
                else if(lastHit) {

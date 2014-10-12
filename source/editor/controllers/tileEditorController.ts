@@ -361,6 +361,13 @@ module pow2.editor {
        * TODO: Is it bad to expose this to other components?
        */
       private _viewLayers:TileEditorViewLayer[] = [];
+      removeViewLayer(index:number){
+         if(index < 0 || index > this._viewLayers.length){
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
+         }
+         this.sceneContainer.removeChildAt(index);
+         this.tileMap.removeLayer(index);
+      }
       newViewLayer(index:number,layer:PowTileLayer):TileEditorViewLayer {
          var newViewLayer:TileEditorViewLayer = {
             tiles:[],
@@ -461,12 +468,19 @@ module pow2.editor {
 
          this.tileMap.insertLayer(index,newLayer);
          this.newViewLayer(index,newLayer);
+         this.setActiveLayer(index);
       }
       newObjectGroup() {
          console.log("adding objectgroup after: " + this.tileMap.layers[this.activeLayerIndex].name);
       }
       removeActiveLayer() {
          console.log("removing layer: " + this.tileMap.layers[this.activeLayerIndex].name);
+         if(this.tileMap.layers.length > 1){
+            this.removeViewLayer(this.activeLayerIndex);
+            if(this.activeLayerIndex >= this.tileMap.layers.length){
+               this.activeLayerIndex--;
+            }
+         }
       }
    }
 
