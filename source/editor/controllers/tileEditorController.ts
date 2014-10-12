@@ -396,7 +396,7 @@ module pow2.editor {
          };
          this._viewLayers.splice(index,0,newViewLayer);
          newViewLayer.container.visible = layer.visible;
-         layer.on('changeTile',(index:number)=>{
+         layer.on(PowTileLayer.EVENTS.CHANGE_TILE,(index:number)=>{
             var newGid:number = layer.tiles[index];
             var tile:EditableTile = newViewLayer.tiles[index];
             if(tile){
@@ -419,7 +419,7 @@ module pow2.editor {
                newViewLayer.tiles[index] = tile;
             }
          },this);
-         layer.on('changeVisible',()=>{
+         layer.on(PowTileLayer.EVENTS.CHANGE_VISIBLE,()=>{
             newViewLayer.container.visible = layer.visible;
          },this);
          if(layer.tiles){
