@@ -19,7 +19,7 @@
 module pow2.editor {
 
    /**
-    * Remove a layer from a given PowTileMap.
+    * Rename a PowTileLayer.
     */
    export class LayerRenameAction extends BaseAction {
       public name:string = "Rename Layer";
