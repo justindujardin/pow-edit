@@ -281,7 +281,7 @@ module pow2.editor {
 
       paintAt(index:number){
          var layer:PowTileLayer = this.tileMap.layers[this.activeLayerIndex];
-         if(!layer || index > layer.tiles.length || index < 0){
+         if(!layer || !layer.tiles || index > layer.tiles.length || index < 0){
             return;
          }
          var newGid:number = this.dragPaint;
@@ -312,7 +312,7 @@ module pow2.editor {
 
       floodPaintAt(index:number,newGid:number=this.dragPaint){
          var layer:PowTileLayer = this.tileMap.layers[this.activeLayerIndex];
-         if(!layer || index > layer.tiles.length || index < 0){
+         if(!layer || !layer.tiles || index > layer.tiles.length || index < 0){
             return;
          }
          var action = new TileFloodPaintAction(layer,index,newGid);
