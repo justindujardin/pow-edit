@@ -71,7 +71,7 @@ module pow2.editor {
 
 
                   angular.element(window).on('resize',()=>{
-                     tileEditor.resize(canvasElement.width(),canvasElement.height());
+                     tileEditor.resize(element.width(),element.height());
                   });
 
                   var t:pow2.editor.PowTileMap = null;

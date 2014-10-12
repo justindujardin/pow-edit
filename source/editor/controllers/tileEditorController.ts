@@ -55,6 +55,7 @@ module pow2.editor {
 
       // STATE
       public activeLayerIndex:number = 0; // Current layer index for tools to act on
+      public activeLayer:PowTileLayer = null; // Reference to the active layer (or null)
 
       // Camera
       public cameraWidth:number;
@@ -196,6 +197,7 @@ module pow2.editor {
       setMap(tileMap:PowTileMap){
          this.tileMap = tileMap;
          this.picker = new pow2.editor.PowTileMapPicker(this.tileMap);
+         this.setActiveLayer(0);
       }
 
       setPaintTile(tileSet:ITileSet,at:pow2.Point){
@@ -223,6 +225,7 @@ module pow2.editor {
          }
          this.activeLayerIndex = index;
          //this.$actions.executeAction(new LayerSelectAction(this,index));
+         this.activeLayer = layer;
       }
 
       loadTextures(tileSets:ITileSet[]){

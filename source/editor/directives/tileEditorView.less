@@ -36,41 +36,29 @@
   section.tile-sets {
     position:absolute;
     left:0;
-    bottom:100px;
+    bottom:0;
     min-height:64px;
     min-width:64px;
-    background-color:@powBgDarker;
+    background-color:rgba(0,0,0,0.4);
     .tile-picker {
       display:block;
     }
   }
 
   nav.toolbox {
-    background-color:rgba(0,0,0,0.85);
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     .no-selection;
-    ul {
-      padding:0;
-      margin:0;
-      li{
-        cursor:pointer;
-        margin:0;
-        height:auto;
-        list-style-type:none;
-        display: inline-block;
-        padding:0.5em;
-        font-size:2em;
-        color:rgba(255,255,255,0.9);
-        &.active {
-          background-color:@powBlue;
-        }
-        &.disabled {
-          color:rgba(128,128,128,0.5);
-        }
+    .btn {
+      font-size:1.5em;
+      &:first-child {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
       }
-
+      &:last-child {
+        border-bottom-left-radius: 0;
+      }
     }
   }
 }
