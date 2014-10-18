@@ -17,14 +17,10 @@
 ///<reference path="../controllers/tileEditorController.ts"/>
 
 module pow2.editor {
-   /**
-    *  Pan Input listener
-    *
-    *  NOTE: Consider refactor into generic zoom/pan directive that
-    *  takes generic x/y/scale props (rather than pixi specific
-    *  sceneContainer props) and manipulates them.
-    */
 
+   /**
+    * Send input events to the active editor tool.
+    */
    pow2.editor.app.directive("tileEditorInput", [() => {
       return {
          restrict: "A",
