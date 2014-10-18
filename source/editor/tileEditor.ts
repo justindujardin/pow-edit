@@ -23,20 +23,90 @@ module pow2.editor {
       cameraStart:pow2.Point;
    }
 
-
-   export interface IEditableSprite extends PIXI.Sprite{
-      powtile:EditableTile;
-   }
-
    export class EditableTile {
       private _uid:number = _.uniqueId();
       _gid:number;
       _tileIndex:number;
-      sprite:IEditableSprite;
+      sprite:PIXI.Sprite;
       constructor(
          public texture: PIXI.Texture) {
-         this.sprite = <IEditableSprite>new PIXI.Sprite(texture);
-         this.sprite.powtile = this;
+         this.sprite = <PIXI.Sprite>new PIXI.Sprite(texture);
+      }
+   }
+
+   export class TileEditor implements pow2.editor.IEditor {
+      toolbox:pow2.editor.TileEditorToolbox = new pow2.editor.TileEditorToolbox();
+      defaultTool:string = "move";
+      ctrl:TileEditorController = null;
+
+      private _contexts:pow2.editor.IEditorContext[] = [];
+      initEditor(tileEditorController:TileEditorController):boolean {
+         console.log("init editor");
+         this.ctrl = tileEditorController;
+         this.pushContext(this.ctrl.tileMap);
+         return true;
+      }
+      destroyEditor():boolean {
+         this.ctrl = null;
+         while(this.popContext()){}
+         return true;
+      }
+
+      setActiveTool(name:string):boolean {
+         var ctx = this.getActiveContext();
+         if(ctx){
+            return ctx.setActiveTool(name);
+         }
+         return false;
+      }
+      getActiveTool():pow2.editor.IEditorTool {
+         var ctx = this.getActiveContext();
+         if(ctx){
+            return ctx.getActiveTool();
+         }
+         return null;
+
+      }
+
+
+      getActiveContext():pow2.editor.IEditorContext {
+         return this._contexts[this._contexts.length-1] || null;
+      }
+      pushContext(object:any):boolean {
+         var ctx:pow2.editor.IEditorContext = this.getActiveContext();
+         // Exit any existing context first
+         if(ctx && !ctx.exitContext()){
+            return false;
+         }
+
+         var newCtx = this.ctrl.createContext(object);
+         if(newCtx && newCtx.enterContext(object)){
+            this._contexts.push(newCtx);
+            this.toolbox.fillToolbox(newCtx);
+            return true;
+         }
+         // Error, restore old context
+         if(ctx){
+            ctx.enterContext(ctx.getContextSource());
+         }
+         return false;
+      }
+      popContext():boolean {
+         // Must have at least one context
+         if(this._contexts.length <= 1){
+            return false;
+         }
+         var ctx:pow2.editor.IEditorContext = this.getActiveContext();
+         if(!ctx || !ctx.exitContext()){
+            return false;
+         }
+         this._contexts.pop();
+         ctx = this.getActiveContext();
+         if(!ctx.enterContext(ctx.getContextSource())){
+            throw new Error(pow2.errors.INVALID_ITEM);
+         }
+         this.toolbox.fillToolbox(ctx);
+         return true;
       }
    }
 }

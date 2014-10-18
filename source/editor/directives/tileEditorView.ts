@@ -48,7 +48,7 @@ module pow2.editor {
             templateUrl: "source/editor/directives/tileEditorView.html",
             require:["tileEditorView","?^documentView"],
             controller:TileEditorController,
-            controllerAs:'editor',
+            controllerAs:'tileController',
             compile:(element,attributes) => {
                var source = $parse(attributes.url);
 

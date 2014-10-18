@@ -21,7 +21,7 @@ module pow2.editor {
 
    pow2.editor.app.controller('LayersListController', [
       '$scope', '$actions',
-      ($scope:any,$actions:ActionsService)=> {
+      ($scope:any,$actions:ActionManager)=> {
          $scope.renameLayer = (layer:PowTileLayer,oldName:string,newName:string)=>{
             if(oldName === newName){
                return;
@@ -32,6 +32,9 @@ module pow2.editor {
             // is supplied by the inline-edit callback.
             // The reason it's already changed is because the inline-edit does a 2way
             // binding to the `layer.name` value.
+            // TODO: Perhaps remove the ng-model binding on inline-edit and go with
+            //       a callback approach that doesn't immediately update the model as a
+            //       user types.
             layer.name = oldName;
             $actions.executeAction(new LayerRenameAction(layer,newName));
          };

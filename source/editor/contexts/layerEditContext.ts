@@ -13,24 +13,17 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-/// <reference path="./IEditorContext.ts"/>
-/// <reference path="./IEditorTool.ts"/>
-
+///<reference path="../tileEditorContext.ts"/>
 module pow2.editor {
 
-   export interface IEditor {
-      // lifetime
-      initEditor(object:any):boolean;
-      destroyEditor():boolean;
-
-      // tools
-      toolbox:IEditorToolbox;
-      defaultTool:string;
-      setActiveTool(name:string):boolean;
-      getActiveTool():IEditorTool;
-
-      getActiveContext():IEditorContext;
-      pushContext(object:any):boolean;
-      popContext():boolean;
+   export class LayerEditContext extends TileEditorContext {
+      getTools():TileEditorTool[] {
+         return [
+            new pow2.editor.HandTool(),
+            new pow2.editor.LayerPencilPaintTool(),
+            new pow2.editor.LayerFloodPaintTool(),
+            new pow2.editor.LayerEraseTool()
+         ];
+      }
    }
 }

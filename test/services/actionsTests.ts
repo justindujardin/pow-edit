@@ -37,11 +37,11 @@ describe("pow2.editor.BaseAction",()=>{
    });
 });
 
-describe("pow2.editor.ActionsService",()=>{
-   var actions:pow2.editor.IActionsService = null;
+describe("pow2.editor.ActionManager",()=>{
+   var actions:pow2.editor.IActionManager = null;
    var scope:any = null;
    beforeEach(module('pow-edit'));
-   beforeEach(inject(($actions:pow2.editor.IActionsService,$rootScope:ng.IRootScopeService) => {
+   beforeEach(inject(($actions:pow2.editor.IActionManager,$rootScope:ng.IRootScopeService) => {
       actions = $actions;
       scope = $rootScope;
    }));

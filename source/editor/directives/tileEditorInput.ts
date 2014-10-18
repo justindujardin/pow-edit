@@ -17,169 +17,44 @@
 ///<reference path="../controllers/tileEditorController.ts"/>
 
 module pow2.editor {
-   pow2.editor.app.directive("tileEditorInput", ['$document',($document) => {
-      /**
-       *  Pan Input listener
-       *
-       *  TODO: Refactor into generic zoom/pan directive that
-       *  takes generic x/y/scale props (rather than pixi specific
-       *  sceneContainer props) and manipulates them.
-       */
-      function handleMouseDown(tileEditor:TileEditorController,event:any) {
-         var e = event;
-         if(event.originalEvent.touches) {
-            e = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
-         }
-         var doMove:any = () => {
-            tileEditor.dragPaint = -1;
-            tileEditor.drag.active = true;
-            tileEditor.drag.start = new pow2.Point(e.clientX,e.clientY);
-            tileEditor.drag.current = tileEditor.drag.start.clone();
-            tileEditor.drag.delta = new pow2.Point(0,0);
-            tileEditor.drag.cameraStart = new Point(tileEditor.cameraCenter.x,tileEditor.cameraCenter.y);
-            var _mouseUp = () => {
-               $document.off('mousemove touchmove',_mouseMove);
-               $document.off('mouseup touchend',_mouseUp);
-               tileEditor.resetDrag();
-            };
-            var _mouseMove = (evt:any) => {
-               if(!tileEditor.drag.active){
-                  return;
-               }
-               if(evt.originalEvent.touches) {
-                  evt = evt.originalEvent.touches[0] || evt.originalEvent.changedTouches[0];
-               }
-               tileEditor.drag.current.set(evt.clientX,evt.clientY);
-               tileEditor.drag.delta.set(tileEditor.drag.start.x - tileEditor.drag.current.x, tileEditor.drag.start.y - tileEditor.drag.current.y);
+   /**
+    *  Pan Input listener
+    *
+    *  NOTE: Consider refactor into generic zoom/pan directive that
+    *  takes generic x/y/scale props (rather than pixi specific
+    *  sceneContainer props) and manipulates them.
+    */
 
-               tileEditor.cameraCenter.x = tileEditor.drag.cameraStart.x + tileEditor.drag.delta.x * (1 / tileEditor.cameraZoom);
-               tileEditor.cameraCenter.y = tileEditor.drag.cameraStart.y + tileEditor.drag.delta.y * (1 / tileEditor.cameraZoom);
-
-               tileEditor.updateCamera();
-               event.stopPropagation();
-               return false;
-            };
-            $document.on('mousemove touchmove', _mouseMove);
-            $document.on('mouseup touchend', _mouseUp);
-            event.stopPropagation();
-            return false;
-         };
-         var right:boolean = false;
-         if (e.originalEvent.which) {
-            right = (e.originalEvent.which == 3);
-         }
-         else if (e.button){
-            right = (e.originalEvent.button == 2);
-         }
-         if(right){
-            return doMove();
-         }
-         var mousePoint:pow2.Point = tileEditor.mouseEventToWorld(event);
-         var mouseAtIndex:number = tileEditor.picker.indexFromPoint(mousePoint);
-         switch(tileEditor.activeTool){
-            case 'paint':
-               tileEditor.dragPaint = tileEditor.tileIndex;
-               tileEditor.paintAt(mouseAtIndex);
-               var _stopPaint = () => {
-                  tileEditor.dragPaint = -1;
-                  $document.off('mouseup touchend',_stopPaint);
-               };
-               $document.on('mouseup touchend', _stopPaint);
-               return;
-               break;
-            case 'flood':
-               var area: pow2.Rect = new pow2.Rect(tileEditor.tileMap.point,tileEditor.tileMap.size);
-               if(area.pointInRect(mousePoint)){
-                  tileEditor.floodPaintAt(mouseAtIndex,tileEditor.tileIndex);
-               }
-               return;
-               break;
-            case 'erase':
-               tileEditor.dragPaint = 0;
-               tileEditor.paintAt(mouseAtIndex);
-               var _stopPaint = () => {
-                  tileEditor.dragPaint = -1;
-                  $document.off('mouseup touchend',_stopPaint);
-               };
-               $document.on('mouseup touchend', _stopPaint);
-               return;
-               break;
-            case 'move':
-               doMove();
-               break;
-         }
-      }
-      /**
-       *  Zoom Input listener
-       */
-      function handleMouseWheel(tileEditor:TileEditorController,event) {
-         if(!tileEditor.sceneContainer) {
-            return;
-         }
-         var delta:number = (event.originalEvent.detail ? event.originalEvent.detail * -1 : event.originalEvent.wheelDelta);
-         var move:number = tileEditor.cameraZoom / 10;
-         tileEditor.cameraZoom += (delta > 0 ? move : -move);
-         tileEditor.updateCamera();
-         event.stopImmediatePropagation();
-         event.preventDefault();
-         return false;
-      }
-
+   pow2.editor.app.directive("tileEditorInput", [() => {
       return {
          restrict: "A",
          require:["tileEditorView"],
          link:(scope, element, attributes:any,controllers:any[]) => {
             var tileEditor:TileEditorController = controllers[0];
-            var lastHit:EditableTile = null;
-            var viewLayers = tileEditor.getViewLayers();
-            element.on('mousemove',(ev:any) => {
+            function getEventTool(ev:any):TileEditorTool{
                if(!angular.element(ev.originalEvent.srcElement).is('canvas')){
-                  return;
+                  return null;
                }
-               tileEditor.mouseAt = tileEditor.mouseEventToWorld(ev);
-               if(tileEditor.activeTool !== 'move' && tileEditor.dragPaint != -1){
-                  tileEditor.paintAt(tileEditor.picker.indexFromPoint(tileEditor.mouseAt));
-                  return;
+               return <TileEditorTool>tileEditor.ed.getActiveTool();
+            }
+            element.on('mousemove',(ev:any) => {
+               var tool:TileEditorTool = getEventTool(ev);
+               if(tool){
+                  return tool.handleMouseMove(ev);
                }
-
-               var pick:IPowTilePick = tileEditor.picker.pickFirst(tileEditor.mouseAt);
-               var hitLayer:string = null;
-               if(pick){
-                  hitLayer = pick.layer.name;
-                  var uiLayer:TileEditorViewLayer = viewLayers[pick.layerIndex];
-                  if(uiLayer){
-                     if(lastHit){
-                        lastHit.sprite.tint = 0xFFFFFF;
-                     }
-                     lastHit = uiLayer.tiles[pick.index];
-                     if(lastHit && lastHit.sprite){
-                        lastHit.sprite.tint = 0x00FF00;
-                     }
-                  }
-               }
-               else if(lastHit) {
-                  lastHit.sprite.tint = 0xFFFFFF;
-                  lastHit = null;
-               }
-               tileEditor.setDebugText(JSON.stringify({
-                  mapX:Math.floor(tileEditor.sceneContainer.x),
-                  mapY:Math.floor(tileEditor.sceneContainer.y),
-                  mouseX:tileEditor.mouseAt.x,
-                  mouseY:tileEditor.mouseAt.y,
-                  hitLayer:hitLayer
-               },null,2));
             });
-
             element.on('mousedown touchstart',(ev)=>{
-               if (!angular.element(ev.originalEvent.srcElement).is('canvas')) {
-                  return;
+               var tool:TileEditorTool = getEventTool(ev);
+               if(tool){
+                  return tool.handleMouseDown(ev);
                }
-               handleMouseDown(tileEditor,ev);
             });
-            element.on("mousewheel DOMMouseScroll MozMousePixelScroll",(e)=>{
-               handleMouseWheel(tileEditor,e);
+            element.on("mousewheel DOMMouseScroll MozMousePixelScroll",(ev)=>{
+               var tool:TileEditorTool = getEventTool(ev);
+               if(tool){
+                  return tool.handleMouseWheel(ev);
+               }
             });
-
          }
       };
    }

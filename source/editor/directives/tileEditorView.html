@@ -1,17 +1,19 @@
 
 <div class="tile-editor-view">
     <nav class="toolbox btn-group-vertical" role="toolbox">
-        <a class="btn btn-default" ng-class="{active:editor.activeTool=='move'}" ng-click="editor.setTool('move'); $event.stopPropagation();"><i class="fa fa-arrows"></i></a>
-        <a class="btn btn-default" ng-class="{active:editor.activeTool=='paint'}" ng-click="editor.setTool('paint'); $event.stopPropagation();"><i class="fa fa-pencil"></i></a>
-        <a class="btn btn-default" ng-class="{active:editor.activeTool=='flood'}" ng-click="editor.setTool('flood'); $event.stopPropagation();"><i class="fa fa-paint-brush"></i></a>
-        <a class="btn btn-default" ng-class="{active:editor.activeTool=='erase'}" ng-click="editor.setTool('erase'); $event.stopPropagation();"><i class="fa fa-eraser"></i></a>
+        <a class="btn btn-default"
+           ng-repeat="tool in tileController.ed.toolbox.getTools()"
+           ng-class="{active:tileController.activeTool==tool.name}"
+           ng-click="tileController.setTool(tool.name); $event.stopPropagation();">
+            <i class="fa {{tool.iconClass}}"></i>
+        </a>
     </nav>
     <canvas class="canvas"></canvas>
-    <section class="tile-sets" ng-if="editor.activeTool!='move'&&editor.activeTool!='erase'">
+    <section class="tile-sets" ng-if="tileController.activeTool!='move'&&tileController.activeTool!='erase'">
         <tile-set-tile-picker
-                ng-repeat="set in editor.tileMap.tileSets"
+                ng-repeat="set in tileController.tileMap.tileSets"
                 url="{{set.url}}"
-                on-pick="editor.setPaintTile(set,tilePoint)"
+                on-pick="tileController.setPaintTile(set,tilePoint)"
                 tile-height="{{set.tileSize.y}}"
                 tile-width="{{set.tileSize.x}}"></tile-set-tile-picker>
     </section>

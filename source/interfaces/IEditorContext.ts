@@ -13,24 +13,26 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-/// <reference path="./IEditorContext.ts"/>
 /// <reference path="./IEditorTool.ts"/>
-
 module pow2.editor {
 
-   export interface IEditor {
-      // lifetime
-      initEditor(object:any):boolean;
-      destroyEditor():boolean;
+   export interface IEditorContext {
 
-      // tools
-      toolbox:IEditorToolbox;
-      defaultTool:string;
+      getTools():IEditorTool[];
+
+      getEditor():IEditor;
+      setEditor(editor:IEditor):boolean;
+
+      enterContext(source:any):boolean;
+      exitContext():boolean;
+
+      getContextSource():any;
+      setContextSource(object:any):boolean;
+
       setActiveTool(name:string):boolean;
       getActiveTool():IEditorTool;
 
-      getActiveContext():IEditorContext;
-      pushContext(object:any):boolean;
-      popContext():boolean;
+      setDefaultTool(name:string):boolean;
+      getDefaultTool():IEditorTool;
    }
 }

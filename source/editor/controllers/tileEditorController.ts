@@ -15,6 +15,7 @@
  */
 ///<reference path="../../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
 ///<reference path="../tileEditor.ts"/>
+///<reference path="../tileEditorToolbox.ts"/>
 ///<reference path="../../app.ts"/>
 ///<reference path="../../services/actions.ts"/>
 ///<reference path="../../services/tasks.ts"/>
@@ -38,9 +39,8 @@ module pow2.editor {
 
    export class TileEditorController extends pow2.Events implements IProcessObject {
 
+      public ed:TileEditor = new TileEditor();
       public blankTile:PIXI.Texture = null;
-//      public ctx:IContext;
-
       public loader:TiledMapLoader;
       public tileMap:PowTileMap = null;
       public picker:pow2.editor.PowTileMapPicker = null;
@@ -88,13 +88,14 @@ module pow2.editor {
          delta:null
       };
 
-      static $inject:string[] = ['$time','$injector','$keys','$platform','$actions'];
+      static $inject:string[] = ['$time','$injector','$keys','$platform','$actions','$document'];
       constructor(
          public $time:pow2.Time,
          public $injector:any,
          public $keys:pow2.editor.IKeysService,
          public $platform:pow2.editor.IAppPlatform,
-         public $actions:pow2.editor.IActionsService) {
+         public $actions:pow2.editor.IActionManager,
+         public $document:any) {
          super();
          $time.addObject(this);
          this.loader = this.$injector.instantiate(TiledMapLoader);
@@ -142,6 +143,7 @@ module pow2.editor {
          this.renderer = PIXI.autoDetectRenderer(w,h,element[0]);
          this.resize(w,h);
          this.stage = stage;
+         this.ed.initEditor(this);
       }
       destroy() {
          angular.forEach(this.keyBinds,(bind:number)=>{
@@ -153,6 +155,7 @@ module pow2.editor {
             this.renderer = null;
          }
          this.container = null;
+         this.ed.destroyEditor();
       }
 
       // IProcessObject implementation
@@ -194,6 +197,12 @@ module pow2.editor {
          this.updateCamera();
 
          return this;
+      }
+
+      createContext(object:any):pow2.editor.IEditorContext {
+         var ctx = new pow2.editor.LayerEditContext();
+         ctx.setEditor(this.ed);
+         return ctx;
       }
 
       setMap(tileMap:PowTileMap){
@@ -340,8 +349,10 @@ module pow2.editor {
 
 
       setTool(name:string){
-         this.activeTool = name;
-         this.trigger('debug','Activate ' + name);
+         if(this.ed.setActiveTool(name)){
+            this.activeTool = name;
+            this.trigger('debug','Activate ' + name);
+         }
       }
 
 

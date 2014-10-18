@@ -16,11 +16,12 @@
 
 /// <reference path="../app.ts"/>
 /// <reference path="../interfaces/IAction.ts"/>
+/// <reference path="../interfaces/IActionManager.ts"/>
 
 module pow2.editor {
 
    pow2.editor.app.factory('$actions',[()=>{
-      return new ActionsService();
+      return new ActionManager();
    }]);
 
    export class BaseAction implements IAction {
@@ -44,21 +45,7 @@ module pow2.editor {
 
    }
 
-   export interface IActionsService {
-      clear();
-      redo():IAction;
-      undo():IAction;
-
-      getUndoCount():number;
-      getRedoCount():number;
-
-      getUndoName(index:number):string;
-      getRedoName(index:number):string;
-
-      executeAction(action:IAction):boolean;
-   }
-
-   export class ActionsService implements IActionsService {
+   export class ActionManager implements IActionManager {
       private _undoStack:IAction[] = [];
       private _redoStack:IAction[] = [];
       clear() {

@@ -13,24 +13,21 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-/// <reference path="./IEditorContext.ts"/>
-/// <reference path="./IEditorTool.ts"/>
 
 module pow2.editor {
 
-   export interface IEditor {
-      // lifetime
-      initEditor(object:any):boolean;
-      destroyEditor():boolean;
+   export interface IActionManager {
+      clear();
+      redo():IAction;
+      undo():IAction;
 
-      // tools
-      toolbox:IEditorToolbox;
-      defaultTool:string;
-      setActiveTool(name:string):boolean;
-      getActiveTool():IEditorTool;
+      getUndoCount():number;
+      getRedoCount():number;
 
-      getActiveContext():IEditorContext;
-      pushContext(object:any):boolean;
-      popContext():boolean;
+      getUndoName(index:number):string;
+      getRedoName(index:number):string;
+
+      executeAction(action:IAction):boolean;
    }
+
 }
