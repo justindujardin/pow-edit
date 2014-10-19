@@ -133,8 +133,14 @@ module pow2.editor {
          };
          this.ctrl.$document.on('mouseup touchend', _pointerUp);
          // by default right click will move camera
-         if(this.onPointerDown(e) !== false && this.isRightMouse(ev)){
+         var handled:boolean = this.onPointerDown(e) === false;
+         if(!handled && this.isRightMouse(ev)){
             return this.beginMove(e);
+         }
+         else if(handled){
+            ev.stopImmediatePropagation();
+            ev.preventDefault();
+            return false;
          }
       }
       handleMouseWheel(ev) {
