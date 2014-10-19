@@ -19,25 +19,26 @@ module pow2.editor {
    export class LayerPencilPaintTool extends TileEditorTool {
       name:string = 'Paint';
       iconClass:string = 'fa-pencil';
+      private _painting:boolean = false;
       onPointerDown(ev:MouseEvent):any{
          if(!this.isRightMouse(ev)){
             var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
             var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            this.ctrl.dragPaint = this.ctrl.tileIndex;
-            this.ctrl.paintAt(mouseAtIndex);
+            this._painting = true;
+            this.ctrl.paintAt(mouseAtIndex,this.ctrl.tileIndex);
             return false;
          }
       }
       onPointerMove(ev:MouseEvent):any{
-         if(this.ctrl.dragPaint !== -1){
+         if(this._painting){
             var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
             var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            this.ctrl.paintAt(mouseAtIndex);
+            this.ctrl.paintAt(mouseAtIndex,this.ctrl.tileIndex);
             return false;
          }
       }
       onPointerUp(ev:MouseEvent):any{
-         this.ctrl.dragPaint = -1;
+         this._painting = false;
       }
    }
 }

@@ -72,21 +72,8 @@ module pow2.editor {
       // Scenegraph
       public sceneContainer:any = null;
 
-      // tile gid to paint, or -1 if no painting
-      public dragPaint:number = -1;
-
       // The selected tile to paint
       public tileIndex:number = 46;
-
-      public activeTool:string = 'move';
-
-      public drag:IDragEvent = {
-         active:false,
-         start:null,
-         current:null,
-         cameraStart:null,
-         delta:null
-      };
 
       static $inject:string[] = ['$time','$injector','$keys','$platform','$actions','$document'];
       constructor(
@@ -127,11 +114,6 @@ module pow2.editor {
                   console.log('File: ' + this.tileMap.name + ' --- SAVED');
                });
             });
-         }));
-
-         // ESCAPE CONTEXT (active tool -> default tool if no context)
-         this.keyBinds.push($keys.bind('esc',(e)=>{
-            this.activeTool = 'move';
          }));
       }
       init(element:any,stage:PIXI.Stage){
@@ -288,13 +270,11 @@ module pow2.editor {
          return new PIXI.Texture(this.spriteTextures[meta.url], frame);
       }
 
-      paintAt(index:number){
+      paintAt(index:number,newGid:number){
          var layer:PowTileLayer = this.tileMap.layers[this.activeLayerIndex];
          if(!layer || !layer.tiles || index > layer.tiles.length || index < 0){
             return;
          }
-         var newGid:number = this.dragPaint;
-
          var action:IAction = null;
          if(newGid !== 0){
             var meta:ITileData = this.tileMap.tileInfo[newGid];
@@ -319,7 +299,7 @@ module pow2.editor {
          }
       }
 
-      floodPaintAt(index:number,newGid:number=this.dragPaint){
+      floodPaintAt(index:number,newGid:number){
          var layer:PowTileLayer = this.tileMap.layers[this.activeLayerIndex];
          if(!layer || !layer.tiles || index > layer.tiles.length || index < 0){
             return;
@@ -329,15 +309,6 @@ module pow2.editor {
             this.setDebugText(action.name);
          }
       }
-      resetDrag(){
-         this.drag = _.extend({},{
-            active:false,
-            start:null,
-            current:null,
-            delta:null
-         });
-      }
-
       updateCamera() {
          if(!this.sceneContainer){
             return;
@@ -350,7 +321,6 @@ module pow2.editor {
 
       setTool(name:string){
          if(this.ed.setActiveTool(name)){
-            this.activeTool = name;
             this.trigger('debug','Activate ' + name);
          }
       }

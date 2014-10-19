@@ -17,6 +17,9 @@
 module pow2.editor {
 
    export class LayerEditContext extends TileEditorContext {
+      constructor() {
+         super();
+      }
       getTools():TileEditorTool[] {
          return [
             new pow2.editor.HandTool(),
