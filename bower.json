@@ -24,6 +24,7 @@
     "pow-core": "*",
     "angular-mocks": "~1.2.21",
     "angular": "~1.2.21",
-    "bootstrap": "~3.2.0"
+    "bootstrap": "~3.2.0",
+    "angular-animate": "1.2.22"
   }
 }

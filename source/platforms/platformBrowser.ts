@@ -20,7 +20,8 @@ module pow2.editor {
 
    export var app = angular.module("pow-edit", [
       'templates-ui',
-      'uiTree'
+      'uiTree',
+      'ngAnimate'
    ]);
 
    app.value('rootPath','/');

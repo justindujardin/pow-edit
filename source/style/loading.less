@@ -1,0 +1,35 @@
+.pow-edit-loading {
+  margin-right: auto;
+  margin-left: auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  .loading-wrapper {
+    display: table;
+    width: 100%;
+    height: 100%; /* For at least Firefox */
+    min-height: 100%;
+  }
+  .loading-wrapper-inner {
+    display: table-cell;
+    vertical-align: middle;
+    text-align:center;
+  }
+  > * {
+    text-align: center;
+    color:#fff;
+  }
+
+  h1 {
+    font-size: 8em;
+    .extrude-stroke-text(4px,rgba(255,255,255,0.2),rgba(0,0,0,0.1));
+
+  }
+  p {
+    font-size:1.2em;
+    .inset-stroke-text(1px,rgba(255,255,255,0.2),rgba(0,0,0,0.1));
+    color:@contrastFontColor;
+  }
+}
