@@ -19,8 +19,18 @@ module pow2.editor {
    export class HandTool extends TileEditorTool {
       name:string = 'Hand';
       iconClass:string = 'fa-arrows';
+      public activateTool(context: IEditorContext): boolean {
+         return super.activateTool(context) && this.setCursorClass('cursor-hand');
+      }
       onPointerDown(ev:MouseEvent):any{
+         this.setCursorClass('cursor-hand-active');
          this.beginMove(ev);
+         return false;
+      }
+      onPointerUp(ev:MouseEvent):any{
+         if(this.drag.active){
+            this.setCursorClass('cursor-hand');
+         }
          return false;
       }
    }

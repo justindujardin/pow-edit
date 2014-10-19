@@ -60,6 +60,9 @@ module pow2.editor {
       }
 
       setActiveTool(name:string):boolean{
+         if(this._activeTool && !this._activeTool.escapeTool(true)){
+            return false;
+         }
          var tool:TileEditorTool = this._getTool(name);
          if(tool && tool.activateTool(this)){
             this._activeTool = tool;

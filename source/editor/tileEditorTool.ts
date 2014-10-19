@@ -30,6 +30,8 @@ module pow2.editor {
          delta:null
       };
       escapeTool(canCancel:boolean):boolean {
+         // Clear any custom cursor the tool has set
+         this.setCursorClass(null);
          return true;
       }
       activateTool(context:pow2.editor.IEditorContext):boolean {
@@ -37,6 +39,19 @@ module pow2.editor {
          this.context = context;
          this.ctrl = this.editor.ctrl;
          return !!this.editor && !!this.context && !!this.ctrl;
+      }
+
+      private _cursorSet:string = null;
+      setCursorClass(cursorClass:string):boolean{
+         var el:any = angular.element(this.ctrl.container);
+         if(this._cursorSet !== null){
+            el.removeClass(this._cursorSet);
+         }
+         if(cursorClass !== null){
+            el.addClass(cursorClass);
+         }
+         this._cursorSet = cursorClass;
+         return true;
       }
 
       resetDrag(){
