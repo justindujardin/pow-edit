@@ -13,21 +13,20 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../tileEditorContext.ts"/>
+///<reference path="../tileEditorTool.ts"/>
 module pow2.editor {
 
-   export class LayerEditContext extends TileEditorContext {
-      constructor() {
-         super();
+   export class ZoomTool extends TileEditorTool {
+      name:string = 'Zoom';
+      iconClass:string = 'fa-search';
+      public activateTool(context: IEditorContext): boolean {
+         return super.activateTool(context) && this.setCursorClass('cursor-zoom-in');
       }
-      getTools():TileEditorTool[] {
-         return [
-            new pow2.editor.HandTool(),
-            new pow2.editor.LayerPencilPaintTool(),
-            new pow2.editor.LayerFloodPaintTool(),
-            new pow2.editor.LayerEraseTool(),
-            new pow2.editor.ZoomTool(),
-         ];
+      onPointerDown(ev:MouseEvent):any{
+         var move:number = this.ctrl.cameraZoom / 2;
+         this.ctrl.cameraZoom += (this.isRightMouse(ev) ? -move : move);
+         this.ctrl.updateCamera();
+         return false;
       }
    }
 }
