@@ -45,6 +45,12 @@ module pow2.editor {
                   return tool.handleMouseDown(ev);
                }
             });
+            element.on('contextmenu',(ev)=>{
+               var tool:TileEditorTool = getEventTool(ev);
+               if(tool){
+                  return tool.handleMouseDown(ev);
+               }
+            });
             element.on("mousewheel DOMMouseScroll MozMousePixelScroll",(ev)=>{
                var tool:TileEditorTool = getEventTool(ev);
                if(tool){
