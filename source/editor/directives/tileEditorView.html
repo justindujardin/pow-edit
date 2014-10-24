@@ -9,7 +9,15 @@
         </a>
     </nav>
     <canvas class="canvas"></canvas>
-    <section class="tile-sets">
+    <!--
+        || HACK ||
+
+        The conditional here is terrible, but fixes a really bad occlusion of the
+        editor toolbox when viewing the BrowserQuest maps because of their huge
+        tile set images.  This should be remove just as soon as it's possible to
+        specify a custom UI template for the active tool.
+    -->
+    <section class="tile-sets" ng-if="tileController.ed.getActiveTool().name=='Paint' || tileController.ed.getActiveTool().name=='Flood Paint'">
         <tile-set-tile-picker
                 ng-repeat="set in tileController.tileMap.tileSets"
                 url="{{set.url}}"
