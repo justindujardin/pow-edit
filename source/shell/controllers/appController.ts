@@ -81,12 +81,12 @@ module pow2.editor {
          // TODO: Document manager.  Should support multiple
          // documents AND have a notion of the active one.
          this.document = {
-            extension:'md',
-            type:this.getDocumentType('md'),
+            extension:'tmx',
+            type:this.getDocumentType('tmx'),
             dirty:false,
-            file:'about.md',
-            url:rootPath + 'about.md',
-            path:rootPath,
+            file:'wilderness.md',
+            url:rootPath + 'maps/pow2/wilderness.tmx',
+            path:rootPath + 'maps/pow2/',
             data:null
          };
 
