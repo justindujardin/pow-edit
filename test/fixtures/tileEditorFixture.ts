@@ -10,7 +10,7 @@ module pow2.editor.tests {
       constructor() {
          beforeEach(module('pow-edit','source/editor/directives/tileEditorView.html'));
          beforeEach((done)=>{
-            inject(($actions:pow2.editor.IActionManager,$rootScope:ng.IRootScopeService,$compile) => {
+            inject(($rootScope:ng.IRootScopeService,$compile) => {
                this.scope = $rootScope;
                this.scope.mapUrl = 'base/test/fixtures/example.tmx';
                var tpl:string = '<tile-editor-view url="mapUrl"></tile-editor-view>';

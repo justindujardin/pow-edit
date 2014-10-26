@@ -75,13 +75,12 @@ module pow2.editor {
       // The selected tile to paint
       public tileIndex:number = 46;
 
-      static $inject:string[] = ['$time','$injector','$keys','$platform','$actions','$document'];
+      static $inject:string[] = ['$time','$injector','$keys','$platform','$document'];
       constructor(
          public $time:pow2.Time,
          public $injector:any,
          public $keys:pow2.editor.IKeysService,
          public $platform:pow2.editor.IAppPlatform,
-         public $actions:pow2.editor.IActionManager,
          public $document:any) {
          super();
          $time.addObject(this);
@@ -89,7 +88,7 @@ module pow2.editor {
 
          angular.forEach(['ctrl+z','cmd+z'],(c:string)=>{
             this.keyBinds.push($keys.bind(c,()=>{
-               var action:IAction = this.$actions.undo();
+               var action:IAction = this.ed.actions.undo();
                if(action){
                   this.setDebugText('Undo ' + action.name);
                }
@@ -97,7 +96,7 @@ module pow2.editor {
          });
          angular.forEach(['ctrl+shift+z','cmd+shift+z'],(c:string)=>{
             this.keyBinds.push($keys.bind(c,(e)=>{
-               var action:IAction = this.$actions.redo();
+               var action:IAction = this.ed.actions.redo();
                if(action){
                   this.setDebugText('Redo ' + action.name);
                }
@@ -214,25 +213,6 @@ module pow2.editor {
          }
       }
 
-      setLayerVisibility(index:number){
-         var layer:PowTileLayer = this.tileMap.layers[index];
-         if(!layer){
-            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
-         }
-         layer.toggleVisible();
-         //this.$actions.executeAction(new LayerVisibilityAction(this,index,!layer.visible));
-      }
-
-      setActiveLayer(index:number) {
-         var layer:PowTileLayer = this.tileMap.layers[index];
-         if(!layer){
-            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
-         }
-         this.activeLayerIndex = index;
-         //this.$actions.executeAction(new LayerSelectAction(this,index));
-         this.activeLayer = layer;
-      }
-
       loadTextures(tileSets:ITileSet[]){
          this.spriteTextures = {};
          _.each(tileSets,(tsx:pow2.editor.ITileSet) => {
@@ -270,45 +250,6 @@ module pow2.editor {
          return new PIXI.Texture(this.spriteTextures[meta.url], frame);
       }
 
-      paintAt(index:number,newGid:number){
-         var layer:PowTileLayer = this.tileMap.layers[this.activeLayerIndex];
-         if(!layer || !layer.tiles || index > layer.tiles.length || index < 0){
-            return;
-         }
-         var action:IAction = null;
-         if(newGid !== 0){
-            var meta:ITileData = this.tileMap.tileInfo[newGid];
-            if(!meta){
-               throw new Error(pow2.errors.INVALID_ITEM);
-            }
-            var tile:number = layer.tiles[index];
-            if(tile === newGid){
-               return;
-            }
-            action = new TilePaintAction(layer,index,newGid);
-         }
-         else {
-            var tile:number = layer.tiles[index];
-            if(tile === newGid){
-               return;
-            }
-            action = new TilePaintAction(layer,index,0);
-         }
-         if(this.$actions.executeAction(action)){
-            this.setDebugText(action.name);
-         }
-      }
-
-      floodPaintAt(index:number,newGid:number){
-         var layer:PowTileLayer = this.tileMap.layers[this.activeLayerIndex];
-         if(!layer || !layer.tiles || index > layer.tiles.length || index < 0){
-            return;
-         }
-         var action = new TileFloodPaintAction(layer,index,newGid);
-         if(this.$actions.executeAction(action)){
-            this.setDebugText(action.name);
-         }
-      }
       updateCamera() {
          if(!this.sceneContainer){
             return;
@@ -474,12 +415,47 @@ module pow2.editor {
       removeActiveLayer() {
          console.log("removing layer: " + this.tileMap.layers[this.activeLayerIndex].name);
          if(this.tileMap.layers.length > 1){
-            this.$actions.executeAction(new LayerRemoveAction(this.tileMap,this.activeLayerIndex));
+            this.ed.actions.executeAction(new LayerRemoveAction(this.tileMap,this.activeLayerIndex));
             if(this.activeLayerIndex >= this.tileMap.layers.length){
                this.setActiveLayer(this.activeLayerIndex-1);
             }
          }
       }
+      renameLayer(layer:PowTileLayer,oldName:string,newName:string){
+         if(oldName === newName){
+            return;
+         }
+         // NOTE: this is a bit of a hack.  The action is being executed after
+         // the layer has changed, so we change it back so that the action
+         // can properly record the oldName for undo.   The oldName argument
+         // is supplied by the inline-edit callback.
+         // The reason it's already changed is because the inline-edit does a 2way
+         // binding to the `layer.name` value.
+         // TODO: Perhaps remove the ng-model binding on inline-edit and go with
+         //       a callback approach that doesn't immediately update the model as a
+         //       user types.
+         layer.name = oldName;
+         this.ed.actions.executeAction(new LayerRenameAction(layer,newName));
+      }
+      setLayerVisibility(index:number){
+         var layer:PowTileLayer = this.tileMap.layers[index];
+         if(!layer){
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
+         }
+         layer.toggleVisible();
+         //this.ed.actions.executeAction(new LayerVisibilityAction(this,index,!layer.visible));
+      }
+
+      setActiveLayer(index:number) {
+         var layer:PowTileLayer = this.tileMap.layers[index];
+         if(!layer){
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
+         }
+         this.activeLayerIndex = index;
+         //this.ed.actions.executeAction(new LayerSelectAction(this,index));
+         this.activeLayer = layer;
+      }
+
    }
 
 }

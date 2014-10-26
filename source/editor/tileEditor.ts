@@ -36,18 +36,21 @@ module pow2.editor {
 
    export class TileEditor implements pow2.editor.IEditor {
       toolbox:pow2.editor.TileEditorToolbox = new pow2.editor.TileEditorToolbox();
-      defaultTool:string = "move";
       ctrl:TileEditorController = null;
+      actions:ActionManager = null;
+      defaultTools:pow2.editor.TileEditorTool[] = [];
 
       private _contexts:pow2.editor.IEditorContext[] = [];
       initEditor(tileEditorController:TileEditorController):boolean {
          console.log("init editor");
+         this.actions = new pow2.editor.ActionManager();
          this.ctrl = tileEditorController;
          this.pushContext(this.ctrl.tileMap);
          return true;
       }
       destroyEditor():boolean {
          this.ctrl = null;
+         this.actions = null;
          while(this.popContext()){}
          return true;
       }

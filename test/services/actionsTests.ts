@@ -41,8 +41,8 @@ describe("pow2.editor.ActionManager",()=>{
    var actions:pow2.editor.IActionManager = null;
    var scope:any = null;
    beforeEach(module('pow-edit'));
-   beforeEach(inject(($actions:pow2.editor.IActionManager,$rootScope:ng.IRootScopeService) => {
-      actions = $actions;
+   beforeEach(inject(($rootScope:ng.IRootScopeService) => {
+      actions = new pow2.editor.ActionManager();
       scope = $rootScope;
    }));
 

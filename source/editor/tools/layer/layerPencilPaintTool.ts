@@ -13,32 +13,32 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../tileEditorTool.ts"/>
+///<reference path="../paintTool.ts"/>
 module pow2.editor {
 
-   export class LayerEraseTool extends TileEditorTool {
-      name:string = 'Erase';
-      iconClass:string = 'fa-eraser';
-      private _erasing:boolean = false;
+   export class LayerPencilPaintTool extends PaintTool {
+      name:string = 'Paint';
+      iconClass:string = 'fa-pencil';
+      private _painting:boolean = false;
       onPointerDown(ev:MouseEvent):any{
          if(!this.isRightMouse(ev)){
             var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
             var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            this._erasing = true;
-            this.ctrl.paintAt(mouseAtIndex,0);
+            this._painting = true;
+            this.paintAt(mouseAtIndex,this.ctrl.tileIndex);
             return false;
          }
       }
       onPointerMove(ev:MouseEvent):any{
-         if(this._erasing != false){
+         if(this._painting){
             var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
             var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            this.ctrl.paintAt(mouseAtIndex,0);
+            this.paintAt(mouseAtIndex,this.ctrl.tileIndex);
             return false;
          }
       }
       onPointerUp(ev:MouseEvent):any{
-         this._erasing = false;
+         this._painting = false;
       }
    }
 }

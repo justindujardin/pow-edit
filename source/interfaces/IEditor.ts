@@ -25,7 +25,7 @@ module pow2.editor {
 
       // tools
       toolbox:IEditorToolbox;
-      defaultTool:string;
+      defaultTools:IEditorTool[];
       setActiveTool(name:string):boolean;
       getActiveTool():IEditorTool;
 

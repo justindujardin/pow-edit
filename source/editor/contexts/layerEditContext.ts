@@ -14,6 +14,9 @@
  limitations under the License.
  */
 ///<reference path="../tileEditorContext.ts"/>
+///<reference path="../tools/layer/layerEraseTool.ts"/>
+///<reference path="../tools/layer/layerFloodPaintTool.ts"/>
+///<reference path="../tools/layer/layerPencilPaintTool.ts"/>
 module pow2.editor {
 
    export class LayerEditContext extends TileEditorContext {

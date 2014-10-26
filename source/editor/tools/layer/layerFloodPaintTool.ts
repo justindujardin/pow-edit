@@ -13,32 +13,32 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../tileEditorTool.ts"/>
+///<reference path="../paintTool.ts"/>
 module pow2.editor {
 
-   export class LayerPencilPaintTool extends TileEditorTool {
-      name:string = 'Paint';
-      iconClass:string = 'fa-pencil';
-      private _painting:boolean = false;
+   export class LayerFloodPaintTool extends PaintTool {
+      name:string = 'Flood Paint';
+      iconClass:string = 'fa-paint-brush';
       onPointerDown(ev:MouseEvent):any{
          if(!this.isRightMouse(ev)){
             var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
             var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            this._painting = true;
-            this.ctrl.paintAt(mouseAtIndex,this.ctrl.tileIndex);
-            return false;
+            var area: pow2.Rect = new pow2.Rect(this.ctrl.tileMap.point,this.ctrl.tileMap.size);
+            if(area.pointInRect(mousePoint)){
+               this.floodPaintAt(mouseAtIndex,this.ctrl.tileIndex);
+               return false;
+            }
          }
       }
-      onPointerMove(ev:MouseEvent):any{
-         if(this._painting){
-            var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
-            var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            this.ctrl.paintAt(mouseAtIndex,this.ctrl.tileIndex);
-            return false;
+      floodPaintAt(index:number,newGid:number){
+         var layer:PowTileLayer = this.ctrl.tileMap.layers[this.ctrl.activeLayerIndex];
+         if(!layer || !layer.tiles || index > layer.tiles.length || index < 0){
+            return;
          }
-      }
-      onPointerUp(ev:MouseEvent):any{
-         this._painting = false;
+         var action = new TileFloodPaintAction(layer,index,newGid);
+         if(this.editor.actions.executeAction(action)){
+            this.ctrl.setDebugText(action.name);
+         }
       }
    }
 }

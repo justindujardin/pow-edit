@@ -19,11 +19,6 @@
 /// <reference path="../interfaces/IActionManager.ts"/>
 
 module pow2.editor {
-
-   pow2.editor.app.factory('$actions',[()=>{
-      return new ActionManager();
-   }]);
-
    export class BaseAction implements IAction {
       executed:boolean = false;
       constructor(public name:string = "Unnamed Action"){}

@@ -13,22 +13,32 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../tileEditorTool.ts"/>
+///<reference path="../paintTool.ts"/>
 module pow2.editor {
 
-   export class LayerFloodPaintTool extends TileEditorTool {
-      name:string = 'Flood Paint';
-      iconClass:string = 'fa-paint-brush';
+   export class LayerEraseTool extends PaintTool {
+      name:string = 'Erase';
+      iconClass:string = 'fa-eraser';
+      private _erasing:boolean = false;
       onPointerDown(ev:MouseEvent):any{
          if(!this.isRightMouse(ev)){
             var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
             var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            var area: pow2.Rect = new pow2.Rect(this.ctrl.tileMap.point,this.ctrl.tileMap.size);
-            if(area.pointInRect(mousePoint)){
-               this.ctrl.floodPaintAt(mouseAtIndex,this.ctrl.tileIndex);
-               return false;
-            }
+            this._erasing = true;
+            this.paintAt(mouseAtIndex,0);
+            return false;
          }
+      }
+      onPointerMove(ev:MouseEvent):any{
+         if(this._erasing != false){
+            var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
+            var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
+            this.paintAt(mouseAtIndex,0);
+            return false;
+         }
+      }
+      onPointerUp(ev:MouseEvent):any{
+         this._erasing = false;
       }
    }
 }

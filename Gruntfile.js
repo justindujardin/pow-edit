@@ -35,6 +35,7 @@ module.exports = function(grunt) {
                "source/editor/tools/*.ts",
                "source/editor/directives/*.ts",
                "source/editor/actions/*.ts",
+               "source/editor/**/*.ts",
                "source/formats/*.ts"
             ],
             dest: 'assets/build/<%= pkg.name %>.js'
