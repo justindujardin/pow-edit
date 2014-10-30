@@ -1,4 +1,4 @@
-/**
+/*
  Copyright (C) 2014 by Justin DuJardin and Contributors
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 ///<reference path="../types/pixi/PIXI.d.ts"/>
 ///<reference path="./interfaces/IAppPlatform.ts"/>
 ///<reference path="../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
-///<reference path="./errors.ts"/>
 
 module pow2.editor {
    export var app:ng.IModule;
