@@ -13,16 +13,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../../types/angular/angular.d.ts"/>
-///<reference path="../interfaces/IAppPlatform.ts"/>
+///<reference path="./platformBase.ts"/>
 
 module pow2.editor {
-
-   export var app = angular.module("pow-edit", [
-      'templates-ui',
-      'uiTree',
-      'ngAnimate'
-   ]);
 
    app.value('rootPath','/');
 

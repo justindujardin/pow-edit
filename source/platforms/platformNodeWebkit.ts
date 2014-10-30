@@ -14,8 +14,7 @@
  limitations under the License.
  */
 ///<reference path="../../types/node/node.d.ts"/>
-///<reference path="../../types/angular/angular.d.ts"/>
-///<reference path="../interfaces/IAppPlatform.ts"/>
+///<reference path="./platformBase.ts"/>
 
 module pow2.editor {
    var fs = require('fs');
@@ -24,15 +23,7 @@ module pow2.editor {
 
    export var APP_PROTOCOL_PATH:string = 'app://pow-edit/';
 
-
-   export var app = angular.module("pow-edit", [
-      'templates-ui',
-      'uiTree',
-      'ngAnimate'
-   ]);
-
    app.value('rootPath',pow2.editor.APP_PROTOCOL_PATH);
-
 
    app.factory('$platform', ():IAppPlatform => {
       return new PlatformNodeWebkit();
