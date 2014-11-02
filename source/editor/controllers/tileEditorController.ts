@@ -120,8 +120,15 @@ module pow2.editor {
          this.container = element;
          var w:number = element.width();
          var h:number = element.height();
-         // create a renderer instance
-         this.renderer = PIXI.autoDetectRenderer(w,h,element[0]);
+         // PIXI hates ios8 and webgl, so use canvas there.
+         if(pow2.editor.ios8){
+            this.renderer = new PIXI.CanvasRenderer(w,h,element[0]);
+         }
+         // Otherwise autodetect the renderer based on capabilities.
+         else {
+            this.renderer = PIXI.autoDetectRenderer(w,h,element[0]);
+         }
+
          this.resize(w,h);
          this.stage = stage;
          this.ed.initEditor(this);

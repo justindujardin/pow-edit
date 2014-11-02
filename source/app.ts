@@ -19,5 +19,6 @@
 ///<reference path="../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
 
 module pow2.editor {
-   export var app:ng.IModule;
+ export var app:ng.IModule;
+ export var ios8:boolean = /(iPhone|iPad|iPod);[a-zA-z\s]*OS\s8/.test(navigator.userAgent);
 }
