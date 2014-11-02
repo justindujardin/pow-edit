@@ -11,11 +11,13 @@ The things you'll need.
 
 ### Node Webkit
 
-Grab a prebuilt v0.9.2 binary and put it in the root of this checkout, if you don't know what node-webkit is.
+Grab a prebuilt binary and put it in the root of this checkout.
 
-* Linux: [32bit](http://dl.node-webkit.org/v0.9.2/node-webkit-v0.9.2-linux-ia32.tar.gz) / [64bit](http://dl.node-webkit.org/v0.9.2/node-webkit-v0.9.2-linux-x64.tar.gz)
-* Windows: [win32](http://dl.node-webkit.org/v0.9.2/node-webkit-v0.9.2-win-ia32.zip)
-* Mac: [32bit, 10.7+](http://dl.node-webkit.org/v0.9.2/node-webkit-v0.9.2-osx-ia32.zip)
+* **v0.10.5:** (Sep 16, 2014, based off of Node v0.11.13, Chromium 35.0.1916.157): [release notes](https://groups.google.com/d/msg/node-webkit/l2PsW-0G5Oc/Fx19-UrS3ZoJ)
+
+ * Linux: [32bit](http://dl.node-webkit.org/v0.10.5/node-webkit-v0.10.5-linux-ia32.tar.gz) / [64bit](http://dl.node-webkit.org/v0.10.5/node-webkit-v0.10.5-linux-x64.tar.gz)
+ * Windows: [win32](http://dl.node-webkit.org/v0.10.5/node-webkit-v0.10.5-win-ia32.zip)
+ * Mac 10.7+: [32bit](http://dl.node-webkit.org/v0.10.5/node-webkit-v0.10.5-osx-ia32.zip) / [64bit](http://dl.node-webkit.org/v0.10.5/node-webkit-v0.10.5-osx-x64.zip)
 
 ### Grunt and Bower
 
