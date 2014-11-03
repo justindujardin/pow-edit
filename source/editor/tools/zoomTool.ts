@@ -17,7 +17,8 @@
 module pow2.editor {
 
    export class ZoomTool extends TileEditorTool {
-      name:string = 'Zoom';
+      static NAME:string = 'Zoom';
+      name:string = ZoomTool.NAME;
       iconClass:string = 'fa-search';
       public activateTool(context: IEditorContext): boolean {
          return super.activateTool(context) && this.setCursorClass('cursor-zoom-in');

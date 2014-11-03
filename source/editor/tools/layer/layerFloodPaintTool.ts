@@ -17,7 +17,8 @@
 module pow2.editor {
 
    export class LayerFloodPaintTool extends PaintTool {
-      name:string = 'Flood Paint';
+      static NAME:string = 'Flood Paint';
+      name:string = LayerFloodPaintTool.NAME;
       iconClass:string = 'fa-paint-brush';
       onTap(ev:MouseEvent):any{
          var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);

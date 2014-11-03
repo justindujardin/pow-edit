@@ -17,7 +17,8 @@
 module pow2.editor {
 
    export class HandTool extends TileEditorTool {
-      name:string = 'Hand';
+      static NAME:string = 'Hand';
+      name:string = HandTool.NAME;
       iconClass:string = 'fa-arrows';
       private _cameraStart:pow2.Point = new pow2.Point();
       public activateTool(context: IEditorContext): boolean {

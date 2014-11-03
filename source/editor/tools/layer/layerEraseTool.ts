@@ -17,7 +17,8 @@
 module pow2.editor {
 
    export class LayerEraseTool extends PaintTool {
-      name:string = 'Erase';
+      static NAME:string = 'Erase';
+      name:string = LayerEraseTool.NAME;
       iconClass:string = 'fa-eraser';
       private _doPaint(ev:any){
          var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);

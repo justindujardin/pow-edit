@@ -46,6 +46,7 @@ module pow2.editor {
          this.actions = new pow2.editor.ActionManager();
          this.ctrl = tileEditorController;
          this.pushContext(this.ctrl.tileMap);
+         this.setActiveTool(HandTool.NAME);
          return true;
       }
       destroyEditor():boolean {

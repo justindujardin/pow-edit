@@ -17,7 +17,8 @@
 module pow2.editor {
 
    export class LayerPencilPaintTool extends PaintTool {
-      name:string = 'Paint';
+      static NAME:string = 'Paint';
+      name:string = LayerPencilPaintTool.NAME;
       iconClass:string = 'fa-pencil';
       private _doPaint(ev:any){
          var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
