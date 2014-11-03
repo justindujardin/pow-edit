@@ -22,9 +22,9 @@ module pow2.editor {
       public activateTool(context: IEditorContext): boolean {
          return super.activateTool(context) && this.setCursorClass('cursor-zoom-in');
       }
-      onPointerDown(ev:MouseEvent):any{
+      onTap(ev:MouseEvent):any{
          var move:number = this.ctrl.cameraZoom / 2;
-         this.ctrl.cameraZoom += (this.isRightMouse(ev) ? -move : move);
+         this.ctrl.cameraZoom += move;
          this.ctrl.updateCamera();
          return false;
       }

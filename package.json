@@ -42,6 +42,7 @@
     "postinstall": "./node_modules/.bin/bower install && ./node_modules/.bin/grunt"
   },
   "devDependencies": {
+    "hammer-simulator": "git://github.com/hammerjs/simulator#master"
   },
   "contributors": []
 }

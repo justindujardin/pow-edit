@@ -1,13 +1,7 @@
 
 <div class="tile-editor-view">
-    <nav class="toolbox btn-group-vertical" role="toolbox">
-        <a class="btn btn-default"
-           ng-repeat="tool in tileController.ed.toolbox.getTools()"
-           ng-class="{active:tileController.ed.getActiveTool().name==tool.name}"
-           ng-click="tileController.setTool(tool.name); $event.stopPropagation();">
-            <i class="fa {{tool.iconClass}}"></i>
-        </a>
-    </nav>
+
+    <tile-editor-toolbox-view></tile-editor-toolbox-view>
     <canvas class="canvas"></canvas>
     <!--
         || HACK ||

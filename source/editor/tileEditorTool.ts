@@ -15,7 +15,6 @@
  */
 ///<reference path="./tileEditor.ts"/>
 module pow2.editor {
-
    export class TileEditorTool implements IEditorTool {
       name:string = "TileEditorTool";
       editor:TileEditor = null;
@@ -53,97 +52,12 @@ module pow2.editor {
          this._cursorSet = cursorClass;
          return true;
       }
+      onPan(ev:any){}
+      onPanstart(ev:any){}
+      onPanend(ev:any){}
+      onTap(ev:any){}
 
-      resetDrag(){
-         this.drag = _.extend({},{
-            active:false,
-            start:null,
-            current:null,
-            delta:null
-         });
-      }
-
-      onPointerDown(ev:MouseEvent):any{}
-      onPointerMove(ev:MouseEvent):any{}
-      onPointerUp(ev:MouseEvent):any{}
-
-      isRightMouse(ev:any):boolean {
-         var right:boolean = false;
-         if (ev.originalEvent && ev.originalEvent.which) {
-            right = (ev.originalEvent.which == 3);
-         }
-         else if (ev.button){
-            right = (ev.button == 2);
-         }
-         return right;
-      }
-
-      beginMove(ev:MouseEvent){
-         this.drag.active = true;
-         this.drag.start = new pow2.Point(ev.clientX,ev.clientY);
-         this.drag.current = this.drag.start.clone();
-         this.drag.delta = new pow2.Point(0,0);
-         this.drag.cameraStart = new Point(this.editor.ctrl.cameraCenter.x,this.editor.ctrl.cameraCenter.y);
-         var _mouseUp = () => {
-            this.ctrl.$document.off('mousemove touchmove',_mouseMove);
-            this.ctrl.$document.off('mouseup touchend',_mouseUp);
-            this.resetDrag();
-         };
-         var _mouseMove = (evt:any) => {
-            if(!this.drag.active){
-               return;
-            }
-            if(evt.originalEvent.touches) {
-               evt = evt.originalEvent.touches[0] || evt.originalEvent.changedTouches[0];
-            }
-            this.drag.current.set(evt.clientX,evt.clientY);
-            this.drag.delta.set(this.drag.start.x - this.drag.current.x, this.drag.start.y - this.drag.current.y);
-
-            this.ctrl.cameraCenter.x = this.drag.cameraStart.x + this.drag.delta.x * (1 / this.ctrl.cameraZoom);
-            this.ctrl.cameraCenter.y = this.drag.cameraStart.y + this.drag.delta.y * (1 / this.ctrl.cameraZoom);
-
-            this.ctrl.updateCamera();
-            ev.stopPropagation();
-            return false;
-         };
-         this.ctrl.$document.on('mousemove touchmove', _mouseMove);
-         this.ctrl.$document.on('mouseup touchend', _mouseUp);
-         ev.stopPropagation();
-         return false;
-      }
-
-      handleMouseMove(ev:any){
-         this.ctrl.mouseAt = this.ctrl.mouseEventToWorld(ev);
-         return this.onPointerMove(ev);
-      }
-
-      handleMouseDown(ev:any) {
-         var e = ev;
-         if(ev.originalEvent.touches) {
-            e = ev.originalEvent.touches[0] || ev.originalEvent.changedTouches[0];
-         }
-         // Capture pointer up
-         var _pointerUp = (upEv) => {
-            var e = upEv;
-            if(ev.originalEvent.touches) {
-               e = upEv.originalEvent.touches[0] || upEv.originalEvent.changedTouches[0];
-            }
-            this.onPointerUp(e);
-            this.ctrl.$document.off('mouseup touchend',_pointerUp);
-         };
-         this.ctrl.$document.on('mouseup touchend', _pointerUp);
-         // by default right click will move camera
-         var handled:boolean = this.onPointerDown(e) === false;
-         if(!handled && this.isRightMouse(ev)){
-            return this.beginMove(e);
-         }
-         else if(handled){
-            ev.stopImmediatePropagation();
-            ev.preventDefault();
-            return false;
-         }
-      }
-      handleMouseWheel(ev) {
+      handleMouseWheel(ev:any) {
          if(!this.ctrl.sceneContainer) {
             return;
          }

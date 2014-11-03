@@ -25,6 +25,7 @@
     "angular": "1.2.21",
     "angular-mocks": "1.2.21",
     "angular-animate": "1.2.21",
-    "bootstrap": "~3.2.0"
+    "bootstrap": "~3.2.0",
+    "hammer.js": "~2.0.4"
   }
 }

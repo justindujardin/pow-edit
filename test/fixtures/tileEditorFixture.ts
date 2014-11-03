@@ -8,7 +8,7 @@ module pow2.editor.tests {
       public editor:pow2.editor.TileEditorController = null;
       public element:ng.IAugmentedJQuery;
       constructor() {
-         beforeEach(module('pow-edit','source/editor/directives/tileEditorView.html'));
+         beforeEach(module('pow-edit','source/editor/directives/tileEditorView.html','source/editor/directives/tileEditorToolboxView.html'));
          beforeEach((done)=>{
             inject(($rootScope:ng.IRootScopeService,$compile) => {
                this.scope = $rootScope;

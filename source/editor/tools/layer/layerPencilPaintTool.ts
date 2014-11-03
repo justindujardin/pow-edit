@@ -19,26 +19,16 @@ module pow2.editor {
    export class LayerPencilPaintTool extends PaintTool {
       name:string = 'Paint';
       iconClass:string = 'fa-pencil';
-      private _painting:boolean = false;
-      onPointerDown(ev:MouseEvent):any{
-         if(!this.isRightMouse(ev)){
-            var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
-            var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            this._painting = true;
-            this.paintAt(mouseAtIndex,this.ctrl.tileIndex);
-            return false;
-         }
+      private _doPaint(ev:any){
+         var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
+         var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
+         this.paintAt(mouseAtIndex,this.ctrl.tileIndex);
       }
-      onPointerMove(ev:MouseEvent):any{
-         if(this._painting){
-            var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
-            var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            this.paintAt(mouseAtIndex,this.ctrl.tileIndex);
-            return false;
-         }
+      onPanstart(ev:any):any{
+         this._doPaint(ev);
       }
-      onPointerUp(ev:MouseEvent):any{
-         this._painting = false;
+      onPan(ev:any):any{
+         this._doPaint(ev);
       }
    }
 }

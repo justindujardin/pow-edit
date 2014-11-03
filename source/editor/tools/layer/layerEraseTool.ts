@@ -19,26 +19,16 @@ module pow2.editor {
    export class LayerEraseTool extends PaintTool {
       name:string = 'Erase';
       iconClass:string = 'fa-eraser';
-      private _erasing:boolean = false;
-      onPointerDown(ev:MouseEvent):any{
-         if(!this.isRightMouse(ev)){
-            var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
-            var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            this._erasing = true;
-            this.paintAt(mouseAtIndex,0);
-            return false;
-         }
+      private _doPaint(ev:any){
+         var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
+         var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
+         this.paintAt(mouseAtIndex,0);
       }
-      onPointerMove(ev:MouseEvent):any{
-         if(this._erasing != false){
-            var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
-            var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            this.paintAt(mouseAtIndex,0);
-            return false;
-         }
+      onPanstart(ev:any):any{
+         this._doPaint(ev);
       }
-      onPointerUp(ev:MouseEvent):any{
-         this._erasing = false;
+      onPan(ev:any):any{
+         this._doPaint(ev);
       }
    }
 }

@@ -10,7 +10,7 @@
         <li ng-repeat="layer in app.editor.tileMap.layers track by $index"
             ng-click="app.editor.setActiveLayer($index)"
             ng-class="{objects:!layer.tiles,visible:layer.visible,active:app.editor.activeLayerIndex==$index}">
-            <a>
+            <a class="item">
                 <i class="icon" ng-click="app.editor.setLayerVisibility($index);$event.stopPropagation();"></i>
                 <inline-edit value="layer.name" on-edit="app.editor.renameLayer(layer,oldName,newName)"></inline-edit>
             </a>

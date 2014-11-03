@@ -283,7 +283,7 @@ module pow2.editor {
       }
 
       mouseEventToWorld(ev:any):pow2.Point {
-         ev = ev.originalEvent;
+         ev = typeof ev.srcEvent !== 'undefined' ? ev.srcEvent : ev;
          var relativeElement:any = ev.srcElement;
          var touches:any = (<any>ev).touches;
          if(touches && touches.length > 0){
@@ -320,7 +320,7 @@ module pow2.editor {
       newViewLayer(index:number,layer:PowTileLayer):TileEditorViewLayer {
          var newViewLayer:TileEditorViewLayer = {
             tiles:[],
-            container: new PIXI.DisplayObjectContainer(),
+            container: new PIXI.Graphics(),
             dataSource:layer
          };
          this._viewLayers.splice(index,0,newViewLayer);
@@ -347,6 +347,8 @@ module pow2.editor {
                newViewLayer.container.addChild(tile.sprite);
                newViewLayer.tiles[index] = tile;
             }
+            // Update cached bitmap.
+            //newViewLayer.container.cacheAsBitmap = true;
          },this);
          layer.on(PowTileLayer.EVENTS.CHANGE_VISIBLE,()=>{
             newViewLayer.container.visible = layer.visible;
@@ -387,6 +389,7 @@ module pow2.editor {
             newViewLayer.container.addChild(box);
          });
          this.sceneContainer.addChildAt(newViewLayer.container,index);
+         //newViewLayer.container.cacheAsBitmap = true;
          return newViewLayer;
       }
       clearViewLayers() {

@@ -17,6 +17,7 @@
 ///<reference path="../controllers/tileEditorController.ts"/>
 
 module pow2.editor {
+   declare var Hammer:any;
 
    /**
     * Send input events to the active editor tool.
@@ -27,32 +28,43 @@ module pow2.editor {
          require:["tileEditorView"],
          link:(scope, element, attributes:any,controllers:any[]) => {
             var tileEditor:TileEditorController = controllers[0];
+            var initScale = tileEditor.cameraZoom;
+
             function getEventTool(ev:any):TileEditorTool{
-               if(!angular.element(ev.originalEvent.srcElement).is('canvas')){
+               if(!angular.element(ev.srcEvent.srcElement).is('canvas')){
                   return null;
                }
                return <TileEditorTool>tileEditor.ed.getActiveTool();
             }
-            element.on('mousemove',(ev:any) => {
-               var tool:TileEditorTool = getEventTool(ev);
-               if(tool){
-                  return tool.handleMouseMove(ev);
-               }
+
+            var hammertime = new Hammer(element[0], {});
+            hammertime.get('pinch').set({ enable: true });
+            hammertime.on('pinch', function(ev) {
+               tileEditor.cameraZoom = initScale * ev.scale;
+               tileEditor.updateCamera();
             });
-            element.on('mousedown touchstart',(ev)=>{
-               var tool:TileEditorTool = getEventTool(ev);
-               if(tool){
-                  return tool.handleMouseDown(ev);
-               }
+            hammertime.on('pinchstart',(ev:any)=>{
+               initScale = tileEditor.cameraZoom;
             });
-            element.on('contextmenu',(ev)=>{
-               var tool:TileEditorTool = getEventTool(ev);
-               if(tool){
-                  return tool.handleMouseDown(ev);
-               }
-            });
+
+            // Forward hammer events to the active tool, converting
+            // the names into very basic camelCase naming.
+            // e.g. panstart -> onPanstart, panend -> onPanend
+            var forwardEvents:string[] = [
+               'tap','pan','panstart','panend'
+            ];
+            function _forwardEvent(eventName:string) {
+               var toolCamelMethod:string = 'on' + eventName[0].toUpperCase() + eventName.substr(1);
+               hammertime.on(eventName,(ev:any)=>{
+                  var tool:TileEditorTool = getEventTool(ev);
+                  if(tool && tool[toolCamelMethod]){
+                     return tool[toolCamelMethod](ev);
+                  }
+               });
+            }
+            angular.forEach(forwardEvents,_forwardEvent);
             element.on("mousewheel DOMMouseScroll MozMousePixelScroll",(ev)=>{
-               var tool:TileEditorTool = getEventTool(ev);
+               var tool:TileEditorTool = <TileEditorTool>tileEditor.ed.getActiveTool();
                if(tool){
                   return tool.handleMouseWheel(ev);
                }

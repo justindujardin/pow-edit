@@ -17,6 +17,8 @@ module.exports = function(config) {
          "assets/bower_components/angular/angular.js",
          "assets/bower_components/angular-animate/angular-animate.js",
          "assets/bower_components/angular-mocks/angular-mocks.js",
+         "assets/bower_components/hammer.js/hammer.js",
+         "node_modules/hammer-simulator/index.js",
          "assets/build/pow-edit.browser.js", // WebBrowser platform
          //"build/pow-edit.nw.js", // Node Webkit platform
          "assets/build/pow-edit.ui.js", // Angular templates

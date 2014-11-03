@@ -19,19 +19,22 @@ module pow2.editor {
    export class HandTool extends TileEditorTool {
       name:string = 'Hand';
       iconClass:string = 'fa-arrows';
+      private _cameraStart:pow2.Point = new pow2.Point();
       public activateTool(context: IEditorContext): boolean {
          return super.activateTool(context) && this.setCursorClass('cursor-hand');
       }
-      onPointerDown(ev:MouseEvent):any{
-         this.setCursorClass('cursor-hand-active');
-         this.beginMove(ev);
-         return false;
+      onPan(ev:any){
+         this.ctrl.cameraCenter.x = this._cameraStart.x + -ev.deltaX * (1 / this.ctrl.cameraZoom);
+         this.ctrl.cameraCenter.y = this._cameraStart.y + -ev.deltaY * (1 / this.ctrl.cameraZoom);
+         this.ctrl.updateCamera();
       }
-      onPointerUp(ev:MouseEvent):any{
-         if(this.drag.active){
-            this.setCursorClass('cursor-hand');
-         }
-         return false;
+      onPanstart(ev:any){
+         this._cameraStart.set(this.editor.ctrl.cameraCenter);
+         this.setCursorClass('cursor-hand-active');
+      }
+      onPanend(ev:any):any{
+         this._cameraStart.zero();
+         this.setCursorClass('cursor-hand');
       }
    }
 }

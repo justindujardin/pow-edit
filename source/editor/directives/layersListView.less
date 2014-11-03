@@ -18,11 +18,21 @@
 @layersToolbarHeight:2.5em;
 
 nav.layer-list {
+  /* prevent user selection */
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  /* default */
+  color: #222;
+  text-decoration: none;
+  font-family: @font-family-scp;
   width: auto;
   margin: 0;
   padding: 0;
   height: 100%;
-  text-decoration: none;
   position: relative;
   overflow:hidden;
   .no-selection;
@@ -59,23 +69,46 @@ nav.layer-list {
     height:100%;
     overflow-y: auto;
     overflow-x: hidden;
-
-    list-style-type: none;
+    list-style: none;
+    border:none;
     li {
       cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+      line-height:1em;
       width: 100%;
-      padding:5px;
+      text-shadow:@itemTextShadow;
+      display: inline-block;
+      padding: 6px 10px;
+      &:hover {
+        text-decoration: none;
+        background-color: rgba(0, 116, 139, 0.82);
+        color:#fff;
+      }
+      a.item {
+        color:#fff;
+        display: inline-block;
+        width:100% !important;
+        font-size:1em;
+        cursor:pointer;
+        i {
+          text-align:center;
+          font-size: 1em;
+          text-shadow:@itemTextShadow;
+        }
+      }
       &.active {
         .inline-edit i {
           display: inherit;
           float:right;
         }
+        .inline-edit span {
+          font-weight: bold;
+        }
         .dark-selection;
       }
       .inline-edit {
         padding: 0;
-        color: #bbb;
-        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
         text-wrap: none;
         white-space: nowrap;
         input {
@@ -94,7 +127,6 @@ nav.layer-list {
       }
       .icon {
         .icon(@fa-var-eye-slash);
-        padding:0 5px;
         color:rgba(255,255,255,0.3);
         text-shadow:-1px -1px rgba(0,0,0,0.6);
       }

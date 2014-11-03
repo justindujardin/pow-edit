@@ -19,15 +19,13 @@ module pow2.editor {
    export class LayerFloodPaintTool extends PaintTool {
       name:string = 'Flood Paint';
       iconClass:string = 'fa-paint-brush';
-      onPointerDown(ev:MouseEvent):any{
-         if(!this.isRightMouse(ev)){
-            var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
-            var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
-            var area: pow2.Rect = new pow2.Rect(this.ctrl.tileMap.point,this.ctrl.tileMap.size);
-            if(area.pointInRect(mousePoint)){
-               this.floodPaintAt(mouseAtIndex,this.ctrl.tileIndex);
-               return false;
-            }
+      onTap(ev:MouseEvent):any{
+         var mousePoint:pow2.Point = this.ctrl.mouseEventToWorld(ev);
+         var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
+         var area: pow2.Rect = new pow2.Rect(this.ctrl.tileMap.point,this.ctrl.tileMap.size);
+         if(area.pointInRect(mousePoint)){
+            this.floodPaintAt(mouseAtIndex,this.ctrl.tileIndex);
+            return false;
          }
       }
       floodPaintAt(index:number,newGid:number){
