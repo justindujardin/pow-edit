@@ -36,6 +36,9 @@ module pow2.editor {
                var toolName:string = el.attr('data-tool-name');
                tileEditor.setTool(toolName);
             });
+            scope.$on('$destroy',()=>{
+               hammertime.destroy();
+            });
          }
       };
    }

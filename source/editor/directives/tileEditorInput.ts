@@ -69,6 +69,9 @@ module pow2.editor {
                   return tool.handleMouseWheel(ev);
                }
             });
+            scope.$on('$destroy',()=>{
+               hammertime.destroy();
+            });
          }
       };
    }
