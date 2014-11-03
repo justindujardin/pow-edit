@@ -84,8 +84,8 @@ module pow2.editor {
             extension:'tmx',
             type:this.getDocumentType('tmx'),
             dirty:false,
-            file:'wilderness.md',
-            url:rootPath + 'maps/pow2/wilderness.tmx',
+            file:'castle.tmx',
+            url:rootPath + 'maps/pow2/castle.tmx',
             path:rootPath + 'maps/pow2/',
             data:null
          };
