@@ -25,6 +25,9 @@ module pow2.editor {
          var mouseAtIndex:number = this.ctrl.picker.indexFromPoint(mousePoint);
          this.paintAt(mouseAtIndex,this.ctrl.tileIndex);
       }
+      onTap(ev:any):any {
+         this._doPaint(ev);
+      }
       onPanstart(ev:any):any{
          this._doPaint(ev);
       }

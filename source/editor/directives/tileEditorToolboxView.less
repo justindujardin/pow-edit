@@ -1,16 +1,27 @@
 nav.toolbox {
+  display:block;
   position: absolute;
   top: 0;
   left: 0;
   .no-selection;
   .btn {
-    font-size:1.5em;
+    font-size:2.5em;
     &:first-child {
       border-top-left-radius: 0;
       border-top-right-radius: 0;
     }
     &:last-child {
       border-bottom-left-radius: 0;
+    }
+  }
+}
+
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: @screen-lg-min) {
+  nav.toolbox {
+    .btn {
+      font-size:2em;
     }
   }
 }

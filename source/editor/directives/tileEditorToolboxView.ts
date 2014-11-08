@@ -32,9 +32,16 @@ module pow2.editor {
             var tileEditor:TileEditorController = controllers[0];
             var hammertime = new Hammer(element[0], {});
             hammertime.on('tap',(ev:any)=>{
-               var el = angular.element(ev.srcEvent.target);
+               var el:any = angular.element(ev.target);
+               while(!el.hasClass('btn')){
+                  el = el.parent();
+               }
                var toolName:string = el.attr('data-tool-name');
+               element.find('.btn').removeClass('active');
+               el.addClass('active');
                tileEditor.setTool(toolName);
+               hammertime.stop();
+               ev.preventDefault();
             });
             scope.$on('$destroy',()=>{
                hammertime.destroy();

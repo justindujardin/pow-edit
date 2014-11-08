@@ -88,7 +88,7 @@ module pow2.editor {
 
             //tree template
             var template =
-                   '<ul class="">' +
+                   '<ul class="pow-list">' +
                    '<li class="list-node" ng-repeat="node in node.' + $scope.nodeChildren+'" ng-class="headClass(node)">' +
                    '<a class="item" ng-click="selectNode(node)"><i></i>{{node.label}}</a>' +
                    '<treeitem ng-if="nodeExpanded()"></treeitem>' +

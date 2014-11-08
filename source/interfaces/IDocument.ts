@@ -16,7 +16,7 @@
 module pow2.editor {
 
    /**
-    * Describe an editable document's
+    * Describe an editable document
     */
    export interface IDocument {
       /**

@@ -16,7 +16,7 @@
 @import "bootstrap/less/bootstrap.less";
 @font-family-serif:"Helvetica Neue",Helvetica,Arial,sans-serif;
 @font-family-scp:'SourceCodePro-Regular', 'Monaco', courier, monospace !important;
-@navbar-height:40px;
+@navbar-height:64px;
 
 @import "shell/directives/fileTree";
 @import "shell/directives/editors/markdownEditorView";
@@ -28,6 +28,7 @@
 @import "editor/directives/tileEditorView";
 @import "editor/directives/tileEditorToolboxView";
 @import "editor/directives/layersListView";
+@import "style/list";
 @import "style/cursors";
 @import "style/transitions";
 @import "style/loading";
@@ -129,19 +130,22 @@ body {
   height:100%;
 }
 
+// -------------------------------------------------------------
+// Navbar
 .pow-edit-navbar {
   cursor:default;
-  .navbar-text {
-    .no-selection;
-    color:rgba(255,255,255,0.8);
-    text-shadow:-1px -1px 0 rgba(0,0,0,0.4);
-
+  font-size:2em;
+  .no-selection;
+  color:rgba(255,255,255,0.8);
+  text-shadow:@itemTextShadow;
+  span {
+    font-size:1.25em;
   }
 
   .left-menu-trigger, .right-menu-trigger {
+    display: inline-block;
     cursor:pointer;
     height:auto;
-    font-size:2em;
     color:rgba(255,255,255,0.9);
     line-height: @navbar-height;
     text-shadow:2px 2px 2px rgba(0,0,0,0.2);
@@ -149,9 +153,18 @@ body {
   .right-menu-trigger {
     padding-right:0.5em;
   }
-
 }
 
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: @screen-lg-min) {
+  .pow-edit-navbar {
+    span {
+      font-size:1em;
+    }
+  }
+}
+// --------------------------------------------------------------
 
 .pow-edit-container {
   position: relative;
@@ -165,6 +178,8 @@ body {
     background: @powBgDarker;
     -webkit-transition: all 0.5s;
     transition: all 0.5s;
+    overflow-y:auto;
+    overflow-x:hidden;
   }
   .left-menu{
     left: 0;

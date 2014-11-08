@@ -282,12 +282,11 @@ module pow2.editor {
          return value;
       }
 
-      mouseEventToWorld(ev:any):pow2.Point {
-         ev = typeof ev.srcEvent !== 'undefined' ? ev.srcEvent : ev;
-         var relativeElement:any = ev.srcElement;
-         var touches:any = (<any>ev).touches;
-         if(touches && touches.length > 0){
-            ev = <any>touches[0];
+      mouseEventToWorld(ev:any,pointer:number=0):pow2.Point {
+         var relativeElement:any = ev.target;
+         var touches:any = (<any>ev).pointers;
+         if(touches && touches.length > pointer){
+            ev = <any>touches[pointer];
          }
          var canoffset = $(relativeElement).offset();
          var x = ev.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(canoffset.left);
