@@ -1,0 +1,82 @@
+/*
+ Copyright (C) 2014 by Justin DuJardin and Contributors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+@itemTextShadow: 0 0 2px rgba(0, 0, 0, 0.8);
+
+.pow-list {
+  font-family: @font-family-scp;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: none;
+  > * {
+    cursor: default;
+    position: relative;
+    white-space: nowrap;
+    line-height:1em;
+    font-family:@font-family-serif;
+    color: rgba(255, 255, 255, 0.9);
+    .item {
+      text-shadow:@itemTextShadow;
+      color:#fff;
+      display: inline-block;
+      width:100% !important;
+      padding: 15px 10px;
+      font-size: 1.25em;
+      cursor:pointer;
+      &:hover {
+        text-decoration: none;
+        background-color: rgba(0, 116, 139, 0.82);
+        color:#fff;
+      }
+      i {
+        text-align:center;
+        font-size: 2em;
+        margin-right: 5px;
+        color: rgba(191, 168, 119, 1);
+        text-shadow:@itemTextShadow;
+      }
+    }
+    &.selected {
+      .item {
+        color:#fff;
+        font-weight: bold;
+        .dark-selection;
+        i {
+          color:rgba(255,255,255,1);
+        }
+      }
+    }
+  }
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: @screen-lg-min) {
+  .pow-list {
+    margin: 0;
+    padding: 0;
+    > * {
+      line-height:1.5em;
+      a.item {
+        padding: 4px 0;
+        font-size:1.25em;
+        i {
+          font-size: 1.25em;
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+}

@@ -31,20 +31,30 @@ module pow2.editor {
             var initScale = tileEditor.cameraZoom;
 
             function getEventTool(ev:any):TileEditorTool{
-               if(!angular.element(ev.srcEvent.srcElement).is('canvas')){
+               if(!angular.element(ev.target).is('canvas')){
                   return null;
                }
                return <TileEditorTool>tileEditor.ed.getActiveTool();
             }
 
-            var hammertime = new Hammer(element[0], {});
-            hammertime.get('pinch').set({ enable: true });
-            hammertime.on('pinch', function(ev) {
+
+            // Configure pinch and double swipe actions
+            var mc = new Hammer(element[0]);
+            mc.get('pan').set({ threshold: 0 });
+            mc.get('pinch').set({ enable: true }).requireFailure(mc.get('pan'));
+            mc.on('pinch', function(ev) {
                tileEditor.cameraZoom = initScale * ev.scale;
                tileEditor.updateCamera();
             });
-            hammertime.on('pinchstart',(ev:any)=>{
+            mc.on('pinchstart',(ev:any)=>{
                initScale = tileEditor.cameraZoom;
+            });
+            // Eat any current gestures when we're done pinching.
+            //
+            // e.g. Don't let the pan gesture pick up after our pinch.
+            mc.on('pinchend',(ev:any)=>{
+               mc.stop();
+               ev.preventDefault();
             });
 
             // Forward hammer events to the active tool, converting
@@ -55,7 +65,7 @@ module pow2.editor {
             ];
             function _forwardEvent(eventName:string) {
                var toolCamelMethod:string = 'on' + eventName[0].toUpperCase() + eventName.substr(1);
-               hammertime.on(eventName,(ev:any)=>{
+               mc.on(eventName,(ev:any)=>{
                   var tool:TileEditorTool = getEventTool(ev);
                   if(tool && tool[toolCamelMethod]){
                      return tool[toolCamelMethod](ev);
@@ -70,7 +80,7 @@ module pow2.editor {
                }
             });
             scope.$on('$destroy',()=>{
-               hammertime.destroy();
+               mc.destroy();
             });
          }
       };

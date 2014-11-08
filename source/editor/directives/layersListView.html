@@ -6,7 +6,7 @@
         <a class="btn btn-default" ng-click="app.editor.removeActiveLayer()"><i class="fa fa-trash"></i> Remove</a>
     </div>
 
-    <ul class="layers">
+    <ul class="layers pow-list">
         <li ng-repeat="layer in app.editor.tileMap.layers track by $index"
             ng-click="app.editor.setActiveLayer($index)"
             ng-class="{objects:!layer.tiles,visible:layer.visible,active:app.editor.activeLayerIndex==$index}">

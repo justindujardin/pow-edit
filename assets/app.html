@@ -17,10 +17,10 @@
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
-                <li class="navbar-text">{{app.editor.activeLayer.name}}</li>
-                <li><div class="right-menu-trigger" ng-click="showRightMenu=!showRightMenu" ng-show="!!app.editor"><i class="fa fa-list-alt"></i></div></li>
-            </ul>
+            <div class="navbar-right">
+                <span class="">{{app.editor.activeLayer.name}}</span>
+                <div class="right-menu-trigger" ng-click="showRightMenu=!showRightMenu" ng-show="!!app.editor"><i class="fa fa-list-alt"></i></div>
+            </div>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>

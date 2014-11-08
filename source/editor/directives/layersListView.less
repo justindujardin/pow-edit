@@ -14,30 +14,19 @@
  limitations under the License.
  */
 
-@canvasWidth:86%;
 @layersToolbarHeight:2.5em;
 
 nav.layer-list {
-  /* prevent user selection */
-  -moz-user-select: -moz-none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
   user-select: none;
-
-  /* default */
-  color: #222;
-  text-decoration: none;
-  font-family: @font-family-scp;
-  width: auto;
   margin: 0;
   padding: 0;
   height: 100%;
   position: relative;
-  overflow:hidden;
+  overflow-x:hidden;
+  overflow-y:auto;
   .no-selection;
   .toolbar {
-    position: absolute;
+    position: fixed;
     bottom:0;
     left:0;
     right:0;
@@ -64,39 +53,8 @@ nav.layer-list {
     left:0;
     right:0;
     bottom:@layersToolbarHeight;
-    margin: 0;
-    padding: 0;
     height:100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    list-style: none;
-    border:none;
     li {
-      cursor: pointer;
-      position: relative;
-      white-space: nowrap;
-      line-height:1em;
-      width: 100%;
-      text-shadow:@itemTextShadow;
-      display: inline-block;
-      padding: 6px 10px;
-      &:hover {
-        text-decoration: none;
-        background-color: rgba(0, 116, 139, 0.82);
-        color:#fff;
-      }
-      a.item {
-        color:#fff;
-        display: inline-block;
-        width:100% !important;
-        font-size:1em;
-        cursor:pointer;
-        i {
-          text-align:center;
-          font-size: 1em;
-          text-shadow:@itemTextShadow;
-        }
-      }
       &.active {
         .inline-edit i {
           display: inherit;
@@ -117,12 +75,6 @@ nav.layer-list {
         }
         i {
           display: none;
-        }
-      }
-      > a {
-        width:100%;
-        &:hover {
-          text-decoration: none;
         }
       }
       .icon {
