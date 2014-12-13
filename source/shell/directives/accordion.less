@@ -1,0 +1,26 @@
+@accordionBorder: 1px solid @powBgDark;
+@accordionTitlePadding:0.5em;
+@accordionTitleBackground:@powBgDarker;
+@accordionContentBackground:@powBgDarker;
+
+.accordion {
+  .pow-list;
+  .item {
+    border: @accordionBorder;
+    .title {
+      background-color: @accordionTitleBackground;
+      padding: @accordionTitlePadding;
+      cursor: pointer;
+      border-bottom: @accordionBorder;
+    }
+    .content {
+      position: relative;
+      background-color:@accordionContentBackground;
+    }
+    &.collapsed {
+      .title {
+        border-bottom: none;
+      }
+    }
+  }
+}
