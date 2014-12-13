@@ -31,15 +31,27 @@
     z-index:0;
   }
 
-  section.tile-sets {
+  .accordion {
     position:absolute;
     left:0;
     bottom:0;
-    min-height:64px;
-    min-width:64px;
-    background-color:rgba(0,0,0,0.4);
-    .tile-picker {
-      display:block;
+    .item {
+      .title {
+        background-color:@powBgDarker;
+      }
+      .content {
+        max-height:300px;
+        overflow:auto;
+      }
+    }
+    section.tile-sets {
+      min-height:64px;
+      min-width:64px;
+      background-color:rgba(0,0,0,0.4);
+      .tile-picker {
+        display:block;
+      }
     }
   }
+
 }

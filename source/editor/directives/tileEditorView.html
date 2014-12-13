@@ -11,12 +11,14 @@
         tile set images.  This should be remove just as soon as it's possible to
         specify a custom UI template for the active tool.
     -->
-    <section class="tile-sets" ng-if="tileController.ed.getActiveTool().name=='Paint' || tileController.ed.getActiveTool().name=='Flood Paint'">
-        <tile-set-tile-picker
-                ng-repeat="set in tileController.tileMap.tileSets"
+    <accordion ng-if="tileController.ed.getActiveTool().name=='Paint' || tileController.ed.getActiveTool().name=='Flood Paint'">
+        <accordion-item title="set.url" ng-repeat="set in tileController.tileMap.tileSets">
+            <tile-set-tile-picker
                 url="{{set.url}}"
                 on-pick="tileController.setPaintTile(set,tilePoint)"
                 tile-height="{{set.tileSize.y}}"
-                tile-width="{{set.tileSize.x}}"></tile-set-tile-picker>
-    </section>
+                tile-width="{{set.tileSize.x}}">
+            </tile-set-tile-picker>
+        </accordion-item>
+    </accordion>
 </div>
