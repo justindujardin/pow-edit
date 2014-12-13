@@ -74,9 +74,11 @@ module pow2.editor {
             }
             angular.forEach(forwardEvents,_forwardEvent);
             element.on("mousewheel DOMMouseScroll MozMousePixelScroll",(ev)=>{
-               var tool:TileEditorTool = <TileEditorTool>tileEditor.ed.getActiveTool();
-               if(tool){
-                  return tool.handleMouseWheel(ev);
+               if(ev.target instanceof HTMLCanvasElement){
+                  var tool:TileEditorTool = <TileEditorTool>tileEditor.ed.getActiveTool();
+                  if(tool){
+                     return tool.handleMouseWheel(ev);
+                  }
                }
             });
             scope.$on('$destroy',()=>{
