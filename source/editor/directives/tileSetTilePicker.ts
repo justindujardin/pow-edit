@@ -28,25 +28,67 @@ module pow2.editor {
             tileHeight: "@",
             onPick: "&"
          },
-         template: '<img src="{{url}}" class="tile-picker"/>',
-         link: (scope, element, attributes) => {
+         templateUrl: 'source/editor/directives/tileSetTilePicker.html',
+         link: (scope, element:JQuery, attributes) => {
             var tileWidth:number = attributes.tileWidth;
             var tileHeight:number = attributes.tileHeight;
             var pickPoint:pow2.Point = new pow2.Point(0,0);
-            element.on('click',(e)=>{
-               var imgX:number = e.offsetX - element[0].offsetLeft;
-               var imgY:number = e.offsetY - element[0].offsetTop;
+
+            var tileForEvent = (ev:any,point:pow2.Point):void => {
+               var imgX:number = (ev.offsetX - element[0].offsetLeft) / scale;
+               var imgY:number = (ev.offsetY - element[0].offsetTop) / scale;
                var tileX:number = Math.floor(imgX/tileWidth);
                var tileY:number = Math.floor(imgY/tileHeight);
-               console.log("Click image at X:" + tileX + ", Y:" + tileY);
+               point.set(tileX,tileY);
+            };
+            var from:pow2.Point = new pow2.Point();
+            element.on('click touchstart',(ev)=>{
+               tileForEvent(ev,from);
                if (typeof scope.onPick === 'function') {
-                  pickPoint.set(tileX, tileY);
+                  pickPoint.set(from.x, from.y);
                   scope.onPick({tilePoint:pickPoint});
                }
-               e.stopImmediatePropagation();
-               return false;
+               selector.css({
+                  top:from.y * tileHeight * scale + 'px',
+                  left:from.x * tileWidth * scale + 'px',
+                  height:tileHeight * scale + 'px',
+                  width:tileWidth * scale + 'px'
+               });
+               ev.preventDefault();
             });
-            var img:HTMLImageElement = element.children('img');
+
+            // Selector indicator
+            var selector:JQuery = element.find('.selection');
+            // Img source
+            var image:JQuery = element.find('img');
+
+            // 16x16 or smaller tile size?
+            var tiny:boolean = tileWidth <= 16 || tileHeight <= 16;
+
+            // If the tilesize is 16x16 or less, scale the tileset up
+            // to 2x its source size.  This allows easier touch interactions
+            // by effectively ensuring there's always a reasonably sized hit
+            // box for fat-finger selection.
+            var scale:number = tiny ? 2 : 1;
+            selector.css({
+               height:tileHeight * scale + 'px',
+               width:tileWidth * scale + 'px',
+               top:0,
+               left:0
+            });
+            var scaleIt:any = () => {
+               image.css({
+                  height:img.naturalHeight * scale + 'px',
+                  width:img.naturalWidth * scale + 'px'
+               });
+            };
+            var img = <HTMLImageElement>image[0];
+            if(img.complete){
+               scaleIt();
+            }
+            else {
+               img.onload = scaleIt;
+            }
             console.log("Picking for tiles of (" + attributes.tileWidth + "," + attributes.tileHeight + ") size");
          }
       };
