@@ -12,11 +12,10 @@
   "author": "Justin DuJardin <justin@dujardinconsulting.com>",
   "license": "Apache2",
   "dependencies": {
-    "grunt": "~0.4.0",
-    "grunt-typescript": "~0.2.8",
+    "grunt": "~0.4.5",
+    "grunt-typescript": "~0.4.4",
     "grunt-contrib-less": "0.10.0",
     "graceful-fs": "~2.0.1",
-    "typescript": "~0.9.7",
     "grunt-html2js": "~0.2.4",
     "grunt-bump": "0.0.13",
     "grunt-conventional-changelog": "~1.1.0",
@@ -29,9 +28,8 @@
     "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-node-webkit-builder": "~0.2.1",
-    "grunt-contrib-connect": "~0.7.1",
-    "grunt-express-server": "~0.4.17",
-    "grunt-karma-coveralls": "~2.5.1",
+    "grunt-express-server": "~0.4.5",
+    "grunt-karma-coveralls": "~2.5.3",
     "karma": "~0.12.21",
     "karma-coverage": "~0.2.6",
     "karma-jasmine": "~0.2.2",
@@ -40,9 +38,6 @@
   "scripts": {
     "test": "./node_modules/karma/bin/karma start karma.conf.js --single-run",
     "postinstall": "./node_modules/.bin/bower install && ./node_modules/.bin/grunt"
-  },
-  "devDependencies": {
-    "hammer-simulator": "git://github.com/hammerjs/simulator#master"
   },
   "contributors": []
 }
