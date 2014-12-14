@@ -6,7 +6,7 @@
     "Justin DuJardin <justin@dujardinconsulting.com>"
   ],
   "description": "Tile Map Editor for Pow2",
-  "license": "MIT",
+  "license": "Apache 2.0",
   "private": true,
   "ignore": [
     "**/.*",
