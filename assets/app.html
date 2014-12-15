@@ -6,6 +6,7 @@
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0">
     <title>pow-edit</title>
     <link rel="stylesheet" href="./build/pow-edit.css">
+    <link rel="stylesheet" href="./bower_components/joint/dist/joint.css">
 </head>
 <body ng-controller="AppController as app" ng-init="initialized=true">
 <nav class="pow-edit-navbar navbar navbar-default navbar-inverse navbar-fixed-top ng-hide fadeIn" role="navigation" ng-show="initialized">
@@ -74,9 +75,9 @@
     window.onload = function() {
         var platform = (typeof require !== 'undefined') ? './build/pow-edit.nw.js' : './build/pow-edit.browser.js';
         loadScripts([
-            "./bower_components/underscore/underscore.js",
+            "./build/pow-bootstrap.js",
+            "./build/joint.js",
             "./bower_components/pow-core/lib/pow-core.js",
-            "./bower_components/jquery/dist/jquery.js",
             "./vendor/ace/src-min-noconflict/ace.js",
             "./vendor/vkbeautify/vkbeautify.js",
             "./bower_components/showdown/compressed/showdown.js",

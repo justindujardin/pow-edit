@@ -62,6 +62,51 @@ module.exports = function(grunt) {
       },
 
       /**
+       * Concat third party dependencies.  This is a not-so-great workaround
+       * for the fact that the only liberally licensed OS graphing library
+       * is pretty finicky about it's versions and utility libraries.   Hopefully
+       * in the future these dependencies are loosened and we can go back to using
+       * underscore and a bower installed set of core libraries.
+       */
+      concat: {
+         /*
+            Use JointJS's preferred jquery/lodash/backbone. (-_-)
+         */
+         bootstrap: {
+            files: {
+               'assets/build/pow-bootstrap.js':[
+                  "assets/bower_components/lodash/dist/lodash.min.js",
+                  "assets/bower_components/jquery/dist/jquery.min.js",
+                  "assets/bower_components/backbone/backbone.js"
+               ]
+            }
+         },
+         joint: {
+            options: {
+               banner: '/*! JointJS  <%= grunt.template.today("yyyy-mm-dd") %> \n\n\nThis Source Code Form is subject to the terms of the Mozilla Public\nLicense, v. 2.0. If a copy of the MPL was not distributed with this\nfile, You can obtain one at http://mozilla.org/MPL/2.0/.\n */\n'
+            },
+            files: {
+               'assets/build/joint.js':[
+                  "assets/bower_components/joint/src/core.js",
+                  "assets/bower_components/joint/src/vectorizer.js",
+                  "assets/bower_components/joint/src/geometry.js",
+                  "assets/bower_components/joint/src/joint.dia.graph.js",
+                  "assets/bower_components/joint/src/joint.dia.cell.js",
+                  "assets/bower_components/joint/src/joint.dia.element.js",
+                  "assets/bower_components/joint/src/joint.dia.link.js",
+                  "assets/bower_components/joint/src/joint.dia.paper.js",
+                  "assets/bower_components/joint/plugins/joint.shapes.basic.js",
+                  "assets/bower_components/joint/plugins/joint.shapes.logic.js",
+                  "assets/bower_components/joint/plugins/joint.shapes.devs.js",
+                  "assets/bower_components/joint/plugins/connectors/joint.connectors.normal.js",
+                  "assets/bower_components/joint/plugins/layout/DirectedGraph/lib/dagre.js",
+                  "assets/bower_components/joint/plugins/layout/DirectedGraph/joint.layout.DirectedGraph.js"
+               ]
+            }
+         }
+      },
+
+      /**
        * Compile game LESS styles to CSS
        */
       less: {
@@ -112,6 +157,10 @@ module.exports = function(grunt) {
          outputs: {
            files: ['assets/build/*.*'],
             tasks: ['express']
+         },
+         concatLibs: {
+           files: ['assets/bower_components/**/*.js'],
+            tasks: ['concat']
          },
 
          ui: {
@@ -228,12 +277,13 @@ module.exports = function(grunt) {
       type = type || 'patch';
       grunt.task.run([
          'npm-contributors',
-            "bump:" + type + ":bump-only",
+         "bump:" + type + ":bump-only",
          'changelog',
          'bump-commit'
       ]);
    });
    grunt.loadNpmTasks('grunt-contrib-clean');
+   grunt.loadNpmTasks('grunt-contrib-concat');
    grunt.loadNpmTasks('grunt-typescript');
    grunt.loadNpmTasks('grunt-contrib-less');
    grunt.loadNpmTasks('grunt-express-server');
@@ -241,10 +291,10 @@ module.exports = function(grunt) {
    grunt.loadNpmTasks('grunt-html2js');
    if(!process || !process.env || process.env.NODE_ENV !== 'production'){
       grunt.loadNpmTasks('grunt-contrib-watch');
-      grunt.registerTask('default', ['clean','typescript','less','html2js']);
+      grunt.registerTask('default', ['clean','typescript','concat','less','html2js']);
    }
    else {
-      grunt.registerTask('default', ['typescript','less','html2js']);
+      grunt.registerTask('default', ['typescript','concat','less','html2js']);
    }
    grunt.registerTask('develop', ['default','watch']);
    grunt.registerTask('develop:web', ['default','express','watch']);

@@ -26,6 +26,9 @@
     "angular-mocks": "1.2.21",
     "angular-animate": "1.2.21",
     "bootstrap": "~3.2.0",
-    "hammer.js": "~2.0.4"
+    "hammer.js": "~2.0.4",
+    "joint": "~0.9.2",
+    "backbone":"1.1.2",
+    "lodash":"037c58c2719aabbb21aef84b8649f6e4ee298be0"
   }
 }

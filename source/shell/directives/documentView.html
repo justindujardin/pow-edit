@@ -20,6 +20,10 @@
             class="image-view">
         <img ng-src="../{{app.document.url}}"/>
     </image-editor-view>
+    <entity-editor-view
+            ng-switch-when="entity"
+            url="app.document.url">
+    </entity-editor-view>
     <text-editor-view
             ng-switch-default
             ng-model="app.document.data"

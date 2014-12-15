@@ -80,13 +80,22 @@ module pow2.editor {
          //
          // TODO: Document manager.  Should support multiple
          // documents AND have a notion of the active one.
+         //this.document = {
+         //   extension:'tmx',
+         //   type:this.getDocumentType('tmx'),
+         //   dirty:false,
+         //   file:'castle.tmx',
+         //   url:rootPath + 'maps/pow2/castle.tmx',
+         //   path:rootPath + 'maps/pow2/',
+         //   data:null
+         //};
          this.document = {
-            extension:'tmx',
-            type:this.getDocumentType('tmx'),
+            extension:'powentity',
+            type:this.getDocumentType('powentity'),
             dirty:false,
-            file:'castle.tmx',
-            url:rootPath + 'maps/pow2/castle.tmx',
-            path:rootPath + 'maps/pow2/',
+            file:'player.powentity',
+            url:rootPath + 'maps/pow-game/entities/player.powentity',
+            path:rootPath + 'maps/pow-game/entities/',
             data:null
          };
 
@@ -122,6 +131,8 @@ module pow2.editor {
             case 'md':
             case 'markdown':
                return 'markdown';
+            case 'powentity':
+               return 'entity';
             default:
                return 'unknown';
          }
