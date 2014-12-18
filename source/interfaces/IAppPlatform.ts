@@ -31,11 +31,26 @@ module pow2.editor {
    }
 
    export interface IFileInfo {
-      name:string; // name
-      path:string; // path
-      full:string; // path.join(path,name)
-      type?:string; // "directory" or "file"
-      children?:IFileInfo[]; // Only used for directories.
+      /**
+       * name
+       */
+      name:string;
+      /**
+       * path
+       */
+      path:string;
+      /**
+       * path.join(path,name)
+       */
+      full:string;
+      /**
+       * "directory" or "file"
+       */
+      type?:string;
+      /**
+       * Only used for directories.
+       */
+      children?:IFileInfo[];
    }
 
 }

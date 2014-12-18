@@ -17,14 +17,14 @@
 ///<reference path="../../../types/angular/angular.d.ts"/>
 ///<reference path="../../app.ts"/>
 
-/**
- * File System Tree directive
- *
- * Based on angular-tree-control : https://github.com/wix/angular-tree-control
- */
 module pow2.editor {
 
 
+   /**
+    * File System Tree directive
+    *
+    * Based on angular-tree-control : https://github.com/wix/angular-tree-control
+    */
    export var fileTree:ng.IModule = angular.module( 'uiTree', [] );
    fileTree.directive( 'treecontrol', ['$compile', function( $compile ) {
       return {
