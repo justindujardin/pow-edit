@@ -97,7 +97,6 @@ module.exports = function(grunt) {
                   "assets/bower_components/joint/src/joint.dia.paper.js",
                   "assets/bower_components/joint/plugins/joint.shapes.basic.js",
                   "assets/bower_components/joint/plugins/joint.shapes.logic.js",
-                  "assets/bower_components/joint/plugins/joint.shapes.devs.js",
                   "assets/bower_components/joint/plugins/connectors/joint.connectors.normal.js",
                   "assets/bower_components/joint/plugins/layout/DirectedGraph/lib/dagre.js",
                   "assets/bower_components/joint/plugins/layout/DirectedGraph/joint.layout.DirectedGraph.js"
