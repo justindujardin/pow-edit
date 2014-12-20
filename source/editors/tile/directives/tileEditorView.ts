@@ -13,16 +13,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
-///<reference path="../../../types/pixi/PIXI.d.ts"/>
-///<reference path="../../../types/angular/angular.d.ts"/>
-///<reference path="../../app.ts"/>
-///<reference path="../../shell/directives/documentView.ts"/>
-///<reference path="../../shell/controllers/appController.ts"/>
-///<reference path="../../services/actions.ts"/>
-///<reference path="../../services/tasks.ts"/>
-///<reference path="../../services/keys.ts"/>
-///<reference path="../../formats/tiledMapLoader.ts"/>
+///<reference path="../../../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
+///<reference path="../../../../types/pixi/PIXI.d.ts"/>
+///<reference path="../../../../types/angular/angular.d.ts"/>
+///<reference path="../../../app.ts"/>
+///<reference path="../../../shell/directives/documentView.ts"/>
+///<reference path="../../../shell/controllers/appController.ts"/>
+///<reference path="../../../services/actions.ts"/>
+///<reference path="../../../services/tasks.ts"/>
+///<reference path="../../../services/keys.ts"/>
+///<reference path="../../../formats/tiledMapLoader.ts"/>
 ///<reference path="../controllers/tileEditorController.ts"/>
 
 module pow2.editor {
@@ -45,7 +45,7 @@ module pow2.editor {
          return {
             restrict: "E",
             replace: false,
-            templateUrl: "source/editor/directives/tileEditorView.html",
+            templateUrl: "source/editors/tile/directives/tileEditorView.html",
             require:["tileEditorView","?^documentView"],
             controller:TileEditorController,
             controllerAs:'tileController',

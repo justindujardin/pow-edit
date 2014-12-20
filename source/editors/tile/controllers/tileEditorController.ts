@@ -13,15 +13,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
+///<reference path="../../../../assets/bower_components/pow-core/lib/pow-core.d.ts"/>
 ///<reference path="../tileEditor.ts"/>
 ///<reference path="../tileEditorToolbox.ts"/>
-///<reference path="../../app.ts"/>
-///<reference path="../../services/actions.ts"/>
-///<reference path="../../services/tasks.ts"/>
-///<reference path="../../services/keys.ts"/>
-///<reference path="../../services/time.ts"/>
-///<reference path="../../formats/tiledMapLoader.ts"/>
+///<reference path="../../../app.ts"/>
+///<reference path="../../../services/actions.ts"/>
+///<reference path="../../../services/tasks.ts"/>
+///<reference path="../../../services/keys.ts"/>
+///<reference path="../../../services/time.ts"/>
+///<reference path="../../../formats/tiledMapLoader.ts"/>
 ///<reference path="../actions/tilePaintAction.ts"/>
 ///<reference path="../actions/tileFloodPaintAction.ts"/>
 ///<reference path="../actions/layerRemoveAction.ts"/>

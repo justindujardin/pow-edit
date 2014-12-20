@@ -19,7 +19,6 @@
 @navbar-height:64px;
 
 @import "shell/directives/fileTree";
-@import "shell/directives/editors/entityEditorView";
 @import "shell/directives/editors/markdownEditorView";
 @import "shell/directives/editors/textEditorView";
 @import "shell/directives/editors/imageEditorView";
@@ -27,10 +26,13 @@
 @import "shell/directives/inlineEdit";
 @import "shell/directives/accordion";
 
-@import "editor/directives/tileEditorView";
-@import "editor/directives/tileEditorToolboxView";
-@import "editor/directives/layersListView";
-@import "editor/directives/tileSetTilePicker";
+
+@import "editors/entity/directives/entityEditorView";
+
+@import "editors/tile/directives/tileEditorView";
+@import "editors/tile/directives/tileEditorToolboxView";
+@import "editors/tile/directives/layersListView";
+@import "editors/tile/directives/tileSetTilePicker";
 @import "style/list";
 @import "style/cursors";
 @import "style/transitions";

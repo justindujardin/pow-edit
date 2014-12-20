@@ -24,17 +24,27 @@ module.exports = function(grunt) {
                "source/app.ts",
                "source/interfaces/*.ts",
                "source/services/*.ts",
+
+               // Common UI elements for editor shell
                "source/shell/controllers/*.ts",
                "source/shell/controllers/**/*.ts",
                "source/shell/directives/*.ts",
                "source/shell/directives/**/*.ts",
-               "source/editor/*.ts",
-               "source/editor/controllers/*.ts",
-               "source/editor/contexts/*.ts",
-               "source/editor/tools/*.ts",
-               "source/editor/directives/*.ts",
-               "source/editor/actions/*.ts",
-               "source/editor/**/*.ts",
+
+               // Entity Editor
+               "source/editors/entity/*.ts",
+               "source/editors/entity/directives/*.ts",
+
+               // Tile Editor
+               "source/editors/tile/*.ts",
+               "source/editors/tile/controllers/*.ts",
+               "source/editors/tile/contexts/*.ts",
+               "source/editors/tile/tools/*.ts",
+               "source/editors/tile/directives/*.ts",
+               "source/editors/tile/actions/*.ts",
+               "source/editors/tile/**/*.ts",
+
+               // File formats
                "source/formats/*.ts"
             ],
             dest: 'assets/build/<%= pkg.name %>.js'

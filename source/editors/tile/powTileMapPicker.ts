@@ -15,8 +15,8 @@
  */
 
 ///<reference path="./tileEditor.ts"/>
-///<reference path="../interfaces/IPicker.ts"/>
-///<reference path="../formats/powTileMap.ts"/>
+///<reference path="../../interfaces/IPicker.ts"/>
+///<reference path="../../formats/powTileMap.ts"/>
 
 
 module pow2.editor {

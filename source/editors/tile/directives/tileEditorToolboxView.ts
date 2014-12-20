@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../../app.ts"/>
+///<reference path="../../../app.ts"/>
 ///<reference path="../controllers/tileEditorController.ts"/>
 
 module pow2.editor {
@@ -26,7 +26,7 @@ module pow2.editor {
       return {
          restrict: "E",
          replace:true,
-         templateUrl:"source/editor/directives/tileEditorToolboxView.html",
+         templateUrl:"source/editors/tile/directives/tileEditorToolboxView.html",
          require:["^tileEditorView"],
          link:(scope, element, attributes:any,controllers:any[]) => {
             var tileEditor:TileEditorController = controllers[0];

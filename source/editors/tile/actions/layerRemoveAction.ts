@@ -13,31 +13,35 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../../services/actions.ts"/>
-///<reference path="../../formats/powTileMap.ts"/>
+///<reference path="../../../services/actions.ts"/>
+///<reference path="../../../formats/powTileMap.ts"/>
 
 module pow2.editor {
 
    /**
-    * Rename a PowTileLayer.
+    * Remove a layer from a given PowTileMap.
     */
-   export class LayerRenameAction extends BaseAction {
-      public name:string = "Rename Layer";
-      private _old:string;
+   export class LayerRemoveAction extends BaseAction {
+      public name:string = "Remove Layer";
+      private _old:PowTileLayer;
       constructor(
-         public layer:PowTileLayer,
-         public newName:string){
+         public map:PowTileMap,
+         public index:number){
          super();
-         if(!newName || !layer){
+         if(!map){
             throw new Error(pow2.errors.INVALID_ARGUMENTS);
          }
-         this._old = layer.name;
+         /*
+          * TODO: Does this object need to be properly cloned?  Assuming not
+          * at the moment, because it should stop being manipulated once removed.
+          */
+         this._old = map.getLayer(index);
       }
       execute():boolean {
          if(!super.execute()){
             return false;
          }
-         this.layer.setName(this.newName);
+         this.map.removeLayer(this.index);
          return true;
       }
 
@@ -45,7 +49,7 @@ module pow2.editor {
          if(!super.undo()){
             return false;
          }
-         this.layer.setName(this._old);
+         this.map.insertLayer(this.index,this._old);
          return true;
       }
    }

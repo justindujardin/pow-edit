@@ -13,35 +13,33 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../../services/actions.ts"/>
-///<reference path="../../formats/powTileMap.ts"/>
+///<reference path="../../../services/actions.ts"/>
+///<reference path="../../../formats/powTileMap.ts"/>
 
 module pow2.editor {
 
-   /**
-    * Remove a layer from a given PowTileMap.
-    */
-   export class LayerRemoveAction extends BaseAction {
-      public name:string = "Remove Layer";
-      private _old:PowTileLayer;
+   // Tile Editor actions
+   export class TilePaintAction extends BaseAction {
+      public name:string = "Paint Tile";
       constructor(
-         public map:PowTileMap,
-         public index:number){
+         public layer:PowTileLayer,
+         public index:number,
+         public gid:number){
          super();
-         if(!map){
+         if(!layer || typeof gid !== 'number'){
             throw new Error(pow2.errors.INVALID_ARGUMENTS);
          }
-         /*
-          * TODO: Does this object need to be properly cloned?  Assuming not
-          * at the moment, because it should stop being manipulated once removed.
-          */
-         this._old = map.getLayer(index);
+         if(index > layer.tiles.length || index < 0){
+            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
+         }
+         this._lastGid = layer.tiles[this.index];
       }
+      private _lastGid:number = 0;
       execute():boolean {
          if(!super.execute()){
             return false;
          }
-         this.map.removeLayer(this.index);
+         this.layer.setTileGid(this.index,this.gid);
          return true;
       }
 
@@ -49,7 +47,7 @@ module pow2.editor {
          if(!super.undo()){
             return false;
          }
-         this.map.insertLayer(this.index,this._old);
+         this.layer.setTileGid(this.index,this._lastGid);
          return true;
       }
    }

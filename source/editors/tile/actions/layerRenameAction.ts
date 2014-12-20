@@ -13,33 +13,31 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-///<reference path="../../services/actions.ts"/>
-///<reference path="../../formats/powTileMap.ts"/>
+///<reference path="../../../services/actions.ts"/>
+///<reference path="../../../formats/powTileMap.ts"/>
 
 module pow2.editor {
 
-   // Tile Editor actions
-   export class TilePaintAction extends BaseAction {
-      public name:string = "Paint Tile";
+   /**
+    * Rename a PowTileLayer.
+    */
+   export class LayerRenameAction extends BaseAction {
+      public name:string = "Rename Layer";
+      private _old:string;
       constructor(
          public layer:PowTileLayer,
-         public index:number,
-         public gid:number){
+         public newName:string){
          super();
-         if(!layer || typeof gid !== 'number'){
+         if(!newName || !layer){
             throw new Error(pow2.errors.INVALID_ARGUMENTS);
          }
-         if(index > layer.tiles.length || index < 0){
-            throw new Error(pow2.errors.INDEX_OUT_OF_RANGE);
-         }
-         this._lastGid = layer.tiles[this.index];
+         this._old = layer.name;
       }
-      private _lastGid:number = 0;
       execute():boolean {
          if(!super.execute()){
             return false;
          }
-         this.layer.setTileGid(this.index,this.gid);
+         this.layer.setName(this.newName);
          return true;
       }
 
@@ -47,7 +45,7 @@ module pow2.editor {
          if(!super.undo()){
             return false;
          }
-         this.layer.setTileGid(this.index,this._lastGid);
+         this.layer.setName(this._old);
          return true;
       }
    }
