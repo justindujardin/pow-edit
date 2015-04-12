@@ -85,7 +85,7 @@ module.exports = function(grunt) {
          bootstrap: {
             files: {
                'assets/build/pow-bootstrap.js':[
-                  "assets/bower_components/lodash/dist/lodash.min.js",
+                  "assets/bower_components/lodash/lodash.min.js",
                   "assets/bower_components/jquery/dist/jquery.min.js",
                   "assets/bower_components/backbone/backbone.js"
                ]
@@ -108,6 +108,9 @@ module.exports = function(grunt) {
                   "assets/bower_components/joint/plugins/joint.shapes.basic.js",
                   "assets/bower_components/joint/plugins/joint.shapes.logic.js",
                   "assets/bower_components/joint/plugins/connectors/joint.connectors.normal.js",
+                  "assets/bower_components/joint/plugins/routers/joint.routers.manhattan.js",
+                  "assets/bower_components/joint/plugins/routers/joint.routers.metro.js",
+                  "assets/bower_components/joint/plugins/routers/joint.routers.orthogonal.js",
                   "assets/bower_components/joint/plugins/layout/DirectedGraph/lib/dagre.js",
                   "assets/bower_components/joint/plugins/layout/DirectedGraph/joint.layout.DirectedGraph.js"
                ]
@@ -270,6 +273,21 @@ module.exports = function(grunt) {
             force: true,
             recursive: true
          }
+      },
+
+      /*
+       Documentation
+       */
+      typedoc: {
+         build: {
+            options: {
+               module: 'commonjs',
+               target: 'es5',
+               out: 'docs/',
+               name: 'My project title'
+            },
+            src: 'source/**/*.ts'
+         }
       }
 
    });
@@ -277,6 +295,8 @@ module.exports = function(grunt) {
    // Testing
    grunt.loadNpmTasks('grunt-karma-coveralls');
 
+   // Documentation
+   grunt.loadNpmTasks('grunt-typedoc');
 
    // Release/Deploy
    grunt.loadNpmTasks('grunt-bump');
