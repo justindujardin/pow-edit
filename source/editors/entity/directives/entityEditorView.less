@@ -20,19 +20,21 @@
       text-transform: capitalize;
     }
     // Component
-    &.Atomic {
-      .entity-heading-rect, .entity-body-rect {
-        fill: #ccc;
-        fill-opacity: 0.8;
-        stroke: #999;
+    &.ComponentModel {
+      .entity-component-rect,.body {
+        fill: rgba(16, 17, 25, 0.81);
+        stroke: #5a6774;
         overflow:hidden;
       }
     }
     // Entity
-    &.Coupled {
+    &.EntityModel {
+      .port-label {
+        color:slategray;
+      }
       .entity-heading-rect, .entity-body-rect {
-        fill: rgba(100, 255, 100, 0.51);
-        stroke:rgba(100, 255, 100, 1);
+        fill: rgba(112, 128, 144, 0.81);
+        stroke: #5a6774;
         overflow:hidden;
       }
     }

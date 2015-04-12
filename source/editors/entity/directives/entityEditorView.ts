@@ -38,7 +38,7 @@ module pow2.editor {
                   catch(e){
                      console.error(e);
                   }
-                  var d:IEntityData = data[0];
+                  var d:IEntityData = data[1];
 
                   //-0---------------------
                   var graph:joint.dia.Graph = new joint.dia.Graph();
@@ -49,56 +49,65 @@ module pow2.editor {
                      gridSize: 1,
                      model: graph,
                      snapLinks: true,
-                     defaultLink: new joint.shapes.pow2.Link
+                     defaultLink: new joint.shapes.pow2.Link,
+                     interactive: (cellView) => {
+                        if (cellView.model instanceof joint.shapes.pow2.ComponentModel) {
+                           return false;
+                        }
+                        return true;
+                     }
                   });
 
                   var connect = function(source, sourcePort, target, targetPort) {
                      var link = new joint.shapes.pow2.Link({
                         source: { id: source.id, selector: source.getPortSelector(sourcePort) },
-                        target: { id: target.id, selector: target.getPortSelector(targetPort) }
+                        target: { id: target.id, selector: target.getPortSelector(targetPort) },
+                        //router: { name:'orthogonal' }
                      });
                      graph.addCell(link);
                   };
 
                   var compCount:number = _.keys(d.components).length;
-                  var entityCoupling = new joint.shapes.pow2.Coupled({
-                     size: { width: 300, height: compCount * 50 },
+                  var entityShape = new joint.shapes.pow2.EntityModel({
+                     size: { width: 450, height: (compCount + 1) * 100 },
                      inPorts: _.keys(d.inputs),
                      outPorts: _.keys(d.outputs),
                      name:d.name,
                      objectType:d.type,
                   });
-                  graph.addCell(entityCoupling);
+                  graph.addCell(entityShape);
 
                   var at:number = 0;
-                  angular.forEach(d.components,(comp:IEntityComponentData,name:string)=>{
-                     var compAtomic = new joint.shapes.pow2.Atomic({
-                        size: { width: 350, height: 100 },
+                  angular.forEach(d.components,(comp:IEntityComponentData,index:number)=>{
+                     var compShape = new joint.shapes.pow2.ComponentModel({
+                        size: { width: 350, height: 50 },
+                        position: { x: 50, y: (at * 75) + 100 },
                         inPorts: ['host'],
                         outPorts: [],
-                        name:name,
+                        name:comp.name,
                         objectType:comp.type
                      });
-                     graph.addCell(compAtomic);
-                     entityCoupling.embed(compAtomic);
-                     connect(entityCoupling,'host',compAtomic,'host');
+                     graph.addCell(compShape);
+                     entityShape.embed(compShape);
+                     //connect(entityShape,'host',compShape,'host');
                      at++;
                   });
 
-                  joint.layout.DirectedGraph.layout(graph, {
-                     nodeSep: 80,
-                     edgeSep: 80,
-                     rankSep:100,
-                     rankDir: "LR"
-                  });
+                  //joint.layout.DirectedGraph.layout(graph, {
+                  //   nodeSep: 20,
+                  //   edgeSep: 20,
+                  //   rankSep:20,
+                  //   rankDir: "LR"
+                  //});
+                  var layoutPadding:number = 50;
                   angular.element(window).on('resize',()=>{
                      paper.setDimensions(element.width(),element.height());
                      paper.scaleContentToFit({
-                        padding:50
+                        padding:layoutPadding
                      });
                   });
                   paper.scaleContentToFit({
-                     padding:50
+                     padding:layoutPadding
                   });
                });
             };
